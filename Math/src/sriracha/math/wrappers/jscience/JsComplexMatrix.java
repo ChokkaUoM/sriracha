@@ -11,18 +11,14 @@ import sriracha.math.interfaces.IVector;
 
 class JsComplexMatrix extends JsMatrix implements IComplexMatrix {
 
-    private Complex[][] values;
-
-
     /**
      * Creates an n x m Complex matrix
      * */
     public JsComplexMatrix(int n, int m) {
-        values = new Complex[n][m];
+        matrix = ComplexMatrix.valueOf(new Complex[m][n]);
     }
 
-    JsComplexMatrix(ComplexMatrix m)
-    {
+    JsComplexMatrix(ComplexMatrix m){
         matrix = m;
     }
 
@@ -34,41 +30,11 @@ class JsComplexMatrix extends JsMatrix implements IComplexMatrix {
     @Override
     public void setValue(int i, int j, IComplex value) {
         if(value instanceof JsComplex){
-            values[i][j] =((JsComplex) value).value;
+            matrix.set(i, j, ((JsComplex) value).value);
         } else{
-            values[i][i] = Complex.valueOf(value.getReal(), value.getImag());
+            matrix.set(i, j, Complex.valueOf(value.getReal(), value.getImag()));
         }
         
     }
 
-
-    @Override
-    public IMatrix plus(IMatrix m) {
-        if(m instanceof JsMatrix){
-            ComplexMatrix sum = ComplexMatrix.valueOf(matrix.plus(((JsMatrix)m).matrix));
-
-        }
-
-        return null;
-    }
-
-    @Override
-    public IMatrix minus(IMatrix m) {
-        return null;
-    }
-
-    @Override
-    public IMatrix times(IMatrix m) {
-        return null;
-    }
-
-    @Override
-    public IMatrix times(double n) {
-        return new JsComplexMatrix(ComplexMatrix.valueOf(matrix.times(Float64.valueOf(n))));
-    }
-
-    @Override
-    public IVector solve(IVector b) {
-        return null;
-    }
 }
