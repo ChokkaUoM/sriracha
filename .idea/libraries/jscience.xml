@@ -1,12 +1,9 @@
 <component name="libraryTable">
   <library name="jscience">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/jscience.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Math/lib/jscience.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://$PROJECT_DIR$/lib/jscience.jar!/" />
-      <root url="file://$USER_HOME$/jscience/src" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>
