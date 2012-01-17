@@ -4,6 +4,7 @@ import org.jscience.mathematics.number.Complex;
 import org.jscience.mathematics.vector.ComplexMatrix;
 import sriracha.math.interfaces.IComplex;
 import sriracha.math.interfaces.IComplexMatrix;
+import sriracha.math.interfaces.IVector;
 
 
 class JsComplexMatrix extends JsMatrix implements IComplexMatrix {
@@ -33,5 +34,6 @@ class JsComplexMatrix extends JsMatrix implements IComplexMatrix {
         }
         
     }
+
 
 }

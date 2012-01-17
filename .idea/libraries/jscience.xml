@@ -4,6 +4,8 @@
       <root url="jar://$PROJECT_DIR$/Math/lib/jscience.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../jscience/src" />
+    </SOURCES>
   </library>
 </component>

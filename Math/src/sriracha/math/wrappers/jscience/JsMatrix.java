@@ -2,8 +2,10 @@ package sriracha.math.wrappers.jscience;
 
 import org.jscience.mathematics.number.Float64;
 import org.jscience.mathematics.vector.ComplexMatrix;
+import org.jscience.mathematics.vector.ComplexVector;
 import org.jscience.mathematics.vector.Float64Matrix;
 import org.jscience.mathematics.vector.Matrix;
+import sriracha.math.interfaces.IComplexVector;
 import sriracha.math.interfaces.IMatrix;
 import sriracha.math.interfaces.IVector;
 
@@ -64,10 +66,11 @@ abstract class JsMatrix implements IMatrix{
     }
     
     @Override
-    public IVector solve(IVector b){
-        if(b instanceof JsVector) {
-            //todo: insert code here
+    public IComplexVector solve(IVector b){
+        if(b instanceof JsVector){
+            return new JsComplexVector(ComplexVector.valueOf(matrix.solve(((JsVector)b).vector)));
         }
+
 
         return null;
 

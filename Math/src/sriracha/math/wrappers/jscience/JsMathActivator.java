@@ -16,11 +16,14 @@ public class JsMathActivator extends MathActivator {
         return new JsRealMatrix(i, j);
     }
 
+    @Override
+    public IRealVector realVector(int length) {
+        return new JsRealVector(length);
+    }
 
     @Override
-	public IVector vector(int dimension) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public IComplexVector complexVector(int length) {
+        return new JsComplexVector(length);
+    }
 
 }

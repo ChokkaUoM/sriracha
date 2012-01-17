@@ -11,7 +11,9 @@ public abstract class MathActivator {
 	public abstract IComplexMatrix complexMatrix(int i, int j);
     public abstract IRealMatrix realMatrix(int i, int j);
 
-	public abstract IVector vector(int length);
+	public abstract IRealVector realVector(int length);
+
+    public abstract IComplexVector complexVector(int length);
 	
 
 }
