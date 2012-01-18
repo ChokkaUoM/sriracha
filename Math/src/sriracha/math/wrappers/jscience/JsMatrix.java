@@ -13,16 +13,36 @@ import sriracha.math.interfaces.IVector;
 abstract class JsMatrix implements IMatrix{
     
     protected Matrix matrix;
+    
+    protected static JsComplexMatrix makeComplex(JsRealMatrix matrix){
+        Float64Matrix realMatrix = (Float64Matrix)matrix.matrix;
+        int m = realMatrix.getRow(0).getDimension();
+        int n = realMatrix.getColumn(0).getDimension();
 
+        Complex[][] values = new Complex[m][n];
+
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j< n; j++){
+                values[i][j] = Complex.valueOf(realMatrix.get(i, j).doubleValue(), 0);
+            }
+        }
+
+        return new JsComplexMatrix(ComplexMatrix.valueOf(values));
+    }
 
     @Override
     public IMatrix plus(IMatrix m) {
         if(m instanceof JsMatrix){
 
             if(m instanceof JsComplexMatrix || this instanceof JsComplexMatrix){
-                return  new JsComplexMatrix(ComplexMatrix.valueOf(matrix.plus(((JsMatrix)m).matrix))); //todo: JsCience does not support adding matrices of different subtypes ... lame
+                
+                JsComplexMatrix thiscomp = (this instanceof JsComplexMatrix) ? (JsComplexMatrix)this : makeComplex((JsRealMatrix)this);
+                JsComplexMatrix thatcomp = (m instanceof JsComplexMatrix) ? (JsComplexMatrix)m : makeComplex((JsRealMatrix)m);
+                
+                return new JsComplexMatrix(thiscomp.getMatrix().times(thatcomp.getMatrix()));
+                
             }  else {
-                return new JsRealMatrix(Float64Matrix.valueOf(matrix.plus(((JsMatrix)m).matrix)));
+                return new JsRealMatrix(((JsRealMatrix)this).getMatrix().plus(((JsRealMatrix)m).getMatrix()));
             }
         }
 
@@ -66,16 +86,7 @@ abstract class JsMatrix implements IMatrix{
         }
     }
     
-    @Override
-    public IComplexVector solve(IVector b){
-        if(b instanceof JsVector){
-            return new JsComplexVector(ComplexVector.valueOf(matrix.solve(((JsVector)b).vector)));
-        }
 
-
-        return null;
-
-    }
 
     @Override
     public abstract IMatrix clone();

@@ -1,5 +1,6 @@
 package sriracha.math.wrappers.jscience;
 
+import org.jscience.mathematics.number.Complex;
 import org.jscience.mathematics.vector.ComplexVector;
 import org.jscience.mathematics.vector.Float64Vector;
 import org.jscience.mathematics.vector.Vector;
@@ -15,9 +16,24 @@ public abstract class JsVector implements IVector{
 
     JsVector(){}
 
-    Vector GetVector(){
+    Vector getVector(){
         return vector;
     }
+
+
+    protected static JsComplexVector makeComplex(JsRealVector vector){
+        Float64Vector realVector = vector.getVector();
+        int dim  = realVector.getDimension();
+
+        Complex[] values = new Complex[dim];
+
+        for(int i = 0; i < dim; i++){
+            values[i] = Complex.valueOf(realVector.get(i).doubleValue(), 0);
+        }
+
+        return new JsComplexVector(ComplexVector.valueOf(values));
+    }
+
 
     @Override
     public int getDimension() {

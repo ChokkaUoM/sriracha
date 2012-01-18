@@ -2,6 +2,7 @@ package sriracha.math.wrappers.jscience;
 
 import org.jscience.mathematics.number.Float64;
 import org.jscience.mathematics.vector.Float64Vector;
+import org.jscience.mathematics.vector.Vector;
 import sriracha.math.interfaces.IRealVector;
 import sriracha.math.interfaces.IVector;
 
@@ -14,6 +15,10 @@ public class JsRealVector extends JsVector implements IRealVector{
 
     JsRealVector(Float64Vector vector){
         this.vector = vector;
+    }
+
+    JsRealVector(Vector<Float64> vector) {
+        this.vector = Float64Vector.valueOf(vector);
     }
 
 
@@ -30,5 +35,9 @@ public class JsRealVector extends JsVector implements IRealVector{
     @Override
     public IVector clone() {
         return new JsRealVector(Float64Vector.valueOf(vector.copy()));
+    }
+
+    Float64Vector getVector() {
+        return (Float64Vector)vector;
     }
 }

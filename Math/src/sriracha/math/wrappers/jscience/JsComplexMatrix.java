@@ -2,10 +2,7 @@ package sriracha.math.wrappers.jscience;
 
 import org.jscience.mathematics.number.Complex;
 import org.jscience.mathematics.vector.ComplexMatrix;
-import sriracha.math.interfaces.IComplex;
-import sriracha.math.interfaces.IComplexMatrix;
-import sriracha.math.interfaces.IMatrix;
-import sriracha.math.interfaces.IVector;
+import sriracha.math.interfaces.*;
 
 
 class JsComplexMatrix extends JsMatrix implements IComplexMatrix {
@@ -22,7 +19,9 @@ class JsComplexMatrix extends JsMatrix implements IComplexMatrix {
         matrix = m;
     }
 
-
+    ComplexMatrix getMatrix(){
+        return (ComplexMatrix)matrix;
+    }
 
     private ComplexMatrix buildZeroMatrix(int m, int n){
         Complex arr[][] = new Complex[m][n];
@@ -35,9 +34,11 @@ class JsComplexMatrix extends JsMatrix implements IComplexMatrix {
         return ComplexMatrix.valueOf(arr);
     }
 
+
+
     @Override
     public IComplex getValue(int i, int j) {
-        return new JsComplex (((ComplexMatrix)matrix).get(i, j));
+        return new JsComplex (getMatrix().get(i, j));
     }
 
     @Override
@@ -51,7 +52,17 @@ class JsComplexMatrix extends JsMatrix implements IComplexMatrix {
     }
 
     @Override
+    public IComplexVector solve(IVector b){
+        if(b instanceof JsRealVector){
+            JsComplexVector v =  JsVector.makeComplex((JsRealVector)b);
+            return new JsComplexVector(getMatrix().solve(v.getVector()));
+        }else{
+            return new JsComplexVector(getMatrix().solve(((JsComplexVector)b).getVector()));
+        }
+    }
+
+    @Override
     public IMatrix clone() {
-        return new JsComplexMatrix(ComplexMatrix.valueOf(matrix.copy()));
+        return new JsComplexMatrix(getMatrix().copy());
     }
 }

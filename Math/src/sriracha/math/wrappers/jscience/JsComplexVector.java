@@ -2,6 +2,7 @@ package sriracha.math.wrappers.jscience;
 
 import org.jscience.mathematics.number.Complex;
 import org.jscience.mathematics.vector.ComplexVector;
+import org.jscience.mathematics.vector.Vector;
 import sriracha.math.interfaces.IComplex;
 import sriracha.math.interfaces.IComplexVector;
 import sriracha.math.interfaces.IVector;
@@ -14,6 +15,10 @@ class JsComplexVector extends JsVector implements IComplexVector{
     
     JsComplexVector(ComplexVector vector){
         this.vector = vector;
+    }
+
+    JsComplexVector(Vector<Complex> vector) {
+        this.vector = ComplexVector.valueOf(vector);
     }
 
 
