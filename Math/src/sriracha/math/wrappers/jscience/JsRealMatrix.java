@@ -28,9 +28,6 @@ public class JsRealMatrix extends JsMatrix implements IRealMatrix{
 
 
 
-
-
-
     @Override
     public double getValue(int i, int j) {
         return ((Float64Matrix)matrix).get(i, j).doubleValue();
@@ -41,9 +38,16 @@ public class JsRealMatrix extends JsMatrix implements IRealMatrix{
         ((Float64Matrix)matrix).set(i, j, Float64.valueOf(value));
     }
 
-    @Override
+  /*  @Override
     public IComplexMatrix times_j() {
-        return new JsComplexMatrix(ComplexMatrix.valueOf( matrix.times(Complex.I)));
-    }
+        Float64Matrix m = (Float64Matrix)matrix;
+        foreach
+        
+        return new JsComplexMatrix(ComplexMatrix.valueOf(matrix).times(Complex.I));
+    }*/
 
+    @Override
+    public IMatrix clone() {
+        return new JsRealMatrix(Float64Matrix.valueOf(matrix.copy()));
+    }
 }

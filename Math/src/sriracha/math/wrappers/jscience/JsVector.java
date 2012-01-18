@@ -20,6 +20,11 @@ public abstract class JsVector implements IVector{
     }
 
     @Override
+    public int getDimension() {
+        return vector.getDimension();
+    }
+
+    @Override
     public IVector plus(IVector v) {
         if(v instanceof JsVector){
 
@@ -43,4 +48,7 @@ public abstract class JsVector implements IVector{
     public IVector times(double vector) {
         return null;
     }
+
+    @Override
+    public abstract IVector clone();
 }

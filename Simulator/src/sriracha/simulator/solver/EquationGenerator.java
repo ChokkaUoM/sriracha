@@ -1,6 +1,7 @@
 package sriracha.simulator.solver;
 
 import sriracha.simulator.model.Circuit;
+import sriracha.simulator.model.CircuitElement;
 import sriracha.simulator.solver.interfaces.IEquation;
 
 public class EquationGenerator {
@@ -9,12 +10,20 @@ public class EquationGenerator {
 
 	public EquationGenerator(Circuit circuit)
 	{
-		this.circuit = circuit;
+		this.circuit = circuit.expandedCircuit();
 	}
 
 
     public IEquation generate(){
-        return null;
+
+        
+        LinearEquation equation = new LinearEquation(circuit.getNodeCount());
+        
+        for(CircuitElement e : circuit.elements){
+            e.applyStamp(equation);
+        }
+
+        return equation;
     }
 	
 	

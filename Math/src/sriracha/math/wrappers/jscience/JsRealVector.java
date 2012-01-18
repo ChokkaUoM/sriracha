@@ -1,11 +1,9 @@
 package sriracha.math.wrappers.jscience;
 
-import org.jscience.mathematics.number.Complex;
 import org.jscience.mathematics.number.Float64;
-import org.jscience.mathematics.vector.ComplexVector;
 import org.jscience.mathematics.vector.Float64Vector;
-import sriracha.math.interfaces.IComplexVector;
 import sriracha.math.interfaces.IRealVector;
+import sriracha.math.interfaces.IVector;
 
 public class JsRealVector extends JsVector implements IRealVector{
 
@@ -30,7 +28,7 @@ public class JsRealVector extends JsVector implements IRealVector{
     }
 
     @Override
-    public IComplexVector times_j() {
-        return new JsComplexVector(ComplexVector.valueOf(vector.times(Complex.I)));
+    public IVector clone() {
+        return new JsRealVector(Float64Vector.valueOf(vector.copy()));
     }
 }

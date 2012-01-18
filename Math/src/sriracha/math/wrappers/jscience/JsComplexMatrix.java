@@ -4,20 +4,35 @@ import org.jscience.mathematics.number.Complex;
 import org.jscience.mathematics.vector.ComplexMatrix;
 import sriracha.math.interfaces.IComplex;
 import sriracha.math.interfaces.IComplexMatrix;
+import sriracha.math.interfaces.IMatrix;
 import sriracha.math.interfaces.IVector;
 
 
 class JsComplexMatrix extends JsMatrix implements IComplexMatrix {
 
+    
     /**
-     * Creates an n x m Complex matrix
+     * Creates an mxn Complex matrix
      * */
-    public JsComplexMatrix(int n, int m) {
-        matrix = ComplexMatrix.valueOf(new Complex[m][n]);
+    public JsComplexMatrix(int m, int n) {
+        matrix = buildZeroMatrix(m, n);
     }
 
     JsComplexMatrix(ComplexMatrix m){
         matrix = m;
+    }
+
+
+
+    private ComplexMatrix buildZeroMatrix(int m, int n){
+        Complex arr[][] = new Complex[m][n];
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                arr[i][j] = Complex.ZERO;
+            }
+        }
+
+        return ComplexMatrix.valueOf(arr);
     }
 
     @Override
@@ -35,5 +50,8 @@ class JsComplexMatrix extends JsMatrix implements IComplexMatrix {
         
     }
 
-
+    @Override
+    public IMatrix clone() {
+        return new JsComplexMatrix(ComplexMatrix.valueOf(matrix.copy()));
+    }
 }

@@ -11,6 +11,8 @@ public interface IMatrix {
 
     public IMatrix times(double n);
 
-    public IVector solve(IVector b);
+    public IComplexVector solve(IVector b);
+
+    public IMatrix clone();
 
 }
