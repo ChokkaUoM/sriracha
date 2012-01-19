@@ -18,8 +18,8 @@ public class Console {
 
     public static void testSequence1() throws IOException {
         Circuit test1 = new Circuit(1);
-        test1.elements.add(new CurrentSource(0, -1, 1));
-        test1.elements.add(new Resistor(0, -1, 1));
+        test1.elements.add(new CurrentSource(0, -1, 2));
+        test1.elements.add(new Resistor(0, -1, 100));
 
         EquationGenerator generator = new EquationGenerator(test1);
 

@@ -38,8 +38,10 @@ abstract class JsMatrix implements IMatrix{
                 
                 JsComplexMatrix thiscomp = (this instanceof JsComplexMatrix) ? (JsComplexMatrix)this : makeComplex((JsRealMatrix)this);
                 JsComplexMatrix thatcomp = (m instanceof JsComplexMatrix) ? (JsComplexMatrix)m : makeComplex((JsRealMatrix)m);
-                
-                return new JsComplexMatrix(thiscomp.getMatrix().times(thatcomp.getMatrix()));
+
+                ComplexMatrix r = thiscomp.getMatrix().plus(thatcomp.getMatrix());
+
+                return new JsComplexMatrix(r);
                 
             }  else {
                 return new JsRealMatrix(((JsRealMatrix)this).getMatrix().plus(((JsRealMatrix)m).getMatrix()));
