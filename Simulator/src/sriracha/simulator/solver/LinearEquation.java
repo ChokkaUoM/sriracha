@@ -4,7 +4,7 @@ import sriracha.math.MathActivator;
 import sriracha.math.interfaces.*;
 import sriracha.simulator.solver.interfaces.IEquation;
 
-class LinearEquation implements IEquation{
+class LinearEquation implements IEquation {
 
     private IRealMatrix C;
 
@@ -13,22 +13,20 @@ class LinearEquation implements IEquation{
     private IRealVector b;
 
 
-
-
     /**
      * Frequency in rads
-     * */
+     */
     private double omega;
-    
-    
-    LinearEquation(int circuitNodeCount){
+
+
+    LinearEquation(int circuitNodeCount) {
         C = MathActivator.Activator.realMatrix(circuitNodeCount, circuitNodeCount);
         G = MathActivator.Activator.complexMatrix(circuitNodeCount, circuitNodeCount);
         b = MathActivator.Activator.realVector(circuitNodeCount);
     }
-    
-    protected IComplexMatrix buildMatrixA(){
-       return (IComplexMatrix)C.plus(G.times(omega));
+
+    protected IComplexMatrix buildMatrixA() {
+        return (IComplexMatrix) C.plus(G.times(omega));
     }
 
 
@@ -47,7 +45,7 @@ class LinearEquation implements IEquation{
     @Override
     public void applyRealStamp(int i, int j, double d) {
         //no stamps to ground
-        if(i==-1 || j == -1) return;
+        if (i == -1 || j == -1) return;
 
         double val = C.getValue(i, j);
         C.setValue(i, j, val + d);
@@ -56,7 +54,7 @@ class LinearEquation implements IEquation{
     @Override
     public void applyComplexStamp(int i, int j, double d) {
         //no stamps to ground
-        if(i==-1 || j == -1) return;
+        if (i == -1 || j == -1) return;
 
         IComplex val = G.getValue(i, j);
         val.setImag(val.getImag() + d);
@@ -66,7 +64,7 @@ class LinearEquation implements IEquation{
     @Override
     public void applySourceStamp(int i, double d) {
         //no stamps to ground
-        if(i == -1) return;
+        if (i == -1) return;
 
         double val = b.getValue(i);
         b.setValue(i, val + d);
@@ -75,9 +73,9 @@ class LinearEquation implements IEquation{
     @Override
     public IEquation clone() {
         LinearEquation clone = new LinearEquation(b.getDimension());
-        clone.G = (IComplexMatrix)G.clone();
-        clone.C = (IRealMatrix)C.clone();
-        clone.b = (IRealVector)b.clone();
+        clone.G = (IComplexMatrix) G.clone();
+        clone.C = (IRealMatrix) C.clone();
+        clone.b = (IRealVector) b.clone();
         return clone;
     }
 }

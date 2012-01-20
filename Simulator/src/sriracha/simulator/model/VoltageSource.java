@@ -3,17 +3,16 @@ package sriracha.simulator.model;
 import sriracha.simulator.model.interfaces.IAddVariable;
 import sriracha.simulator.solver.interfaces.IEquation;
 
-public class VoltageSource extends Source implements IAddVariable{
+public class VoltageSource extends Source implements IAddVariable {
 
     private int nodePos, nodeNeg;
 
     private double E;
 
     /**
-     *
      * @param nodePos
      * @param nodeNeg
-     * @param e - voltage?? i assume
+     * @param e       - voltage?? i assume
      */
     public VoltageSource(int nodePos, int nodeNeg, double e) {
         this.nodePos = nodePos;
@@ -24,7 +23,6 @@ public class VoltageSource extends Source implements IAddVariable{
     private int currentIndex;
 
 
-    
     @Override
     public void applyStamp(IEquation equation) {
         equation.applyRealStamp(currentIndex, nodePos, 1);
@@ -36,7 +34,12 @@ public class VoltageSource extends Source implements IAddVariable{
     }
 
     @Override
-    public void setVariableIndex(int i) {
+    public int getVarIndexCount() {
+        return 1;
+    }
 
+    @Override
+    public void setFirstVarIndex(int i) {
+        currentIndex = i;
     }
 }

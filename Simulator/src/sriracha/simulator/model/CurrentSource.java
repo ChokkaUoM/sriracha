@@ -21,9 +21,10 @@ public class CurrentSource extends Source {
 
     /**
      * Standard CurrentSource constructor
-     * @param outNode  the node positive current flows out of
+     *
+     * @param outNode the node positive current flows out of
      * @param inNode  the node positive current flows in to
-     * @param current  current in Amperes
+     * @param current current in Amperes
      */
     public CurrentSource(int outNode, int inNode, double current) {
         this.outNode = outNode;

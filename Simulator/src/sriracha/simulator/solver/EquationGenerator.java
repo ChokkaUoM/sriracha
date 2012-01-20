@@ -6,25 +6,24 @@ import sriracha.simulator.solver.interfaces.IEquation;
 
 public class EquationGenerator {
 
-	private Circuit circuit;
+    private Circuit circuit;
 
-	public EquationGenerator(Circuit circuit)
-	{
-		this.circuit = circuit;
-	}
+    public EquationGenerator(Circuit circuit) {
+        this.circuit = circuit;
+    }
 
 
-    public IEquation generate(){
+    public IEquation generate() {
 
-        
+
         LinearEquation equation = new LinearEquation(circuit.getVariableCount());
-        
-        for(CircuitElement e : circuit.elements){
+
+        for (CircuitElement e : circuit.elements) {
             e.applyStamp(equation);
         }
 
         return equation;
     }
-	
-	
+
+
 }

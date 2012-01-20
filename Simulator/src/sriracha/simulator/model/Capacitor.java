@@ -2,8 +2,8 @@ package sriracha.simulator.model;
 
 import sriracha.simulator.solver.interfaces.IEquation;
 
-public class Capacitor extends CircuitElement{
-    
+public class Capacitor extends CircuitElement {
+
     private int nodeA, nodeB;
 
     private double capacitance;
