@@ -4,7 +4,7 @@ import sriracha.simulator.solver.interfaces.IEquation;
 
 public class Resistor extends CircuitElement {
 
-    private int nodeA, nodeB;
+    protected int nodeA, nodeB;
 
     /**
      * conductance G = 1/R where R is in ohms
@@ -26,16 +26,11 @@ public class Resistor extends CircuitElement {
     
     @Override
     public void applyStamp(IEquation equation) {
-        if(nodeA != -1 && nodeB != -1){
-            equation.applyRealStamp(nodeA, nodeA, G);
-            equation.applyRealStamp(nodeB, nodeB, G);
-            equation.applyRealStamp(nodeA, nodeB, -G);
-            equation.applyRealStamp(nodeB, nodeA, -G);
-        }  else if(nodeA == -1){
-            equation.applyRealStamp(nodeB, nodeB, G);
-        } else if (nodeB == -1){
-            equation.applyRealStamp(nodeA, nodeA, G);
-        }
+        equation.applyRealStamp(nodeA, nodeA, G);
+        equation.applyRealStamp(nodeB, nodeB, G);
+        equation.applyRealStamp(nodeA, nodeB, -G);
+        equation.applyRealStamp(nodeB, nodeA, -G);
+
 
     }
 }

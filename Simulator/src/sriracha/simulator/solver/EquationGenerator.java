@@ -10,14 +10,14 @@ public class EquationGenerator {
 
 	public EquationGenerator(Circuit circuit)
 	{
-		this.circuit = circuit.expandedCircuit();
+		this.circuit = circuit;
 	}
 
 
     public IEquation generate(){
 
         
-        LinearEquation equation = new LinearEquation(circuit.getNodeCount());
+        LinearEquation equation = new LinearEquation(circuit.getVariableCount());
         
         for(CircuitElement e : circuit.elements){
             e.applyStamp(equation);

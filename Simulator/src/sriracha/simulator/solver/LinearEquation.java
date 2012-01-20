@@ -11,7 +11,10 @@ class LinearEquation implements IEquation{
     private IComplexMatrix G;
 
     private IRealVector b;
-    
+
+
+
+
     /**
      * Frequency in rads
      * */
@@ -43,12 +46,18 @@ class LinearEquation implements IEquation{
 
     @Override
     public void applyRealStamp(int i, int j, double d) {
+        //no stamps to ground
+        if(i==-1 || j == -1) return;
+
         double val = C.getValue(i, j);
         C.setValue(i, j, val + d);
     }
 
     @Override
     public void applyComplexStamp(int i, int j, double d) {
+        //no stamps to ground
+        if(i==-1 || j == -1) return;
+
         IComplex val = G.getValue(i, j);
         val.setImag(val.getImag() + d);
         G.setValue(i, j, val);
@@ -56,6 +65,9 @@ class LinearEquation implements IEquation{
 
     @Override
     public void applySourceStamp(int i, double d) {
+        //no stamps to ground
+        if(i == -1) return;
+
         double val = b.getValue(i);
         b.setValue(i, val + d);
     }

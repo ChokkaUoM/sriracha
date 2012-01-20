@@ -11,4 +11,5 @@ public abstract class CircuitElement {
     public abstract void applyStamp(IEquation equation);
 
 
+
 }

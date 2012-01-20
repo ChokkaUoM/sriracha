@@ -1,5 +1,7 @@
 package sriracha.simulator.model;
 
+import sriracha.simulator.model.interfaces.IAddVariable;
+
 import java.util.ArrayList;
 
 public class Circuit {
@@ -18,10 +20,15 @@ public class Circuit {
         return nodeCount;
     }
     
-    
-
-    public Circuit expandedCircuit() {
-        //todo: expand basic circuit elements into submodels such that the new nodeCount works for equation generation
-        return this;
+    public int getVariableCount(){
+        int count = 0;
+        for(CircuitElement e : elements){
+            if(e instanceof IAddVariable) {
+                ((IAddVariable) e).setVariableIndex(nodeCount + count++);
+            }
+        }
+        return count + nodeCount;
     }
+
+   
 }

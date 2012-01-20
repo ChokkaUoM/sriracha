@@ -33,12 +33,7 @@ public class CurrentSource extends Source {
 
     @Override
     public void applyStamp(IEquation equation) {
-        if(outNode != -1){
-            equation.applySourceStamp(outNode, current);
-        }
-
-        if(inNode != -1){
-            equation.applySourceStamp(inNode, -current);
-        }
+        equation.applySourceStamp(outNode, current);
+        equation.applySourceStamp(inNode, -current);
     }
 }
