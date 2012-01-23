@@ -26,6 +26,13 @@
             </SvnBranchConfiguration>
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/Simulator">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="trunkUrl" value="https://sriracha.googlecode.com/svn/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
       </map>
     </option>
     <option name="mySupportsUserInfoFilter" value="true" />

@@ -46,7 +46,7 @@ public class Solver {
         @Override
         public void run() {
 
-            //todo: implment analysis types
+            //todo: implement analysis types
 
             IComplexVector solution = eqClone.solve();
             try {
