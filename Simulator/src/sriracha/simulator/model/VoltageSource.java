@@ -34,8 +34,13 @@ public class VoltageSource extends Source implements IAddVariable {
     }
 
     @Override
-    public int getVarIndexCount() {
-        return 1;
+    public int getNodeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getVariableCount() {
+        return 3;
     }
 
     @Override

@@ -42,25 +42,42 @@ public class Solver {
             }
         }
 
-
+         private void flush(IComplexVector solution) {
+             try {
+                 for (int i = 0; i < solution.getDimension(); i++) {
+                     dataOut.writeDouble(solution.getValue(i).getReal());
+                 }
+             } catch (IOException e) {
+                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+             }
+         }
         @Override
         public void run() {
 
             //todo: implement analysis types
-
-            IComplexVector solution = eqClone.solve();
-            try {
-                for (int i = 0; i < solution.getDimension(); i++) {
-
-                    dataOut.writeDouble(solution.getValue(i).getReal());
+            if(analysis instanceof SmallSignal){
+                SmallSignal freq = (SmallSignal) analysis;
+                switch (freq.getType()){
+                    case Linear:
+                        double interval = (freq.getfEnd() - freq.getfStart())/freq.getPoints();
+                        for(int i = 0; i< freq.getPoints(); i++ ){
+                            flush(eqClone.solve(freq.getfStart() + interval*i));
+                        }
+                        break;
+                    case Decade:
 
                 }
+            }
+
+
+            try {
                 dataOut.flush();
                 dataOut.close();
                 dataOut = null;
             } catch (IOException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
+
         }
 
     }

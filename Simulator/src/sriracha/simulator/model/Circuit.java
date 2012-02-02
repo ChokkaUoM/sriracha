@@ -1,10 +1,10 @@
 package sriracha.simulator.model;
 
-import sriracha.simulator.model.interfaces.IAddVariable;
+import sriracha.simulator.solver.interfaces.IEquation;
 
 import java.util.ArrayList;
 
-public class Circuit {
+public class Circuit{
 
     private int nodeCount;
 
@@ -15,23 +15,25 @@ public class Circuit {
         elements = new ArrayList<CircuitElement>();
     }
 
+   // @Override
+    public void applyStamp(IEquation equation) {
+        for(CircuitElement e : elements){
+            e.applyStamp(equation);
+        }
+    }
 
+ //   @Override
     public int getNodeCount() {
         return nodeCount;
     }
 
+  //  @Override
     public int getVariableCount() {
         int count = 0;
         for (CircuitElement e : elements) {
-            if (e instanceof IAddVariable) {
-                int k = ((IAddVariable) e).getVarIndexCount();
-                ((IAddVariable) e).setFirstVarIndex(nodeCount + count);
-                count += k;
-
-
-            }
+            count += e.getVariableCount();
         }
-        return count + nodeCount;
+        return count;
     }
 
 

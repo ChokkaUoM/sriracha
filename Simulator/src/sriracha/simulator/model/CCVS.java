@@ -35,9 +35,15 @@ public class CCVS extends ControlledSource implements IAddVariable {
     }
 
     @Override
-    public int getVarIndexCount() {
+    public int getNodeCount() {
         return 2;
     }
+
+    @Override
+    public int getVariableCount() {
+        return 4;
+    }
+
 
     @Override
     public void setFirstVarIndex(int i) {

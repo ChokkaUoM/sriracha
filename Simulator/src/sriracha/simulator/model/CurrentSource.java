@@ -37,4 +37,14 @@ public class CurrentSource extends Source {
         equation.applySourceStamp(outNode, current);
         equation.applySourceStamp(inNode, -current);
     }
+
+    @Override
+    public int getNodeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getVariableCount() {
+        return 2;
+    }
 }

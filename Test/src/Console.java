@@ -1,8 +1,9 @@
+import sriracha.simulator.model.Capacitor;
 import sriracha.simulator.model.Circuit;
-import sriracha.simulator.model.CurrentSource;
 import sriracha.simulator.model.Resistor;
 import sriracha.simulator.model.VoltageSource;
 import sriracha.simulator.solver.EquationGenerator;
+import sriracha.simulator.solver.SmallSignal;
 import sriracha.simulator.solver.Solver;
 
 import java.io.DataInputStream;
@@ -24,12 +25,18 @@ public class Console {
         Circuit test1 = new Circuit(1);
         test1.elements.add(new VoltageSource(0, -1, 1));
         test1.elements.add(new Resistor(0, -1, 2));
+        test1.elements.add(new Capacitor(0, -1, 2));
 
         EquationGenerator generator = new EquationGenerator(test1);
 
         Solver solver = new Solver(generator.generate());
 
-        DataInputStream dataStream = new DataInputStream(solver.solve(null));
+        SmallSignal analysis = new SmallSignal();
+        analysis.interval = 10;
+        analysis.min = 0;
+        analysis.max = 1000;
+
+        DataInputStream dataStream = new DataInputStream(solver.solve(analysis));
         try {
             while (true){
 

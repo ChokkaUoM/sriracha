@@ -4,24 +4,42 @@ import sriracha.simulator.solver.interfaces.IEquation;
 
 public class Capacitor extends CircuitElement {
 
-    private int nodeA, nodeB;
+    private int nodePos, nodeNeg;
 
-    private double capacitance;
+    private double capacitance, initialVoltage;
 
-    public Capacitor(int nodeA, int nodeB, double capacitance) {
-        this.nodeA = nodeA;
-        this.nodeB = nodeB;
+    public Capacitor(int nodePos, int nodeNeg, double capacitance) {
+        this.nodePos = nodePos;
+        this.nodeNeg = nodeNeg;
         this.capacitance = capacitance;
+        initialVoltage = 0;
+    }
+
+    public Capacitor(int nodePos, int nodeNeg, double capacitance, double ic) {
+        this.nodePos = nodePos;
+        this.nodeNeg = nodeNeg;
+        this.capacitance = capacitance;
+        this.initialVoltage = ic;
     }
 
     @Override
     public void applyStamp(IEquation equation) {
-        equation.applyComplexStamp(nodeA, nodeA, capacitance);
-        equation.applyComplexStamp(nodeA, nodeB, -capacitance);
-        equation.applyComplexStamp(nodeB, nodeA, -capacitance);
-        equation.applyComplexStamp(nodeB, nodeB, capacitance);
+        equation.applyComplexStamp(nodePos, nodePos, capacitance);
+        equation.applyComplexStamp(nodePos, nodeNeg, -capacitance);
+        equation.applyComplexStamp(nodeNeg, nodePos, -capacitance);
+        equation.applyComplexStamp(nodeNeg, nodeNeg, capacitance);
 
 
+    }
+
+    @Override
+    public int getNodeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getVariableCount() {
+        return 2;
     }
 
 }

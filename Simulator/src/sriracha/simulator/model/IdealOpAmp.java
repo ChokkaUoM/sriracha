@@ -35,9 +35,15 @@ public class IdealOpAmp extends CircuitElement implements IAddVariable{
     }
 
     @Override
-    public int getVarIndexCount() {
-        return 1;
+    public int getNodeCount() {
+        return 3;
     }
+
+    @Override
+    public int getVariableCount() {
+        return 4;
+    }
+
 
     @Override
     public void setFirstVarIndex(int i) {

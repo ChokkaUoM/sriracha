@@ -34,4 +34,14 @@ public class Resistor extends CircuitElement {
 
 
     }
+
+    @Override
+    public int getNodeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getVariableCount() {
+        return 2;
+    }
 }

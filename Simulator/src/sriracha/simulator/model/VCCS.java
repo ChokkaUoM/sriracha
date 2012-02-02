@@ -33,4 +33,14 @@ public class VCCS extends ControlledSource {
         equation.applyRealStamp(iPrime, kPrime, gm);
     }
 
+    @Override
+    public int getNodeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getVariableCount() {
+        return 2;
+    }
+
 }
