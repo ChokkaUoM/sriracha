@@ -42,8 +42,9 @@ public class Solver {
             }
         }
 
-         private void flush(IComplexVector solution) {
+         private void flush(IComplexVector solution, double omega) {
              try {
+                    dataOut.writeDouble(omega);
                  for (int i = 0; i < solution.getDimension(); i++) {
                      dataOut.writeDouble(solution.getValue(i).getReal());
                  }
@@ -51,6 +52,22 @@ public class Solver {
                  e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
              }
          }
+
+        private void ssLogScaleRun(int base, SmallSignal freq){
+            double f = freq.getfStart();
+            int i=0, k = 1;
+            while(f <=freq.getfEnd()){
+                double interval = (f * k) * (base - 1) / freq.getPoints();
+                while(i < freq.getPoints() && f <= freq.getfEnd()) {
+                    f = f + i*interval;
+                    flush(eqClone.solve(f), f);
+                    i++;
+                }
+                k*=base;
+                i=0;
+            }
+        }
+
         @Override
         public void run() {
 
@@ -61,10 +78,16 @@ public class Solver {
                     case Linear:
                         double interval = (freq.getfEnd() - freq.getfStart())/freq.getPoints();
                         for(int i = 0; i< freq.getPoints(); i++ ){
-                            flush(eqClone.solve(freq.getfStart() + interval*i));
+                            double omega = freq.getfStart() + interval*i;
+                            flush(eqClone.solve(omega), omega);
                         }
                         break;
                     case Decade:
+                        ssLogScaleRun(10, freq);
+                        break;
+                    case Octave:
+                        ssLogScaleRun(8, freq);
+                        break;
 
                 }
             }
