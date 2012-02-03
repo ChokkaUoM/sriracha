@@ -8,14 +8,16 @@ public class Capacitor extends CircuitElement {
 
     private double capacitance, initialVoltage;
 
-    public Capacitor(int nodePos, int nodeNeg, double capacitance) {
+    public Capacitor(String name, int nodePos, int nodeNeg, double capacitance) {
+        super(name);
         this.nodePos = nodePos;
         this.nodeNeg = nodeNeg;
         this.capacitance = capacitance;
         initialVoltage = 0;
     }
 
-    public Capacitor(int nodePos, int nodeNeg, double capacitance, double ic) {
+    public Capacitor(String name, int nodePos, int nodeNeg, double capacitance, double ic) {
+        super(name);
         this.nodePos = nodePos;
         this.nodeNeg = nodeNeg;
         this.capacitance = capacitance;
