@@ -8,13 +8,5 @@ import java.util.HashMap;
  */
 public class Simulator {
 
-    /**
-     * mapping from node names in received netlist to index in final matrix.
-     * Ground node is always the tuple ("0", -1)
-     */
-    private HashMap<String, Integer> nodeMap;
-    
-    public void addNodeMapping(String nodeName, int index){
-        nodeMap.put(nodeName, index);
-    }
+
 }

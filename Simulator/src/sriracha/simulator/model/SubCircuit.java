@@ -1,23 +1,23 @@
 package sriracha.simulator.model;
 
 import sriracha.simulator.solver.interfaces.IEquation;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 
+/**
+ * Subcircuits use a different internal node numbering system and maintains a mapping from internal nodes to
+ * matrix indices
+ */
 public class SubCircuit extends CircuitElement{
 
 
-    /**
-     * list of all elements forming the subcircuit
-     */
-    private ArrayList<CircuitElement> elements;
+
+
 
     /**
-     * 
+     * Indices for nodes corresponding to external terminals
      */
     private ArrayList<Integer> nodes;
-
-
 
 
     public void addElement(CircuitElement element){
@@ -25,6 +25,12 @@ public class SubCircuit extends CircuitElement{
     }
 
 
+    @Override
+    public void setNodeIndices(int... indices) {
+        for(int i : indices){
+            nodes.add(i);
+        }
+    }
 
     @Override
     public void applyStamp(IEquation equation) {
@@ -45,12 +51,21 @@ public class SubCircuit extends CircuitElement{
         return count;
     }
 
+    public static SubCircuit build(SubCircuitTemplate template){
+
+    }
+
     /**
      * Makes a copy of the subcircuit
      */
+    @Override
     public SubCircuit buildCopy(){
        SubCircuit subCircuit = new SubCircuit();
+       for(CircuitElement e : elements){
+           CircuitElement copy = e.buildCopy();
 
+           subCircuit.addElement(e.buildCopy());
+       }
 
     }
 }
