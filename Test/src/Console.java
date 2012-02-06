@@ -3,6 +3,7 @@ import sriracha.simulator.model.Circuit;
 import sriracha.simulator.model.Resistor;
 import sriracha.simulator.model.VoltageSource;
 import sriracha.simulator.solver.EquationGenerator;
+import sriracha.simulator.solver.SSType;
 import sriracha.simulator.solver.SmallSignal;
 import sriracha.simulator.solver.Solver;
 
@@ -31,10 +32,8 @@ public class Console {
 
         Solver solver = new Solver(generator.generate());
 
-        SmallSignal analysis = new SmallSignal();
-        analysis.interval = 10;
-        analysis.min = 0;
-        analysis.max = 1000;
+        SmallSignal analysis = new SmallSignal(SSType.Linear, )
+
 
         DataInputStream dataStream = new DataInputStream(solver.solve(analysis));
         try {

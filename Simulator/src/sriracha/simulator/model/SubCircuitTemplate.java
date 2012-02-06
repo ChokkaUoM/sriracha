@@ -53,8 +53,8 @@ public class SubCircuitTemplate {
     }
 
     /**
-     * Returns the number of internal nodes
-     * @return
+     * Returns the number of internal nodes (total - external)
+     * @return internal node count
      */
     public int getInternalNodeCount(){
         return internalNodeMap.size() - nodeCount;

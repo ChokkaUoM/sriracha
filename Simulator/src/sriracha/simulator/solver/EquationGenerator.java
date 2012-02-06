@@ -17,10 +17,10 @@ public class EquationGenerator {
 
 
         LinearEquation equation = new LinearEquation(circuit.getMatrixSize());
-
-        for (CircuitElement e : circuit.elements) {
-            e.applyStamp(equation);
-        }
+        
+        circuit.assignAdditionalVarIndices();
+        
+        circuit.applyStamp(equation);
 
         return equation;
     }
