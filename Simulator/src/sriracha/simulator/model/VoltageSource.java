@@ -1,23 +1,15 @@
 package sriracha.simulator.model;
 
-import sriracha.simulator.model.interfaces.IAddVariable;
 import sriracha.simulator.solver.interfaces.IEquation;
 
-public class VoltageSource extends Source implements IAddVariable {
+public class VoltageSource extends Source  {
 
-    private int nodePos, nodeNeg;
 
-    private double E;
+    private double voltage;
 
-    /**
-     * @param nodePos
-     * @param nodeNeg
-     * @param e       - voltage?? i assume
-     */
-    public VoltageSource(int nodePos, int nodeNeg, double e) {
-        this.nodePos = nodePos;
-        this.nodeNeg = nodeNeg;
-        E = e;
+    public VoltageSource(String name, double voltage) {
+         super(name);
+         this.voltage = voltage;
     }
 
     private int currentIndex;
@@ -25,12 +17,12 @@ public class VoltageSource extends Source implements IAddVariable {
 
     @Override
     public void applyStamp(IEquation equation) {
-        equation.applyRealStamp(currentIndex, nodePos, 1);
-        equation.applyRealStamp(currentIndex, nodeNeg, -1);
-        equation.applyRealStamp(nodePos, currentIndex, 1);
-        equation.applyRealStamp(nodeNeg, currentIndex, -1);
+        equation.applyRealStamp(currentIndex, nPlus, 1);
+        equation.applyRealStamp(currentIndex, nMinus, -1);
+        equation.applyRealStamp(nPlus, currentIndex, 1);
+        equation.applyRealStamp(nMinus, currentIndex, -1);
 
-        equation.applySourceStamp(currentIndex, E);
+        equation.applySourceStamp(currentIndex, voltage);
     }
 
     @Override
@@ -39,8 +31,26 @@ public class VoltageSource extends Source implements IAddVariable {
     }
 
     @Override
-    public int getVariableCount() {
-        return 3;
+    public int getExtraVariableCount() {
+        return 1;
+    }
+
+    /**
+     * This is used to build a copy of the circuit element during netlist parsing
+     * when adding multiple elements with the same properties.
+     * Node information will of course not be copied and have to be entered afterwards
+     */
+    @Override
+    public CircuitElement buildCopy(String name) {
+        return new VoltageSource(name, voltage);
+    }
+
+    /**
+     * @return an array containing the matrix indices for the nodes in this circuit element
+     */
+    @Override
+    public int[] getNodeIndices() {
+        return new int[]{nPlus, nMinus};
     }
 
     @Override

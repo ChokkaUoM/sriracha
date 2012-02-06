@@ -16,7 +16,7 @@ public class EquationGenerator {
     public IEquation generate() {
 
 
-        LinearEquation equation = new LinearEquation(circuit.getVariableCount());
+        LinearEquation equation = new LinearEquation(circuit.getMatrixSize());
 
         for (CircuitElement e : circuit.elements) {
             e.applyStamp(equation);

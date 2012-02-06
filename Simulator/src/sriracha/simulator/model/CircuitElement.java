@@ -28,6 +28,10 @@ public abstract class CircuitElement {
      */
     public abstract void setNodeIndices(int ... indices);
 
+    /**
+     * @return an array containing the matrix indices for the nodes in this circuit element
+     */
+    public abstract int[] getNodeIndices();
 
     /**
      * Some elements add extra variables to the matrix. This method serves to set the index for the
@@ -53,13 +57,12 @@ public abstract class CircuitElement {
      *
      * @return total number of variables this element represents in the final matrix representation
      */
-    public abstract int getVariableCount();
+    public abstract int getExtraVariableCount();
 
     /**
      * This is used to build a copy of the circuit element during netlist parsing
      * when adding multiple elements with the same properties.
      * Node information will of course not be copied and have to be entered afterwards
      */
-    public abstract CircuitElement buildCopy();
-
+    public abstract CircuitElement buildCopy(String name);
 }

@@ -5,16 +5,6 @@ import sriracha.simulator.solver.interfaces.IEquation;
 public class CurrentSource extends Source {
 
     /**
-     * the node positive current flows out of
-     */
-    private int outNode;
-
-    /**
-     * the node positive current flows in to
-     */
-    private int inNode;
-
-    /**
      * current in Amperes
      */
     private double current;
@@ -22,20 +12,26 @@ public class CurrentSource extends Source {
     /**
      * Standard CurrentSource constructor
      *
-     * @param outNode the node positive current flows out of
-     * @param inNode  the node positive current flows in to
      * @param current current in Amperes
+     * @param name name from netlist
      */
-    public CurrentSource(int outNode, int inNode, double current) {
-        this.outNode = outNode;
-        this.inNode = inNode;
+    public CurrentSource(String name, double current) {
+        super(name);
         this.current = current;
+    }
+
+    /**
+     * @return an array containing the matrix indices for the nodes in this circuit element
+     */
+    @Override
+    public int[] getNodeIndices() {
+        return new int[]{nPlus, nMinus};
     }
 
     @Override
     public void applyStamp(IEquation equation) {
-        equation.applySourceStamp(outNode, current);
-        equation.applySourceStamp(inNode, -current);
+        equation.applySourceStamp(nMinus, current);
+        equation.applySourceStamp(nPlus, -current);
     }
 
     @Override
@@ -44,7 +40,12 @@ public class CurrentSource extends Source {
     }
 
     @Override
-    public int getVariableCount() {
-        return 2;
+    public int getExtraVariableCount() {
+        return 0;
+    }
+
+    @Override
+    public CurrentSource buildCopy(String name) {
+        return new CurrentSource(name, current);
     }
 }

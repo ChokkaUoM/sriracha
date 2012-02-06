@@ -7,26 +7,35 @@ public class Resistor extends CircuitElement {
     protected int nodeA, nodeB;
 
     /**
-     * conductance G = 1/R where R is in ohms
+     * in ohms
      */
-    private double G;
+    private double resistance;
 
     /**
      * Standard Resistor Constructor
      *
-     * @param nodeA      - node id (-1 for ground)
-     * @param nodeB      - node id (-1 for ground)
      * @param resistance - resistance in ohms
      */
-    public Resistor(int nodeA, int nodeB, double resistance) {
-        this.nodeA = nodeA;
-        this.nodeB = nodeB;
-        G = 1.0 / resistance;
+    public Resistor(String name, double resistance) {
+        super(name);
+        this.resistance = resistance;
     }
 
 
     @Override
+    public void setNodeIndices(int... indices) {
+        nodeA = indices[0];
+        nodeB = indices[1];
+    }
+
+    @Override
+    public int[] getNodeIndices() {
+        return new int[]{nodeA, nodeB};
+    }
+
+    @Override
     public void applyStamp(IEquation equation) {
+        double G = 1.0/resistance; //conductance
         equation.applyRealStamp(nodeA, nodeA, G);
         equation.applyRealStamp(nodeB, nodeB, G);
         equation.applyRealStamp(nodeA, nodeB, -G);
@@ -41,7 +50,12 @@ public class Resistor extends CircuitElement {
     }
 
     @Override
-    public int getVariableCount() {
-        return 2;
+    public int getExtraVariableCount() {
+        return 0;
+    }
+
+    @Override
+    public CircuitElement buildCopy(String name) {
+        return new Resistor(name, resistance);
     }
 }

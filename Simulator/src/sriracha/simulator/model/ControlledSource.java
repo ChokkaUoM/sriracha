@@ -7,28 +7,47 @@ package sriracha.simulator.model;
 public abstract class ControlledSource extends Source {
 
     /**
-     * nodes
+     * control nodes positive and negative
+     * positive current flows rom positive to negative node
      */
-    protected int i, iPrime, k, kPrime;
+    protected int ncPlus, ncMinus;
 
     //factor for source
     protected double gm;
 
 
     /**
+     * Set the indices that correspond to the circuit element's nodes.
+     * The nodes are assumed to be in the order they are in the netlist.
+     * (-1 is always ground)
+     *
+     * @param indices the ordered node indices
+     */
+    @Override
+    public void setNodeIndices(int... indices) {
+        super.setNodeIndices(indices);
+        ncPlus = indices[2];
+        ncMinus = indices[3];
+
+    }
+
+    /**
      * Constructor for controlled sources
      *
-     * @param i      - top left node in ssm
-     * @param iPrime - bottom left node in ssm
-     * @param k      - top right node in ssm
-     * @param kPrime - bottom right node in ssm
      * @param gm     - factor in source equation
      */
-    protected ControlledSource(int i, int iPrime, int k, int kPrime, double gm) {
-        this.i = i;
-        this.iPrime = iPrime;
-        this.k = k;
-        this.kPrime = kPrime;
+    protected ControlledSource(String name, double gm) {
+        super(name);
         this.gm = gm;
     }
+
+    /**
+     * @return an array containing the matrix indices for the nodes in this circuit element
+     */
+    @Override
+    public int[] getNodeIndices() {
+        return new int[]{nPlus, ncMinus, ncPlus, ncMinus};
+    }
+
+
 }

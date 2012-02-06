@@ -1,9 +1,8 @@
 package sriracha.simulator.model;
 
-import sriracha.simulator.model.interfaces.IAddVariable;
 import sriracha.simulator.solver.interfaces.IEquation;
 
-public class CCVS extends ControlledSource implements IAddVariable {
+public class CCVS extends ControlledSource {
 
     int i0Index, ieIndex;
 
@@ -11,26 +10,23 @@ public class CCVS extends ControlledSource implements IAddVariable {
      * Current Controlled Voltage Source
      * Vs = gm * i0
      *
-     * @param i      - current i0 in node
-     * @param iPrime - current i0 out node
-     * @param k      - positive node on source
-     * @param kPrime - negative node on source
-     * @param gm     - factor in source equation
+     * @param name  - CCVS netlist name
+     * @param gm    - factor in source equation
      */
-    protected CCVS(int i, int iPrime, int k, int kPrime, double gm) {
-        super(i, iPrime, k, kPrime, gm);
+    protected CCVS(String name, double gm) {
+        super(name, gm);
     }
 
     @Override
     public void applyStamp(IEquation equation) {
-        equation.applyRealStamp(i0Index, i, 1);
-        equation.applyRealStamp(i0Index, iPrime, -1);
-        equation.applyRealStamp(ieIndex, k, 1);
-        equation.applyRealStamp(ieIndex, kPrime, -1);
-        equation.applyRealStamp(i, i0Index, 1);
-        equation.applyRealStamp(iPrime, i0Index, -1);
-        equation.applyRealStamp(k, ieIndex, 1);
-        equation.applyRealStamp(kPrime, ieIndex, -1);
+        equation.applyRealStamp(i0Index, ncPlus, 1);
+        equation.applyRealStamp(i0Index, ncMinus, -1);
+        equation.applyRealStamp(ieIndex, nPlus, 1);
+        equation.applyRealStamp(ieIndex, nMinus, -1);
+        equation.applyRealStamp(ncPlus, i0Index, 1);
+        equation.applyRealStamp(ncMinus, i0Index, -1);
+        equation.applyRealStamp(nPlus, ieIndex, 1);
+        equation.applyRealStamp(nMinus, ieIndex, -1);
         equation.applyRealStamp(i0Index, ieIndex, -gm);
     }
 
@@ -40,8 +36,18 @@ public class CCVS extends ControlledSource implements IAddVariable {
     }
 
     @Override
-    public int getVariableCount() {
-        return 4;
+    public int getExtraVariableCount() {
+        return 2;
+    }
+
+    /**
+     * This is used to build a copy of the circuit element during netlist parsing
+     * when adding multiple elements with the same properties.
+     * Node information will of course not be copied and have to be entered afterwards
+     */
+    @Override
+    public CircuitElement buildCopy(String name) {
+        return new CCVS(name, gm);
     }
 
 

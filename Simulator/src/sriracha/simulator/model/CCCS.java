@@ -1,9 +1,8 @@
 package sriracha.simulator.model;
 
-import sriracha.simulator.model.interfaces.IAddVariable;
 import sriracha.simulator.solver.interfaces.IEquation;
 
-public class CCCS extends ControlledSource implements IAddVariable {
+public class CCCS extends ControlledSource {
 
     int currentIndex;
 
@@ -11,24 +10,21 @@ public class CCCS extends ControlledSource implements IAddVariable {
      * Current controlled Current Source
      * Is = gm * i0
      *
-     * @param i      - current i0 in node
-     * @param iPrime - current i0 out node
-     * @param k      - current Is out node
-     * @param kPrime - current Is in node
-     * @param gm     - factor in source equation
+     * @param name  - name from netlist
+     * @param gm    - factor in source equation
      */
-    public CCCS(int i, int iPrime, int k, int kPrime, double gm) {
-        super(i, iPrime, k, kPrime, gm);
+    public CCCS(String name, double gm) {
+        super(name, gm);
     }
 
     @Override
     public void applyStamp(IEquation equation) {
-        equation.applyRealStamp(currentIndex, i, 1);
-        equation.applyRealStamp(currentIndex, iPrime, -1);
-        equation.applyRealStamp(currentIndex, k, -gm);
-        equation.applyRealStamp(currentIndex, kPrime, gm);
-        equation.applyRealStamp(i, currentIndex, 1);
-        equation.applyRealStamp(iPrime, currentIndex, -1);
+        equation.applyRealStamp(currentIndex, ncPlus, 1);
+        equation.applyRealStamp(currentIndex, ncMinus, -1);
+        equation.applyRealStamp(currentIndex, nMinus, -gm);
+        equation.applyRealStamp(currentIndex, nPlus, gm);
+        equation.applyRealStamp(ncPlus, currentIndex, 1);
+        equation.applyRealStamp(ncMinus, currentIndex, -1);
 
     }
 
@@ -38,9 +34,20 @@ public class CCCS extends ControlledSource implements IAddVariable {
     }
 
     @Override
-    public int getVariableCount() {
-        return 3;
+    public int getExtraVariableCount() {
+        return 1;
     }
+
+    /**
+     * This is used to build a copy of the circuit element during netlist parsing
+     * when adding multiple elements with the same properties.
+     * Node information will of course not be copied and have to be entered afterwards
+     */
+    @Override
+    public CircuitElement buildCopy(String name) {
+        return new CCCS(name, gm);
+    }
+
 
 
     @Override
