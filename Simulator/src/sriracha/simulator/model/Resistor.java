@@ -55,7 +55,7 @@ public class Resistor extends CircuitElement {
     }
 
     @Override
-    public CircuitElement buildCopy(String name) {
+    public Resistor buildCopy(String name) {
         return new Resistor(name, resistance);
     }
 }

@@ -24,15 +24,19 @@ public class Console {
 
     public static void testSequence1() throws IOException {
         Circuit test1 = new Circuit(1);
-        test1.elements.add(new VoltageSource(0, -1, 1));
-        test1.elements.add(new Resistor(0, -1, 2));
-        test1.elements.add(new Capacitor(0, -1, 2));
+        
+        Resistor r1 =  new Resistor("r1", 10);
+        Capacitor c1 = new Capacitor("c1", 4);
 
+
+
+
+        
         EquationGenerator generator = new EquationGenerator(test1);
 
         Solver solver = new Solver(generator.generate());
 
-        SmallSignal analysis = new SmallSignal(SSType.Linear, )
+        SmallSignal analysis = new SmallSignal(SSType.Linear, 1000, 3000, 500);
 
 
         DataInputStream dataStream = new DataInputStream(solver.solve(analysis));

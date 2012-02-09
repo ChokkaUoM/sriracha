@@ -46,7 +46,7 @@ public class VCCS extends ControlledSource {
      * Node information will of course not be copied and have to be entered afterwards
      */
     @Override
-    public CircuitElement buildCopy(String name) {
+    public VCCS buildCopy(String name) {
         return new VCCS(name, gm);
     }
 

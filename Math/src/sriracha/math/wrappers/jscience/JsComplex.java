@@ -36,5 +36,15 @@ class JsComplex implements IComplex{
     public void setReal(double real) {
           value = Complex.valueOf(real, value.getImaginary());
     }
-    
+
+    @Override
+    public IComplex plus(IComplex d) {
+        return new JsComplex(d.getReal() + getReal(), d.getImag() + getImag());
+    }
+
+    @Override
+    public IComplex opposite() {
+        return new JsComplex(value.opposite());
+    }
+
 }

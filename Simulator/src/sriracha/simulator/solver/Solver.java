@@ -1,5 +1,6 @@
 package sriracha.simulator.solver;
 
+import sriracha.math.interfaces.IComplex;
 import sriracha.math.interfaces.IComplexVector;
 import sriracha.simulator.solver.interfaces.IAnalysis;
 import sriracha.simulator.solver.interfaces.IEquation;
@@ -8,16 +9,34 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.ArrayList;
 
 public class Solver {
 
 
     private IEquation equation;
+    
+    private ArrayList<Integer> filter;
 
     public Solver(IEquation equation) {
         this.equation = equation;
     }
 
+    public void addFilterIndex(int i){
+        if(!filter.contains(i))
+            filter.add(i);
+
+    }
+
+    public void removeFilterIndex(int i){
+        if(filter.contains(i))
+            filter.remove(i);
+
+    }
+
+    public void clearFilter(){
+        filter.clear();
+    }
 
     private class solverThread extends Thread {
 
@@ -42,11 +61,26 @@ public class Solver {
             }
         }
 
+        /**
+         * sends filtered data out the stream
+         * @param solution
+         * @param omega current frequency value - outputted as well??
+         */
          private void flush(IComplexVector solution, double omega) {
              try {
-                    dataOut.writeDouble(omega);
-                 for (int i = 0; i < solution.getDimension(); i++) {
-                     dataOut.writeDouble(solution.getValue(i).getReal());
+                    //dataOut.writeDouble(omega); //yes or no?
+                 if(filter.size() == 0){
+                     for (int i = 0; i < solution.getDimension(); i++) {
+                        dataOut.writeDouble(solution.getValue(i).getReal());
+                        dataOut.writeDouble(solution.getValue(i).getImag());
+                     }
+                 }else {
+                     //so that the number are output in the same order they were inserted into the filter
+                     for(int i : filter){
+                         IComplex val  = solution.getValue(i);
+                         dataOut.writeDouble(val.getReal());
+                         dataOut.writeDouble(val.getImag());
+                     }
                  }
              } catch (IOException e) {
                  e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

@@ -1,23 +1,24 @@
 package sriracha.simulator.model;
 
+import sriracha.math.interfaces.IComplex;
 import sriracha.simulator.solver.interfaces.IEquation;
 
 public class CurrentSource extends Source {
 
     /**
-     * current in Amperes
+     * complex number representation of phasor vector.
      */
-    private double current;
+    private IComplex currentPhasor;
 
     /**
      * Standard CurrentSource constructor
      *
-     * @param current current in Amperes
+     * @param currentPhasor current in Amperes
      * @param name name from netlist
      */
-    public CurrentSource(String name, double current) {
+    public CurrentSource(String name, IComplex currentPhasor) {
         super(name);
-        this.current = current;
+        this.currentPhasor = currentPhasor;
     }
 
     /**
@@ -30,8 +31,8 @@ public class CurrentSource extends Source {
 
     @Override
     public void applyStamp(IEquation equation) {
-        equation.applySourceStamp(nMinus, current);
-        equation.applySourceStamp(nPlus, -current);
+        equation.applySourceStamp(nMinus, currentPhasor);
+        equation.applySourceStamp(nPlus, currentPhasor.opposite());
     }
 
     @Override
@@ -46,6 +47,6 @@ public class CurrentSource extends Source {
 
     @Override
     public CurrentSource buildCopy(String name) {
-        return new CurrentSource(name, current);
+        return new CurrentSource(name, currentPhasor);
     }
 }

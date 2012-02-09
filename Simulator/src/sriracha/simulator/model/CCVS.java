@@ -46,7 +46,7 @@ public class CCVS extends ControlledSource {
      * Node information will of course not be copied and have to be entered afterwards
      */
     @Override
-    public CircuitElement buildCopy(String name) {
+    public CCVS buildCopy(String name) {
         return new CCVS(name, gm);
     }
 

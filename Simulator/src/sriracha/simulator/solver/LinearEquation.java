@@ -4,13 +4,17 @@ import sriracha.math.MathActivator;
 import sriracha.math.interfaces.*;
 import sriracha.simulator.solver.interfaces.IEquation;
 
+/**
+ * Linear equation
+ * C + jwG = b
+ */
 class LinearEquation implements IEquation {
 
     private IRealMatrix C;
 
     private IComplexMatrix G;
 
-    private IRealVector b;
+    private IComplexVector b;
 
 
     /**
@@ -22,7 +26,7 @@ class LinearEquation implements IEquation {
     LinearEquation(int circuitNodeCount) {
         C = MathActivator.Activator.realMatrix(circuitNodeCount, circuitNodeCount);
         G = MathActivator.Activator.complexMatrix(circuitNodeCount, circuitNodeCount);
-        b = MathActivator.Activator.realVector(circuitNodeCount);
+        b = MathActivator.Activator.complexVector(circuitNodeCount);
     }
 
     protected IComplexMatrix buildMatrixA() {
@@ -62,12 +66,12 @@ class LinearEquation implements IEquation {
     }
 
     @Override
-    public void applySourceStamp(int i, double d) {
+    public void applySourceStamp(int i, IComplex d) {
         //no stamps to ground
         if (i == -1) return;
 
-        double val = b.getValue(i);
-        b.setValue(i, val + d);
+        IComplex val = b.getValue(i);
+        b.setValue(i, val.plus(d));
     }
 
     @Override
@@ -75,7 +79,7 @@ class LinearEquation implements IEquation {
         LinearEquation clone = new LinearEquation(b.getDimension());
         clone.G = (IComplexMatrix) G.clone();
         clone.C = (IRealMatrix) C.clone();
-        clone.b = (IRealVector) b.clone();
+        clone.b = (IComplexVector) b.clone();
         return clone;
     }
 }

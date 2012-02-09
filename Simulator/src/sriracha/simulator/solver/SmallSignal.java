@@ -6,8 +6,6 @@ public class SmallSignal implements IAnalysis {
 
     private SSType type;
 
-    private String sourceName;
-
     private double fStart;
     private double fEnd;
     private int points;
@@ -15,14 +13,12 @@ public class SmallSignal implements IAnalysis {
     /**
      *
      * @param type Type of scale for output octave and decade are log scales
-     * @param sourceName name of source with AC signal
      * @param fStart start frequency
      * @param fEnd stop frequency
      * @param points for Linear total number of frequency points or number per decade/octave
      */
-    public SmallSignal(SSType type, String sourceName, double fStart, double fEnd, int points) {
+    public SmallSignal(SSType type, double fStart, double fEnd, int points) {
         this.type = type;
-        this.sourceName = sourceName;
         this.fStart = fStart;
         this.fEnd = fEnd;
         this.points = points;
@@ -31,10 +27,6 @@ public class SmallSignal implements IAnalysis {
 
     public SSType getType() {
         return type;
-    }
-
-    public String getSourceName() {
-        return sourceName;
     }
 
     public double getfStart() {

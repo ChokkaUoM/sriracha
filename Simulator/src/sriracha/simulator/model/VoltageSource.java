@@ -1,15 +1,16 @@
 package sriracha.simulator.model;
 
+import sriracha.math.interfaces.IComplex;
 import sriracha.simulator.solver.interfaces.IEquation;
 
 public class VoltageSource extends Source  {
 
 
-    private double voltage;
+    private IComplex voltagePhasor;
 
-    public VoltageSource(String name, double voltage) {
+    public VoltageSource(String name, IComplex voltagePhasor) {
          super(name);
-         this.voltage = voltage;
+         this.voltagePhasor = voltagePhasor;
     }
 
     private int currentIndex;
@@ -22,7 +23,8 @@ public class VoltageSource extends Source  {
         equation.applyRealStamp(nPlus, currentIndex, 1);
         equation.applyRealStamp(nMinus, currentIndex, -1);
 
-        equation.applySourceStamp(currentIndex, voltage);
+        //warning: if we ever have to deal with superposition this will not work
+        equation.applySourceStamp(currentIndex, voltagePhasor);
     }
 
     @Override
@@ -41,8 +43,8 @@ public class VoltageSource extends Source  {
      * Node information will of course not be copied and have to be entered afterwards
      */
     @Override
-    public CircuitElement buildCopy(String name) {
-        return new VoltageSource(name, voltage);
+    public VoltageSource buildCopy(String name) {
+        return new VoltageSource(name, voltagePhasor);
     }
 
     /**

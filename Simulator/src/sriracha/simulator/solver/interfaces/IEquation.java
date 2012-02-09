@@ -1,5 +1,6 @@
 package sriracha.simulator.solver.interfaces;
 
+import sriracha.math.interfaces.IComplex;
 import sriracha.math.interfaces.IComplexVector;
 
 public interface IEquation {
@@ -13,7 +14,7 @@ public interface IEquation {
 
     public void applyComplexStamp(int i, int j, double d);
 
-    public void applySourceStamp(int i, double d);
+    public void applySourceStamp(int i, IComplex d);
 
     public IEquation clone();
 

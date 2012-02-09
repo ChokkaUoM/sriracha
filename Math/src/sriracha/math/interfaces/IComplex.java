@@ -9,4 +9,9 @@ public interface IComplex {
     public double getReal();
 
     public void setReal(double real);
+
+    IComplex plus(IComplex d);
+
+    IComplex opposite();
 }
+
