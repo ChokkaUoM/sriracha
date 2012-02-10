@@ -1,5 +1,6 @@
 package sriracha.simulator.solver;
 
+import sriracha.math.interfaces.IComplexVector;
 import sriracha.simulator.solver.interfaces.IAnalysis;
 import sriracha.simulator.solver.interfaces.IEquation;
 
@@ -21,7 +22,9 @@ public class Solver {
         private IEquation eqClone;
         private PipedInputStream inputStream;
         private IAnalysis analysis;
+        private AnalysisResults results;
         private OutputFilter filter;
+        private boolean saveResults;
         private DataOutputStream dataOut;
 
 
@@ -29,8 +32,16 @@ public class Solver {
             this.inputStream = inputStream;
             this.analysis = analysis;
             this.filter = filter;
+            this.saveResults = false;
             eqClone = equation.clone();
             setupStream();
+        }
+
+        public solverThread(IAnalysis analysis, AnalysisResults results) {
+            this.analysis = analysis;
+            this.results = results;
+            this.saveResults = true;
+            eqClone = equation.clone();
         }
 
 
@@ -38,7 +49,7 @@ public class Solver {
             try {
                 dataOut = new DataOutputStream(new PipedOutputStream(inputStream));
             } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace(); 
             }
         }
 
@@ -51,7 +62,12 @@ public class Solver {
                 double interval = (f * k) * (base - 1) / freq.getPoints();
                 while(i < freq.getPoints() && f <= freq.getfEnd()) {
                     f = f + i*interval;
-                    filter.flush(dataOut, eqClone.solve(f), f);
+                    IComplexVector soln = eqClone.solve(f);
+                    if(!saveResults){
+                        filter.flush(dataOut, soln, f);
+                    }else {
+                        results.addVector(f, soln);
+                    }
                     i++;
                 }
                 k*=base;
@@ -59,10 +75,10 @@ public class Solver {
             }
         }
 
+        
         @Override
         public void run() {
 
-            //todo: implement analysis types
             if(analysis instanceof SmallSignal){
                 SmallSignal freq = (SmallSignal) analysis;
                 switch (freq.getSSType()){
@@ -70,7 +86,12 @@ public class Solver {
                         double interval = (freq.getfEnd() - freq.getfStart())/freq.getPoints();
                         for(int i = 0; i< freq.getPoints(); i++ ){
                             double omega = freq.getfStart() + interval*i;
-                            filter.flush(dataOut, eqClone.solve(omega), omega);
+                            IComplexVector soln = eqClone.solve(omega);
+                            if(!saveResults){
+                                filter.flush(dataOut, soln, omega);
+                            }else {
+                                results.addVector(omega, soln);
+                            }
                         }
                         break;
                     case Decade:
@@ -83,15 +104,15 @@ public class Solver {
                 }
             }
 
-
-            try {
-                dataOut.flush();
-                dataOut.close();
-                dataOut = null;
-            } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            if(!saveResults){
+                try {
+                    dataOut.flush();
+                    dataOut.close();
+                    dataOut = null;
+                } catch (IOException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
             }
-
         }
 
     }
@@ -101,5 +122,19 @@ public class Solver {
         solverThread t = new solverThread(in, analysis, filter);
         t.start();
         return in;
+    }
+
+    public AnalysisResults getResults(IAnalysis analysis) {
+        AnalysisResults results;
+        switch (analysis.getType()){
+            case Transient:
+                results = new SSResults();
+                break;
+            default:
+                throw new UnsupportedOperationException("analysis type not supported");
+        }
+        solverThread t = new solverThread(analysis, results);
+        t.run();//yes this is deliberate we do not want to return before the solving is done.
+        return results;
     }
 }

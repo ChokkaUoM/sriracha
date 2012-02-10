@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * Time: 2:29 PM
  * To change this template use File | Settings | File Templates.
  */
-public class SSResults {
+public class SSResults extends AnalysisResults{
 
     private ArrayList<SSResult> data;
 
@@ -40,11 +40,9 @@ public class SSResults {
 
         @Override
         public void run() {
-
             for(SSResult r : data){
                 filter.flush(dataOut, r.vector, r.w);    
             }
-
 
             try {
                 dataOut.flush();
@@ -53,15 +51,16 @@ public class SSResults {
             } catch (IOException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
-
         }
 
     }
 
-    private void addVector(double w, IComplexVector vector){
+    @Override
+    public void addVector(double w, IComplexVector vector){
         data.add(new SSResult(w, vector));
     }
-    
+
+    @Override
     public PipedInputStream output(OutputFilter filter){
         PipedInputStream in = new PipedInputStream();
         outputThread t = new outputThread(in, filter);
