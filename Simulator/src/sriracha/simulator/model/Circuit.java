@@ -5,9 +5,9 @@ import sriracha.simulator.solver.interfaces.IEquation;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Circuit{
+public class Circuit {
 
-    public ArrayList<CircuitElement> elements;
+    private ArrayList<CircuitElement> elements;
 
     /**
      * mapping from node names in received netlist to index in final matrix.
@@ -23,16 +23,18 @@ public class Circuit{
     }
 
 
-
-
+    public void addElement(CircuitElement e){
+        elements.add(e);
+    }
 
     /**
      * Add new node mapping
+     *
      * @param nodeName - name of node from netlist
      * @return index for node
      */
-    public int assignNodeMapping(String nodeName){
-        if(!nodeMap.containsKey(nodeName)) {
+    public int assignNodeMapping(String nodeName) {
+        if (!nodeMap.containsKey(nodeName)) {
             nodeMap.put(nodeName, getNodeCount());
         }
         return nodeMap.get(nodeName);
@@ -40,17 +42,18 @@ public class Circuit{
 
 
     public void applyStamp(IEquation equation) {
-        for(CircuitElement e : elements){
+        for (CircuitElement e : elements) {
             e.applyStamp(equation);
         }
     }
 
     /**
      * number of nodes in the circuit excluding ground and internal subcircuit nodes.
+     *
      * @return number of nodes
      */
     public int getNodeCount() {
-        return nodeMap.size()-1;
+        return nodeMap.size() - 1;
     }
 
 
@@ -58,10 +61,10 @@ public class Circuit{
      * Assigns indices to the additional variables required by some elements
      * and also to internal nodes in subcircuits
      */
-    public void assignAdditionalVarIndices(){
+    public void assignAdditionalVarIndices() {
         int index = getNodeCount();
-        for(CircuitElement e : elements){
-            if(e.getExtraVariableCount() > 0){
+        for (CircuitElement e : elements) {
+            if (e.getExtraVariableCount() > 0) {
                 e.setFirstVarIndex(index);
                 index += e.getExtraVariableCount();
             }
