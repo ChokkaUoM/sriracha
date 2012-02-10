@@ -11,6 +11,8 @@ public class Circuit{
 
     public Circuit() {
         elements = new ArrayList<CircuitElement>();
+        nodeMap = new HashMap<String, Integer>();
+        nodeMap.put("0", -1);
     }
 
 
@@ -36,7 +38,7 @@ public class Circuit{
      * @param nodeName - name of node from netlist
      */
     public int getNodeIndex(String nodeName){
-        if(!nodeMap.containsKey(nodeName)) return -1;
+        if(!nodeMap.containsKey(nodeName)) return -2;
         return nodeMap.get(nodeName);
     }
 
@@ -52,7 +54,7 @@ public class Circuit{
      * @return number of nodes
      */
     public int getNodeCount() {
-        return nodeMap.size();
+        return nodeMap.size()-1;
     }
 
 
