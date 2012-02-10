@@ -80,4 +80,12 @@ public class Circuit {
     }
 
 
+    @Override
+    public String toString() {
+        String s = "";
+        for(CircuitElement e : elements){
+            s += e + "\n";
+        }
+        return s;
+    }
 }

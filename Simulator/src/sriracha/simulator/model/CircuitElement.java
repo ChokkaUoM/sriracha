@@ -65,4 +65,16 @@ public abstract class CircuitElement {
      * Node information will of course not be copied and have to be entered afterwards
      */
     public abstract CircuitElement buildCopy(String name);
+    
+
+    @Override
+    public String toString() {
+        String s = name + " ";
+        int[] nodes = getNodeIndices();
+        for(int i : nodes){
+            s += i + " ";
+        }
+        
+        return s.trim();
+    }
 }
