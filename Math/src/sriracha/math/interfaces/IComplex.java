@@ -11,6 +11,7 @@ public interface IComplex {
     public void setReal(double real);
 
     IComplex plus(IComplex d);
+    IComplex minus(IComplex d);
 
     IComplex opposite();
 }

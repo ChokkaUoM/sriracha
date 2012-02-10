@@ -13,29 +13,10 @@ import java.util.ArrayList;
 
 public class Solver {
 
-
     private IEquation equation;
-    
-    private ArrayList<Integer> filter;
 
     public Solver(IEquation equation) {
         this.equation = equation;
-    }
-
-    public void addFilterIndex(int i){
-        if(!filter.contains(i))
-            filter.add(i);
-
-    }
-
-    public void removeFilterIndex(int i){
-        if(filter.contains(i))
-            filter.remove(i);
-
-    }
-
-    public void clearFilter(){
-        filter.clear();
     }
 
     private class solverThread extends Thread {
@@ -43,11 +24,14 @@ public class Solver {
         private IEquation eqClone;
         private PipedInputStream inputStream;
         private IAnalysis analysis;
+        private OutputFilter filter;
         private DataOutputStream dataOut;
 
-        public solverThread(PipedInputStream inputStream, IAnalysis analysis) {
+
+        public solverThread(PipedInputStream inputStream, IAnalysis analysis, OutputFilter filter) {
             this.inputStream = inputStream;
             this.analysis = analysis;
+            this.filter = filter;
             eqClone = equation.clone();
             setupStream();
         }
@@ -61,31 +45,7 @@ public class Solver {
             }
         }
 
-        /**
-         * sends filtered data out the stream
-         * @param solution
-         * @param omega current frequency value - outputted as well??
-         */
-         private void flush(IComplexVector solution, double omega) {
-             try {
-                    //dataOut.writeDouble(omega); //yes or no?
-                 if(filter.size() == 0){
-                     for (int i = 0; i < solution.getDimension(); i++) {
-                        dataOut.writeDouble(solution.getValue(i).getReal());
-                        dataOut.writeDouble(solution.getValue(i).getImag());
-                     }
-                 }else {
-                     //so that the number are output in the same order they were inserted into the filter
-                     for(int i : filter){
-                         IComplex val  = solution.getValue(i);
-                         dataOut.writeDouble(val.getReal());
-                         dataOut.writeDouble(val.getImag());
-                     }
-                 }
-             } catch (IOException e) {
-                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-             }
-         }
+
 
         private void ssLogScaleRun(int base, SmallSignal freq){
             double f = freq.getfStart();
@@ -94,7 +54,7 @@ public class Solver {
                 double interval = (f * k) * (base - 1) / freq.getPoints();
                 while(i < freq.getPoints() && f <= freq.getfEnd()) {
                     f = f + i*interval;
-                    flush(eqClone.solve(f), f);
+                    filter.flush(dataOut, eqClone.solve(f), f);
                     i++;
                 }
                 k*=base;
@@ -113,7 +73,7 @@ public class Solver {
                         double interval = (freq.getfEnd() - freq.getfStart())/freq.getPoints();
                         for(int i = 0; i< freq.getPoints(); i++ ){
                             double omega = freq.getfStart() + interval*i;
-                            flush(eqClone.solve(omega), omega);
+                            filter.flush(dataOut, eqClone.solve(omega), omega);
                         }
                         break;
                     case Decade:
@@ -139,9 +99,9 @@ public class Solver {
 
     }
 
-    public PipedInputStream solve(IAnalysis analysis) {
+    public PipedInputStream solve(IAnalysis analysis, OutputFilter filter) {
         PipedInputStream in = new PipedInputStream();
-        solverThread t = new solverThread(in, analysis);
+        solverThread t = new solverThread(in, analysis, filter);
         t.start();
         return in;
     }

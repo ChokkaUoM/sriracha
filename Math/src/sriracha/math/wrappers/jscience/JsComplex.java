@@ -43,6 +43,11 @@ class JsComplex implements IComplex{
     }
 
     @Override
+    public IComplex minus(IComplex d) {
+        return new JsComplex(getReal() - d.getReal(), getImag() - d.getImag());
+    }
+
+    @Override
     public IComplex opposite() {
         return new JsComplex(value.opposite());
     }
