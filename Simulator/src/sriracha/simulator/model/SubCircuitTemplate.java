@@ -1,12 +1,14 @@
 package sriracha.simulator.model;
 
+import sriracha.simulator.model.interfaces.ICollectElements;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * Information necessary for building a new subcircuit object
  */
-public class SubCircuitTemplate {
+public class SubCircuitTemplate implements ICollectElements{
 
     /**
      * corresponds to the name given to the subcircuit definition in the netlist
@@ -14,6 +16,15 @@ public class SubCircuitTemplate {
     private String name;
     
     private int nodeCount;
+
+
+    /**
+     * mapping from node names in received netlist to internal
+     * subcircuit numbering system.
+     * By convention if the Subcircuit has n terminals those should correspond to the integers 0 -> n-1
+     * internal nodes take integers from n on
+     */
+    private HashMap<String, Integer> internalNodeMap;
 
     /**
      * list of all elements forming the subcircuit
@@ -40,8 +51,26 @@ public class SubCircuitTemplate {
      * @see this.addInternalNodeMapping()
      * @param element - new element with nodes numbered with internal system.
      */
+    @Override
     public void addElement(CircuitElement element){
         elements.add(element);
+    }
+
+    /**
+     * Add new node mapping
+     * This mapping system should use sequential integers
+     * starting from 0 where the first ones correspond to the external terminals
+     * in the order they are defined in the netlist
+     *
+     * @param nodeName - name of node from netlist
+     * @return index for node
+     */
+    @Override
+    public int assignNodeMapping(String nodeName) {
+        if (!internalNodeMap.containsKey(nodeName)) {
+            internalNodeMap.put(nodeName, internalNodeMap.size());
+        }
+        return internalNodeMap.get(nodeName);
     }
 
     /**
@@ -58,25 +87,6 @@ public class SubCircuitTemplate {
      */
     public int getInternalNodeCount(){
         return internalNodeMap.size() - nodeCount;
-    }
-
-    /**
-     * mapping from node names in received netlist to internal
-     * subcircuit numbering system.
-     * By convention if the Subcircuit has n terminals those should correspond to the integers 0 -> n-1
-     * internal nodes take integers from n on
-     */
-    private HashMap<String, Integer> internalNodeMap;
-
-    /**
-     * This mapping system should use sequential integers
-     * starting from 0 where the first ones correspond to the external terminals
-     * in the order they are defined in the netlist
-     * @param nodeName - name of node from netlist
-     * @param index - internal index
-     */
-    public void addInternalNodeMapping(String nodeName, int index){
-        internalNodeMap.put(nodeName, index);
     }
 
 

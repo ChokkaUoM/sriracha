@@ -29,13 +29,6 @@ public class SubCircuit extends CircuitElement{
      */
     private ArrayList<CircuitElement> elements;
 
-    /**
-     * adds a new element to the subcircuit
-     * @param element - element with external node mapping
-     */
-    private void addElement(CircuitElement element){
-        elements.add(element);
-    }
 
 
     public SubCircuit(String name, SubCircuitTemplate template) {

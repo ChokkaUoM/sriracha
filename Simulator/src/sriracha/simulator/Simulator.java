@@ -2,7 +2,9 @@ package sriracha.simulator;
 
 import sriracha.simulator.model.Circuit;
 import sriracha.simulator.solver.AnalysisType;
+import sriracha.simulator.solver.EquationGenerator;
 import sriracha.simulator.solver.OutputFilter;
+import sriracha.simulator.solver.Solver;
 import sriracha.simulator.solver.interfaces.IAnalysis;
 
 import java.util.ArrayList;
@@ -20,7 +22,21 @@ public class Simulator {
 
     private HashMap<AnalysisType, ArrayList<OutputFilter>> outputFilters;
 
-
+    public void runAll(){
+        EquationGenerator gen = new EquationGenerator(circuit);
+        Solver solver = new Solver(gen.generate());
+        for(IAnalysis a : requestedAnalysis){
+            if(outputFilters.containsKey(a.getType())){
+                for(OutputFilter f : outputFilters.get(a.getType())){
+                    solver.solve(a, f);
+                }
+            }else{
+                solver.solve(a, new OutputFilter());
+            }
+        }
+    }
+    
+    
 
 
 }

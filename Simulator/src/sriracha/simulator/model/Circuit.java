@@ -1,11 +1,12 @@
 package sriracha.simulator.model;
 
+import sriracha.simulator.model.interfaces.ICollectElements;
 import sriracha.simulator.solver.interfaces.IEquation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Circuit {
+public class Circuit implements ICollectElements{
 
     private ArrayList<CircuitElement> elements;
 
@@ -22,7 +23,7 @@ public class Circuit {
         nodeMap.put("0", -1);
     }
 
-
+    @Override
     public void addElement(CircuitElement e){
         elements.add(e);
     }
@@ -33,6 +34,7 @@ public class Circuit {
      * @param nodeName - name of node from netlist
      * @return index for node
      */
+    @Override
     public int assignNodeMapping(String nodeName) {
         if (!nodeMap.containsKey(nodeName)) {
             nodeMap.put(nodeName, getNodeCount());
