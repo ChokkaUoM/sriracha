@@ -1,16 +1,24 @@
 package sriracha.simulator.model;
 
+import sriracha.math.MathActivator;
 import sriracha.math.interfaces.IComplex;
 import sriracha.simulator.solver.interfaces.IEquation;
 
 public class VoltageSource extends Source  {
 
-
+    private Double dcVoltage;
     private IComplex voltagePhasor;
 
+    public VoltageSource(String name, double dcVoltage) {
+        super(name);
+        this.dcVoltage = dcVoltage;
+        voltagePhasor = null;
+    }
+    
     public VoltageSource(String name, IComplex voltagePhasor) {
          super(name);
          this.voltagePhasor = voltagePhasor;
+         dcVoltage = null;
     }
 
     private int currentIndex;
@@ -24,7 +32,11 @@ public class VoltageSource extends Source  {
         equation.applyRealStamp(nMinus, currentIndex, -1);
 
         //warning: if we ever have to deal with superposition this will not work
-        equation.applySourceStamp(currentIndex, voltagePhasor);
+        if(dcVoltage == null){
+            equation.applySourceStamp(currentIndex, voltagePhasor);
+        }else{
+            equation.applySourceStamp(currentIndex, MathActivator.Activator.complex(dcVoltage, 0));
+        }
     }
 
     @Override

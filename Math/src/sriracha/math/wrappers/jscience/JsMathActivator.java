@@ -12,6 +12,11 @@ public class JsMathActivator extends MathActivator {
     }
 
     @Override
+    public IComplex complex(double real, double imag) {
+        return new JsComplex(real, imag);
+    }
+
+    @Override
     public IRealMatrix realMatrix(int i, int j) {
         return new JsRealMatrix(i, j);
     }

@@ -14,6 +14,7 @@ public abstract class MathActivator {
 	public abstract IRealVector realVector(int length);
 
     public abstract IComplexVector complexVector(int length);
-	
 
+
+    public abstract IComplex complex(double real, double imag);
 }
