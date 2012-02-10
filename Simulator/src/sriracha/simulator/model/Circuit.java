@@ -7,12 +7,9 @@ import java.util.HashMap;
 
 public class Circuit{
 
-    private int nodeCount;
-
     public ArrayList<CircuitElement> elements;
 
-    public Circuit(int nodeCount) {
-        this.nodeCount = nodeCount;
+    public Circuit() {
         elements = new ArrayList<CircuitElement>();
     }
 
@@ -46,7 +43,7 @@ public class Circuit{
      * @return number of nodes
      */
     public int getNodeCount() {
-        return nodeCount;
+        return nodeMap.size();
     }
 
 
@@ -55,7 +52,7 @@ public class Circuit{
      * and also to internal nodes in subcircuits
      */
     public void assignAdditionalVarIndices(){
-        int index = nodeCount;
+        int index = getNodeCount();
         for(CircuitElement e : elements){
             if(e.getExtraVariableCount() > 0){
                 e.setFirstVarIndex(index);
@@ -64,13 +61,12 @@ public class Circuit{
         }
     }
 
-
     public int getMatrixSize() {
         int evCount = 0;
         for (CircuitElement e : elements) {
             evCount += e.getExtraVariableCount();
         }
-        return evCount + nodeCount;
+        return evCount + getNodeCount();
     }
 
 
