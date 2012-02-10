@@ -52,4 +52,8 @@ class JsComplex implements IComplex{
         return new JsComplex(value.opposite());
     }
 
+    @Override
+    public String toString() {
+        return value.toString();    //To change body of overridden methods use File | Settings | File Templates.
+    }
 }
