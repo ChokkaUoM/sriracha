@@ -58,4 +58,9 @@ public class Resistor extends CircuitElement {
     public Resistor buildCopy(String name) {
         return new Resistor(name, resistance);
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + " " + resistance;
+    }
 }

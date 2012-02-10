@@ -70,4 +70,12 @@ public class CurrentSource extends Source {
     public CurrentSource buildCopy(String name) {
         return new CurrentSource(name, currentPhasor);
     }
+
+    @Override
+    public String toString() {
+        if (currentPhasor == null)
+            return super.toString() + " " + dcCurrent;
+        else
+            return super.toString() + " " + currentPhasor;
+    }
 }

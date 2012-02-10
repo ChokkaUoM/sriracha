@@ -6,7 +6,7 @@ public class Inductor extends CircuitElement  {
 
     private int nPlus, nMinus;
 
-    private double L;
+    private double inductance;
 
     private int currentIndex;
 
@@ -17,21 +17,21 @@ public class Inductor extends CircuitElement  {
 
 
     /**
-     * @param l     - inductance
+     * @param inductance     - inductance
      */
-    public Inductor(String name, double l){
+    public Inductor(String name, double inductance){
         super(name);
-        L = l;
+        this.inductance = inductance;
         initialCurrent = 0;
     }
 
     /**
-     * @param l     - inductance
+     * @param inductance     - inductance
      * @param ic - the initial current flowing through the inductor.
      */
-    public Inductor(String name, double l, double ic) {
+    public Inductor(String name, double inductance, double ic) {
         super(name);
-        L = l;
+        this.inductance = inductance;
         initialCurrent = ic;
     }
 
@@ -42,7 +42,7 @@ public class Inductor extends CircuitElement  {
         equation.applyRealStamp(nPlus, currentIndex, 1);
         equation.applyRealStamp(nMinus, currentIndex, -1);
 
-        equation.applyComplexStamp(currentIndex, currentIndex, L);
+        equation.applyComplexStamp(currentIndex, currentIndex, inductance);
 
     }
     
@@ -65,7 +65,12 @@ public class Inductor extends CircuitElement  {
      */
     @Override
     public Inductor buildCopy(String name) {
-        return new Inductor(name, L, initialCurrent);
+        return new Inductor(name, inductance, initialCurrent);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " " + inductance;
     }
 
     /**

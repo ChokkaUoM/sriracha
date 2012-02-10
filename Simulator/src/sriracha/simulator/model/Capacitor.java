@@ -38,7 +38,7 @@ public class Capacitor extends CircuitElement {
      */
     @Override
     public int[] getNodeIndices() {
-        return new int[0];
+        return new int[] { nPlus, nMinus };
     }
 
     @Override
@@ -71,4 +71,8 @@ public class Capacitor extends CircuitElement {
         return new Capacitor(name, capacitance, initialVoltage);
     }
 
+    @Override
+    public String toString() {
+        return super.toString() + " " + capacitance;
+    }
 }

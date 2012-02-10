@@ -59,6 +59,14 @@ public class VoltageSource extends Source  {
         return new VoltageSource(name, voltagePhasor);
     }
 
+    @Override
+    public String toString() {
+        if (voltagePhasor == null)
+            return super.toString() + " " + dcVoltage;
+        else 
+            return super.toString() + " " + voltagePhasor;
+    }
+
     /**
      * @return an array containing the matrix indices for the nodes in this circuit element
      */

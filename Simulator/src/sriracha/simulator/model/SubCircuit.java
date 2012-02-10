@@ -34,7 +34,7 @@ public class SubCircuit extends CircuitElement{
     public SubCircuit(String name, SubCircuitTemplate template) {
         super(name);
         this.template = template;
-
+        nodes = new ArrayList<Integer>();
     }
 
     /**

@@ -30,5 +30,4 @@ public class JsMathActivator extends MathActivator {
     public IComplexVector complexVector(int length) {
         return new JsComplexVector(length);
     }
-
 }

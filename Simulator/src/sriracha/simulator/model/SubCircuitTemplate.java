@@ -43,6 +43,8 @@ public class SubCircuitTemplate implements ICollectElements{
     public SubCircuitTemplate(String name, int nodeCount) {
         this.name = name;
         this.nodeCount = nodeCount;
+        internalNodeMap = new HashMap<String, Integer>();
+        elements = new ArrayList<CircuitElement>();
     }
 
     /**

@@ -80,8 +80,6 @@ public class Circuit implements ICollectElements{
         }
         return evCount + getNodeCount();
     }
-
-
     @Override
     public String toString() {
         String s = "";

@@ -45,4 +45,9 @@ public class SmallSignal implements IAnalysis {
     public AnalysisType getType() {
         return AnalysisType.Transient;
     }
+
+    @Override
+    public String toString() {
+        return ".AC " + type + " " + points + " " + fStart + " " + fEnd;
+    }
 }
