@@ -31,6 +31,15 @@ public class Circuit{
         nodeMap.put(nodeName, index);
     }
 
+    /**
+     * Add new node mapping
+     * @param nodeName - name of node from netlist
+     */
+    public int getNodeIndex(String nodeName){
+        if(!nodeMap.containsKey(nodeName)) return -1;
+        return nodeMap.get(nodeName);
+    }
+
 
     public void applyStamp(IEquation equation) {
         for(CircuitElement e : elements){
