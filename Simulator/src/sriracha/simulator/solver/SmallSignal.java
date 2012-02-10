@@ -25,7 +25,7 @@ public class SmallSignal implements IAnalysis {
     }
 
 
-    public SSType getType() {
+    public SSType getSSType() {
         return type;
     }
 
@@ -41,4 +41,8 @@ public class SmallSignal implements IAnalysis {
         return points;
     }
 
+    @Override
+    public AnalysisType getType() {
+        return AnalysisType.Transient;
+    }
 }

@@ -1,7 +1,5 @@
 package sriracha.simulator.solver;
 
-import sriracha.math.interfaces.IComplex;
-import sriracha.math.interfaces.IComplexVector;
 import sriracha.simulator.solver.interfaces.IAnalysis;
 import sriracha.simulator.solver.interfaces.IEquation;
 
@@ -9,7 +7,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.util.ArrayList;
 
 public class Solver {
 
@@ -68,7 +65,7 @@ public class Solver {
             //todo: implement analysis types
             if(analysis instanceof SmallSignal){
                 SmallSignal freq = (SmallSignal) analysis;
-                switch (freq.getType()){
+                switch (freq.getSSType()){
                     case Linear:
                         double interval = (freq.getfEnd() - freq.getfStart())/freq.getPoints();
                         for(int i = 0; i< freq.getPoints(); i++ ){
