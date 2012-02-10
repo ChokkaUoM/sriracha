@@ -9,6 +9,13 @@ public class Circuit{
 
     public ArrayList<CircuitElement> elements;
 
+    /**
+     * mapping from node names in received netlist to index in final matrix.
+     * Ground node is always the tuple ("0", -1)
+     * Internal SubMatrix nodes are not mapped here
+     */
+    private HashMap<String, Integer> nodeMap;
+
     public Circuit() {
         elements = new ArrayList<CircuitElement>();
         nodeMap = new HashMap<String, Integer>();
@@ -17,28 +24,17 @@ public class Circuit{
 
 
 
-    /**
-     * mapping from node names in received netlist to index in final matrix.
-     * Ground node is always the tuple ("0", -1)
-     * Internal SubMatrix nodes are not mapped here
-     */
-    private HashMap<String, Integer> nodeMap;
+
 
     /**
      * Add new node mapping
      * @param nodeName - name of node from netlist
-     * @param index - matrix index for voltage.
+     * @return index for node
      */
-    public void addNodeMapping(String nodeName, int index){
-        nodeMap.put(nodeName, index);
-    }
-
-    /**
-     * Add new node mapping
-     * @param nodeName - name of node from netlist
-     */
-    public int getNodeIndex(String nodeName){
-        if(!nodeMap.containsKey(nodeName)) return -2;
+    public int assignNodeMapping(String nodeName){
+        if(!nodeMap.containsKey(nodeName)) {
+            nodeMap.put(nodeName, getNodeCount());
+        }
         return nodeMap.get(nodeName);
     }
 
