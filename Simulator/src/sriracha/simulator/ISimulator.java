@@ -26,12 +26,6 @@ public interface ISimulator {
      */
     public void addFilter(String filter);
 
-    /**
-     * Gets the only instance of the singleton Simulator class
-     * @return the simulator
-     */
-    public ISimulator getInstance();
-
 
     
 }

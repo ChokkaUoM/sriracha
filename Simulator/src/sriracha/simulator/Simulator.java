@@ -1,21 +1,29 @@
 package sriracha.simulator;
 
 import sriracha.simulator.model.Circuit;
+import sriracha.simulator.parser.CircuitBuilder;
 import sriracha.simulator.solver.*;
 import sriracha.simulator.solver.interfaces.IAnalysis;
+import sriracha.simulator.solver.interfaces.IEquation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * Main Class for interaction with the Simulator, abstracts away all the sub-components 
- * giving one cohesive object to deal with from the frontend
+ *
  */
-class Simulator implements ISimulator {
+public class Simulator implements ISimulator {
 
     public static Simulator Instance = new Simulator();
     
     private Circuit circuit;
+
+    private CircuitBuilder builder;
+    
+    private EquationGenerator generator;
+
+    private IEquation equation;
 
     private ArrayList<IAnalysis> requestedAnalysis;
 
@@ -23,64 +31,51 @@ class Simulator implements ISimulator {
 
     private HashMap<AnalysisType, AnalysisResults> results;
 
-    
-    public void addAnalysis(IAnalysis analysis){
-        requestedAnalysis.add(analysis);
-    }
-    
-
     private Simulator() {
         requestedAnalysis = new ArrayList<IAnalysis>();
         outputFilters = new HashMap<AnalysisType, ArrayList<OutputFilter>>();
         results = new HashMap<AnalysisType, AnalysisResults>();
         
     }
-
-    //todo: Finish this!
-    public void runAll(){
-        EquationGenerator gen = new EquationGenerator(circuit);
-        Solver solver = new Solver(gen.generate());
-        
+    
+    private void saveAll(){
         for(IAnalysis a : requestedAnalysis){
-            if(outputFilters.containsKey(a.getType())){
-                AnalysisResults res = solver.getResults(a); 
-                results.put(a.getType(), res);
-                for(OutputFilter f : outputFilters.get(a.getType())){
-                    res.output(f);
-                }
-            }else{
-                solver.solve(a, new OutputFilter());
-            }
+            save(a, equation);
         }
     }
-
-
-    public Circuit getCircuit() {
-        return circuit;
+    
+    private void save(IAnalysis analysis, IEquation equation){
+        Solver solver = new Solver(equation);
+        results.put(analysis.getType(), solver.getResults(analysis));
     }
 
-    public void setCircuit(Circuit circuit) {
+    private void setCircuit(Circuit circuit) {
         this.circuit = circuit;
+        generator = new EquationGenerator(circuit);
+        equation = generator.generate();
+
     }
 
 
     @Override
     public void setNetlist(String netlist) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        builder = new CircuitBuilder(netlist);
+        setCircuit(builder.getCircuit());
+        requestedAnalysis.addAll(builder.getAnalysisTypes());
+
     }
 
     @Override
     public void addAnalysis(String analysis) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        IAnalysis a = builder.parseAnalysis(analysis);
+        requestedAnalysis.add(a);
+        save(a, equation);
     }
 
     @Override
     public void addFilter(String filter) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        //todo: implement
     }
 
-    @Override
-    public ISimulator getInstance() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+
 }
