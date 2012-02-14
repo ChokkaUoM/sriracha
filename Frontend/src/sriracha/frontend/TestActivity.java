@@ -2,8 +2,9 @@ package sriracha.frontend;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.widget.TextView;
 
-public class MyActivity extends Activity
+public class TestActivity extends Activity
 {
     /** Called when the activity is first created. */
     @Override
@@ -11,5 +12,8 @@ public class MyActivity extends Activity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        TextView tv = new TextView(this);
+        tv.setText("Hello Sriracha");
+
     }
 }
