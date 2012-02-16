@@ -8,13 +8,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-/**
- * Created by IntelliJ IDEA.
- * User: antoine
- * Date: 10/02/12
- * Time: 11:13 AM
- * To change this template use File | Settings | File Templates.
- */
 public class OutputFilter {
 
     private ArrayList<IOutputData> dataFilter;

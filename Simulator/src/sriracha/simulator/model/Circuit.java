@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public class Circuit implements ICollectElements{
 
-    private ArrayList<CircuitElement> elements;
+    private HashMap<String, CircuitElement> elements;
 
     /**
      * mapping from node names in received netlist to index in final matrix.
@@ -18,14 +18,14 @@ public class Circuit implements ICollectElements{
     private HashMap<String, Integer> nodeMap;
 
     public Circuit() {
-        elements = new ArrayList<CircuitElement>();
+        elements = new HashMap<String, CircuitElement>();
         nodeMap = new HashMap<String, Integer>();
         nodeMap.put("0", -1);
     }
 
     @Override
     public void addElement(CircuitElement e){
-        elements.add(e);
+        elements.put(e.name, e);
     }
 
     /**
@@ -42,9 +42,15 @@ public class Circuit implements ICollectElements{
         return nodeMap.get(nodeName);
     }
 
+    public CircuitElement getElement(String name){
+        if(elements.containsKey(name)){
+            return elements.get(name);
+        }
+        return null;
+    }
 
     public void applyStamp(IEquation equation) {
-        for (CircuitElement e : elements) {
+        for (CircuitElement e : elements.values()) {
             e.applyStamp(equation);
         }
     }
@@ -65,7 +71,7 @@ public class Circuit implements ICollectElements{
      */
     public void assignAdditionalVarIndices() {
         int index = getNodeCount();
-        for (CircuitElement e : elements) {
+        for (CircuitElement e : elements.values()) {
             if (e.getExtraVariableCount() > 0) {
                 e.setFirstVarIndex(index);
                 index += e.getExtraVariableCount();
@@ -75,7 +81,7 @@ public class Circuit implements ICollectElements{
 
     public int getMatrixSize() {
         int evCount = 0;
-        for (CircuitElement e : elements) {
+        for (CircuitElement e : elements.values()) {
             evCount += e.getExtraVariableCount();
         }
         return evCount + getNodeCount();
@@ -83,7 +89,7 @@ public class Circuit implements ICollectElements{
     @Override
     public String toString() {
         String s = "";
-        for(CircuitElement e : elements){
+        for(CircuitElement e : elements.values()){
             s += e + "\n";
         }
         return s;

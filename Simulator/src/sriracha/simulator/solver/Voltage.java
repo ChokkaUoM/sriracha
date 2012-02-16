@@ -9,7 +9,8 @@ import sriracha.simulator.solver.interfaces.IOutputData;
  * if nodeMinus is null ground is assumed.
  */
 public class Voltage implements IOutputData{
-    public Integer nodePlus, nodeMinus;
+    private Integer nodePlus, nodeMinus;
+
 
     public Voltage(Integer nodePlus) {
         this.nodePlus = nodePlus;

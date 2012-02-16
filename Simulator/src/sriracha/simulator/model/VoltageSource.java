@@ -79,4 +79,8 @@ public class VoltageSource extends Source  {
     public void setFirstVarIndex(int i) {
         currentIndex = i;
     }
+
+    public int getCurrentVarIndex() {
+        return currentIndex;
+    }
 }

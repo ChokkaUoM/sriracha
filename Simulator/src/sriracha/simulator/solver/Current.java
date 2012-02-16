@@ -2,24 +2,32 @@ package sriracha.simulator.solver;
 
 import sriracha.math.interfaces.IComplex;
 import sriracha.math.interfaces.IComplexVector;
+import sriracha.simulator.model.Circuit;
+import sriracha.simulator.model.VoltageSource;
 import sriracha.simulator.solver.interfaces.IOutputData;
 
-/**
- * Created by IntelliJ IDEA.
- * User: antoine
- * Date: 10/02/12
- * Time: 5:01 PM
- * To change this template use File | Settings | File Templates.
- */
 public class Current implements IOutputData{
     private String sourceName;
 
-    public Current(String sourceName) {
+    private Circuit circuit;
+
+    /**
+     * keeps a reference to the circuit so that it can extract the correct index after equation generation.
+     * @param sourceName
+     * @param circuit
+     */
+    public Current(String sourceName, Circuit circuit) {
         this.sourceName = sourceName;
+        this.circuit = circuit;
     }
 
     @Override
     public IComplex extract(IComplexVector data) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        VoltageSource vs = (VoltageSource)circuit.getElement(sourceName);
+        if(vs != null){
+            int index = vs.getCurrentVarIndex();
+            return data.getValue(index);
+        }
+        return null;
     }
 }
