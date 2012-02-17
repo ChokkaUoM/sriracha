@@ -8,5 +8,6 @@ package sriracha.simulator.solver;
  * To change this template use File | Settings | File Templates.
  */
 public enum AnalysisType {
-    Transient
+    AC,
+    DC
 }

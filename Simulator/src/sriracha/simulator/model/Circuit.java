@@ -42,6 +42,10 @@ public class Circuit implements ICollectElements{
         return nodeMap.get(nodeName);
     }
 
+    public int getNodeIndex(String nodeName){
+        return nodeMap.get(nodeName);
+    }
+    
     public CircuitElement getElement(String name){
         if(elements.containsKey(name)){
             return elements.get(name);

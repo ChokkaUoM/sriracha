@@ -127,7 +127,7 @@ public class Solver {
     public AnalysisResults getResults(IAnalysis analysis) {
         AnalysisResults results;
         switch (analysis.getType()){
-            case Transient:
+            case AC:
                 results = new SSResults();
                 break;
             default:

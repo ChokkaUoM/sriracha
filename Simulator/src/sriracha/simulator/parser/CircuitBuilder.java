@@ -4,9 +4,9 @@ import sriracha.math.MathActivator;
 import sriracha.math.interfaces.IComplex;
 import sriracha.simulator.model.*;
 import sriracha.simulator.model.interfaces.ICollectElements;
-import sriracha.simulator.solver.SSType;
-import sriracha.simulator.solver.SmallSignal;
+import sriracha.simulator.solver.*;
 import sriracha.simulator.solver.interfaces.IAnalysis;
+import sriracha.simulator.solver.interfaces.OutputData;
 
 import java.util.*;
 
@@ -16,6 +16,7 @@ public class CircuitBuilder {
     
     Circuit circuit;
     ArrayList<IAnalysis> analysisTypes = new ArrayList<IAnalysis>();
+    ArrayList<OutputFilter> outputFilters = new ArrayList<OutputFilter>();
 
     public Circuit getCircuit() {
         return circuit;
@@ -23,6 +24,10 @@ public class CircuitBuilder {
 
     public List<IAnalysis> getAnalysisTypes() {
         return Collections.unmodifiableList(analysisTypes);
+    }
+
+    public List<OutputFilter> getOutputFilters() {
+        return Collections.unmodifiableList(outputFilters);
     }
 
     public CircuitBuilder(String netlist)
@@ -55,7 +60,136 @@ public class CircuitBuilder {
             {                
                 analysisTypes.add(parseAnalysis(line));
             }
+            else if (line.startsWith(".PLOT"))
+            {
+                outputFilters.add(parsePlot(line));
+            }
         }
+    }
+
+    private OutputFilter parsePlot(String line)
+    {
+        String[] params = tokenizeLine(line);        
+
+        if (params.length < 3)
+            throw new ParseException("Not enough parameters for .PLOT: " + line);
+
+        String plotTypeStr = params[1];
+        AnalysisType plotType;
+        
+        if (plotTypeStr.equalsIgnoreCase("AC"))
+            plotType = AnalysisType.AC;
+        else if (plotTypeStr.equalsIgnoreCase("DC"))
+            plotType = AnalysisType.DC;
+        else if (plotTypeStr.equalsIgnoreCase("TRAN") || plotTypeStr.equalsIgnoreCase("NOISE") || plotTypeStr.equalsIgnoreCase("DISTO"))
+            throw new UnsupportedOperationException("This type of analysis is currently not supported: " + line);
+        else 
+            throw new ParseException("Invalid Plot analysis type: " + line);
+        
+        ArrayList<OutputData> outputDataList = new ArrayList<OutputData>();
+        for (int i = 2; i < params.length; i++)
+        {
+            char firstChar = Character.toUpperCase(params[i].charAt(0));
+            if (firstChar == 'V' || firstChar == 'I')
+            {
+                OutputType outputType = StringToOutputType(params[i].substring(1, params[i].indexOf('(')), line);
+                String[] nodeList = parseBracketContents(params[i].substring(params[i].indexOf('('), params[i].length()));
+                
+                for (String node : nodeList)
+                    if (node.length() == 0)
+                        throw new ParseException("Expected a node name: " + line);
+                
+                if (firstChar == 'V')
+                {
+                    if (nodeList.length == 1)
+                        outputDataList.add(new Voltage(outputType, circuit.getNodeIndex(nodeList[0])));
+                    else if (nodeList.length == 2)
+                        outputDataList.add(new Voltage(outputType, circuit.getNodeIndex(nodeList[0]), circuit.getNodeIndex(nodeList[1])));
+                    else 
+                        throw new ParseException("Voltages can only be requested between 1 or 2 nodes: " + line);
+                }
+                else if (firstChar == 'I')
+                {
+                    if (nodeList.length != 1 || Character.toUpperCase(nodeList[0].charAt(0)) != 'V')
+                        throw new ParseException("Currents can only be requested at a single voltage source: " + line);
+                    
+                    outputDataList.add(new Current(outputType,  nodeList[0], circuit));
+                }                    
+            }
+            else 
+                throw new UnsupportedOperationException("The expression '" + params[i] + "' is not supported. Line: " + line);
+        }
+
+        OutputFilter outputFilter = new OutputFilter(plotType);
+        for (OutputData data : outputDataList)
+            outputFilter.addData(data);
+        
+        return outputFilter;
+    }
+
+    private OutputType StringToOutputType(String outputString, String line)
+    {
+        if (outputString.equals(""))
+            return OutputType.Complex;
+        else if (outputString.equalsIgnoreCase("R"))
+            return OutputType.Real;
+        else if (outputString.equalsIgnoreCase("I"))
+            return OutputType.Imaginary;
+        else if (outputString.equalsIgnoreCase("M"))
+            return OutputType.Magnitude;
+        else if (outputString.equalsIgnoreCase("P"))
+            return OutputType.Phase;
+        else if (outputString.equalsIgnoreCase("DB"))
+            return OutputType.Decibels;
+        
+        throw new ParseException("Invalid output type: " + line);
+    }
+
+    private String[] parseBracketContents(String bracketString)
+    {
+        bracketString = bracketString.trim();
+        
+        if (bracketString.charAt(0) != '(' || bracketString.charAt(bracketString.length() - 1) != ')')
+            throw new ParseException("Expected an expression enclosed in brackets. Found: " + bracketString);
+
+        // strip brackets
+        bracketString = bracketString.substring(1, bracketString.length() - 1);
+
+        return bracketString.split(",\\s*");        
+    }
+    
+    private String[] tokenizeLine(String line) {
+        ArrayList<String> params = new ArrayList<String>();
+
+        String currentParam = "";
+        int bracketLevel = 0;
+        for (int i = 0; i < line.length(); i++)
+        {
+            if (Character.isWhitespace(line.charAt(i)) && bracketLevel == 0)
+            {
+                if (currentParam.length() > 0)
+                    params.add(currentParam);
+                
+                currentParam = "";
+            }
+            else 
+            {
+                if (line.charAt(i) == '(')
+                    bracketLevel++;
+                else if (line.charAt(i) == ')')
+                    bracketLevel--;
+                
+                currentParam += line.charAt(i);
+            }
+        }
+
+        if (currentParam.length() > 0)
+            params.add(currentParam);
+        
+        if (bracketLevel != 0)
+            throw new ParseException("Unmatched brackets: " + line);
+
+        return params.toArray(new String[0]);
     }
 
     public IAnalysis parseAnalysis(String line)

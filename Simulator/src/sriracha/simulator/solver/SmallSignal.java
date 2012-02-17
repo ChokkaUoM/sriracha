@@ -43,7 +43,7 @@ public class SmallSignal implements IAnalysis {
 
     @Override
     public AnalysisType getType() {
-        return AnalysisType.Transient;
+        return AnalysisType.AC;
     }
 
     @Override

@@ -30,4 +30,9 @@ public class Current extends OutputData {
         IComplex val = data.getValue(index);
         return getFromType(val);
     }
+
+    @Override
+    public String toString() {
+        return type + " current " + sourceName;
+    }
 }

@@ -16,6 +16,7 @@ public class OutputFilter {
 
     public OutputFilter(AnalysisType analysisType) {
         this.analysisType = analysisType;
+        dataFilter = new ArrayList<OutputData>();
     }
 
     public void addData(OutputData data){
@@ -62,9 +63,12 @@ public class OutputFilter {
         }
     }
 
-
-
     public AnalysisType getAnalysisType() {
         return analysisType;
+    }
+
+    @Override
+    public String toString() {
+        return analysisType + ": " + dataFilter;
     }
 }

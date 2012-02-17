@@ -30,4 +30,9 @@ public class Voltage extends OutputData {
         return getFromType(val);
 
     }
+
+    @Override
+    public String toString() {
+        return type + " voltage " + nodePlus + " " + nodeMinus;
+    }
 }

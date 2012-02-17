@@ -3,10 +3,7 @@ import sriracha.simulator.model.Circuit;
 import sriracha.simulator.model.Resistor;
 import sriracha.simulator.model.VoltageSource;
 import sriracha.simulator.parser.CircuitBuilder;
-import sriracha.simulator.solver.EquationGenerator;
-import sriracha.simulator.solver.SSType;
-import sriracha.simulator.solver.SmallSignal;
-import sriracha.simulator.solver.Solver;
+import sriracha.simulator.solver.*;
 import sriracha.simulator.solver.interfaces.IAnalysis;
 
 import java.io.DataInputStream;
@@ -56,13 +53,17 @@ public class Console {
                 "I1 n1 n2 3\n" +
                 "C1 n1 0 0.4\n" +
                 "L1 n1 0 0.2\n" +
-                ".AC DEC 10 1 10000";
+                ".AC DEC 10 1 10000\n" +
+                ".PLOT AC I(V1) VM(n2, n1)";
 
         CircuitBuilder builder = new CircuitBuilder(netlist);
         System.out.println(builder.getCircuit());
         
         for (IAnalysis analysis : builder.getAnalysisTypes())
             System.out.println(analysis);
+        
+        for (OutputFilter filter : builder.getOutputFilters())
+            System.out.println(filter);
     }
 
     public static void testSubcircuitParsing() throws IOException
