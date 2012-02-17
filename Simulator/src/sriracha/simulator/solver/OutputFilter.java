@@ -2,7 +2,7 @@ package sriracha.simulator.solver;
 
 import sriracha.math.interfaces.IComplex;
 import sriracha.math.interfaces.IComplexVector;
-import sriracha.simulator.solver.interfaces.IOutputData;
+import sriracha.simulator.solver.interfaces.OutputData;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class OutputFilter {
 
-    private ArrayList<IOutputData> dataFilter;
+    private ArrayList<OutputData> dataFilter;
 
     private AnalysisType analysisType;
 
@@ -18,13 +18,13 @@ public class OutputFilter {
         this.analysisType = analysisType;
     }
 
-    public void addData(IOutputData data){
+    public void addData(OutputData data){
         if(!dataFilter.contains(data))
             dataFilter.add(data);
     }
 
 
-    public void removeData(IOutputData data){
+    public void removeData(OutputData data){
         if(dataFilter.contains(data))
             dataFilter.remove(data);
     }
@@ -49,16 +49,20 @@ public class OutputFilter {
                 }
             }else {
                 //so that the number are output in the same order they were inserted into the filter
-                for(IOutputData d : dataFilter){
-                    IComplex val  = d.extract(solution);
-                    dataOut.writeDouble(val.getReal());
-                    dataOut.writeDouble(val.getImag());
+                for(OutputData d : dataFilter){
+                    double[] val  = d.extract(solution);
+                    for(double v : val){
+                        dataOut.writeDouble(v);
+                    }
+
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
+
+
 
     public AnalysisType getAnalysisType() {
         return analysisType;

@@ -4,9 +4,9 @@ import sriracha.math.interfaces.IComplex;
 import sriracha.math.interfaces.IComplexVector;
 import sriracha.simulator.model.Circuit;
 import sriracha.simulator.model.VoltageSource;
-import sriracha.simulator.solver.interfaces.IOutputData;
+import sriracha.simulator.solver.interfaces.OutputData;
 
-public class Current implements IOutputData{
+public class Current extends OutputData {
     private String sourceName;
 
     private Circuit circuit;
@@ -16,18 +16,18 @@ public class Current implements IOutputData{
      * @param sourceName
      * @param circuit
      */
-    public Current(String sourceName, Circuit circuit) {
+    public Current(OutputType type, String sourceName, Circuit circuit) {
+        super(type);
         this.sourceName = sourceName;
         this.circuit = circuit;
     }
 
     @Override
-    public IComplex extract(IComplexVector data) {
+    public double[] extract(IComplexVector data) {
         VoltageSource vs = (VoltageSource)circuit.getElement(sourceName);
-        if(vs != null){
-            int index = vs.getCurrentVarIndex();
-            return data.getValue(index);
-        }
-        return null;
+        if(vs == null) return null;
+        int index = vs.getCurrentVarIndex();
+        IComplex val = data.getValue(index);
+        return getFromType(val);
     }
 }
