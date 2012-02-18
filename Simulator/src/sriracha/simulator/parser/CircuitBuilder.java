@@ -67,7 +67,7 @@ public class CircuitBuilder {
         }
     }
 
-    private OutputFilter parsePlot(String line)
+    public OutputFilter parsePlot(String line)
     {
         String[] params = tokenizeLine(line);        
 

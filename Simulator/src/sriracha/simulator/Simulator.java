@@ -74,7 +74,14 @@ public class Simulator implements ISimulator {
 
     @Override
     public void addFilter(String filter) {
-        //todo: implement
+        OutputFilter f = builder.parsePlot(filter);
+
+        if(!outputFilters.containsKey(f.getAnalysisType())){
+            outputFilters.put(f.getAnalysisType(), new ArrayList<OutputFilter>());
+        }
+
+        outputFilters.get(f.getAnalysisType()).add(f);
+
     }
 
 

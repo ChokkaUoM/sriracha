@@ -19,6 +19,13 @@
             </SvnBranchConfiguration>
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/Frontend">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="trunkUrl" value="https://sriracha.googlecode.com/svn/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/Math">
           <value>
             <SvnBranchConfiguration>
