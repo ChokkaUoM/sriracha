@@ -12,10 +12,10 @@ import java.util.List;
  */
 public class ACResults implements IAnalysisResults {
 
-    private ArrayList<ACResult> data;
+    private List<IResultVector> data;
 
     public ACResults() {
-        data = new ArrayList<ACResult>();
+        data = new ArrayList<IResultVector>();
     }
 
     @Override
@@ -25,7 +25,7 @@ public class ACResults implements IAnalysisResults {
 
     @Override
     public List<IResultVector> getData() {
-        return null;
+        return data;
     }
 
 }

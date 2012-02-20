@@ -29,4 +29,20 @@ public class FilteredVector implements IDataPoint {
     public double[][] getVector() {
         return data;
     }
+
+    @Override
+    public String toString() {
+        
+        StringBuilder sb = new StringBuilder();
+        for(int i =0; i< data.length; i++){
+            sb.append('[');
+            for(int j =0; j< data[i].length; j++){
+                sb.append(Math.round(data[i][j]*100)/100.0);
+                if(j +1 < data[i].length) sb.append(", ");
+            }
+            sb.append(']');
+        }
+        
+        return x + ": " + sb.toString() + "\n";
+    }
 }

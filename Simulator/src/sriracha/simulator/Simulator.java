@@ -84,7 +84,16 @@ public class Simulator implements ISimulator {
         requestedAnalysis.addAll(builder.getAnalysisTypes());
 
         outputFilters.addAll(builder.getOutputFilters());
-        
+
+        runAll();
+    }
+    
+    
+    private void runAll(){
+        results.clear();
+        for(IAnalysis a : requestedAnalysis){
+            results.put(a.getSubType(), a.analyse(equation));
+        }
     }
 
     @Override

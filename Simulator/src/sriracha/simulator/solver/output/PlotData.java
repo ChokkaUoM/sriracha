@@ -3,6 +3,7 @@ package sriracha.simulator.solver.output;
 import sriracha.simulator.IDataPoint;
 import sriracha.simulator.IPlotData;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,6 +17,9 @@ public class PlotData implements IPlotData {
 
     private List<IDataPoint> data;
 
+    public PlotData() {
+        data = new ArrayList<IDataPoint>();
+    }
 
     public void addResult(IDataPoint vector){
         data.add(vector);
@@ -24,6 +28,12 @@ public class PlotData implements IPlotData {
     @Override
     public List<IDataPoint> getData() {
         return data;
+    }
+
+
+    @Override
+    public String toString() {
+        return data.toString();
     }
 }
 
