@@ -1,8 +1,10 @@
 package sriracha.simulator.solver;
 
 import sriracha.math.MathActivator;
-import sriracha.math.interfaces.*;
-import sriracha.simulator.solver.interfaces.IEquation;
+import sriracha.math.interfaces.IComplex;
+import sriracha.math.interfaces.IComplexMatrix;
+import sriracha.math.interfaces.IComplexVector;
+import sriracha.math.interfaces.IRealMatrix;
 
 /**
  * Linear equation

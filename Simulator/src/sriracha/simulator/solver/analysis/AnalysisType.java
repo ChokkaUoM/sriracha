@@ -1,4 +1,4 @@
-package sriracha.simulator.solver;
+package sriracha.simulator.solver.analysis;
 
 /**
  * Created by IntelliJ IDEA.

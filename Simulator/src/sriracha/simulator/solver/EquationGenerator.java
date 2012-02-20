@@ -1,8 +1,6 @@
 package sriracha.simulator.solver;
 
 import sriracha.simulator.model.Circuit;
-import sriracha.simulator.model.CircuitElement;
-import sriracha.simulator.solver.interfaces.IEquation;
 
 public class EquationGenerator {
 

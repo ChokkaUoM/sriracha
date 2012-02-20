@@ -1,6 +1,6 @@
 package sriracha.simulator.model;
 
-import sriracha.simulator.solver.interfaces.IEquation;
+import sriracha.simulator.solver.IEquation;
 
 public class CCVS extends ControlledSource {
 

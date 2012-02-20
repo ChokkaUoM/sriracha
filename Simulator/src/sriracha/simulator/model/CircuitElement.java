@@ -1,6 +1,6 @@
 package sriracha.simulator.model;
 
-import sriracha.simulator.solver.interfaces.IEquation;
+import sriracha.simulator.solver.IEquation;
 
 /**
  * Base class for all circuit elements including sources and subcircuits

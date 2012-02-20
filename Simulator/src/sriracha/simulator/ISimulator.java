@@ -1,12 +1,16 @@
 package sriracha.simulator;
 
+import java.util.List;
+
 /**
  * Interface for the only class that the FrontEnd should ever use from the backend.
  */
 public interface ISimulator {
 
     /**
-     * Sets the current netlist. 
+     * Sets the current netlist.
+     * If the initial netlist contains analysis and output filtering statements
+     * the results will all be streamed right away.
      * @param netlist
      */
     public void setNetlist(String netlist);
@@ -24,7 +28,19 @@ public interface ISimulator {
      * ex.: ".PLOT V(1) I(Vin) V(5, 4)"
      * @param filter string representation of output spec
      */
-    public void addFilter(String filter);
+    public IPlotData requestPlot(String filter);
+
+    /**
+     * list of computed and filtered results.
+     * each IPlotData corresponds to a .PLOT statement
+     * They are found in the list in the same order as
+     * results were requested or found in the netlist.
+     *
+     * @return all computed results so far
+     */
+    public List<IPlotData> getAllResults();
+
+
 
 
     

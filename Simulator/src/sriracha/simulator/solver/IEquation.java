@@ -1,4 +1,4 @@
-package sriracha.simulator.solver.interfaces;
+package sriracha.simulator.solver;
 
 import sriracha.math.interfaces.IComplex;
 import sriracha.math.interfaces.IComplexVector;

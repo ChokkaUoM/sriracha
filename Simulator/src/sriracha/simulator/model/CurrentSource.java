@@ -2,7 +2,7 @@ package sriracha.simulator.model;
 
 import sriracha.math.MathActivator;
 import sriracha.math.interfaces.IComplex;
-import sriracha.simulator.solver.interfaces.IEquation;
+import sriracha.simulator.solver.IEquation;
 
 public class CurrentSource extends Source {
 

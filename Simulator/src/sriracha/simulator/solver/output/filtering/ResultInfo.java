@@ -1,29 +1,21 @@
-package sriracha.simulator.solver.interfaces;
+package sriracha.simulator.solver.output.filtering;
 
 import sriracha.math.interfaces.IComplex;
 import sriracha.math.interfaces.IComplexVector;
-import sriracha.simulator.solver.OutputType;
 
-/**
- * Created by IntelliJ IDEA.
- * User: antoine
- * Date: 10/02/12
- * Time: 11:18 AM
- * To change this template use File | Settings | File Templates.
- */
-public abstract class OutputData {
+public abstract class ResultInfo {
 
-    protected OutputType type;
+    protected DataFormat format;
 
 
-    protected OutputData(OutputType type) {
-        this.type = type;
+    protected ResultInfo(DataFormat format) {
+        this.format = format;
     }
 
-    public abstract double[] extract(IComplexVector data);
+    public abstract double[] extractFrom(IComplexVector data);
 
     protected double[] getFromType(IComplex val){
-        switch (type){
+        switch (format){
             case Complex:
                 return toArray(val);
             case Real:

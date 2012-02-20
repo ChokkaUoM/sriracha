@@ -2,12 +2,16 @@ package sriracha.simulator;
 
 import sriracha.simulator.model.Circuit;
 import sriracha.simulator.parser.CircuitBuilder;
-import sriracha.simulator.solver.*;
-import sriracha.simulator.solver.interfaces.IAnalysis;
-import sriracha.simulator.solver.interfaces.IEquation;
+import sriracha.simulator.solver.EquationGenerator;
+import sriracha.simulator.solver.IEquation;
+import sriracha.simulator.solver.analysis.AnalysisType;
+import sriracha.simulator.solver.analysis.IAnalysis;
+import sriracha.simulator.solver.analysis.IAnalysisResults;
+import sriracha.simulator.solver.output.filtering.OutputFilter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Main Class for interaction with the Simulator, abstracts away all the sub-components 
@@ -25,16 +29,19 @@ public class Simulator implements ISimulator {
 
     private IEquation equation;
 
-    private ArrayList<IAnalysis> requestedAnalysis;
+    private List<IAnalysis> requestedAnalysis;
 
-    private HashMap<AnalysisType, ArrayList<OutputFilter>> outputFilters;
+    private List<OutputFilter> outputFilters;
 
-    private HashMap<AnalysisType, AnalysisResults> results;
+    private HashMap<AnalysisType, IAnalysisResults> results;
+    
+  //  private List<IPlotData> filteredResults;
 
     private Simulator() {
         requestedAnalysis = new ArrayList<IAnalysis>();
-        outputFilters = new HashMap<AnalysisType, ArrayList<OutputFilter>>();
-        results = new HashMap<AnalysisType, AnalysisResults>();
+        outputFilters = new ArrayList<OutputFilter>();
+        results = new HashMap<AnalysisType, IAnalysisResults>();
+        //filteredResults = new ArrayList<IPlotData>();
         
     }
     
@@ -45,24 +52,39 @@ public class Simulator implements ISimulator {
     }
     
     private void save(IAnalysis analysis, IEquation equation){
-        Solver solver = new Solver(equation);
-        results.put(analysis.getType(), solver.getResults(analysis));
+        results.put(analysis.getSubType(), analysis.analyse(equation));      
     }
 
+    /**
+     * Sets a new Circuit, and remakes the this.generator and this.equation Fields
+     * @param circuit
+     */
     private void setCircuit(Circuit circuit) {
         this.circuit = circuit;
         generator = new EquationGenerator(circuit);
         equation = generator.generate();
+        saveAll();
 
     }
 
 
+    /**
+     * Parses the netlist and builds an internal representation
+     * @param netlist
+     * @return
+     */
     @Override
     public void setNetlist(String netlist) {
+        clearData();
+
+
         builder = new CircuitBuilder(netlist);
         setCircuit(builder.getCircuit());
+        
         requestedAnalysis.addAll(builder.getAnalysisTypes());
 
+        outputFilters.addAll(builder.getOutputFilters());
+        
     }
 
     @Override
@@ -73,16 +95,38 @@ public class Simulator implements ISimulator {
     }
 
     @Override
-    public void addFilter(String filter) {
+    public IPlotData requestPlot(String filter) {
         OutputFilter f = builder.parsePlot(filter);
-
-        if(!outputFilters.containsKey(f.getAnalysisType())){
-            outputFilters.put(f.getAnalysisType(), new ArrayList<OutputFilter>());
-        }
-
-        outputFilters.get(f.getAnalysisType()).add(f);
-
+        outputFilters.add(f);
+        IAnalysisResults r =  results.get(f.getAnalysisType());
+        return f.getPlot(r);
     }
+
+    /**
+     * list of computed and filtered results.
+     * each IPlotData corresponds to a .PLOT statement
+     * They are found in the list in the same order as
+     * results were requested or found in the netlist.
+     *
+     * @return all computed results so far
+     */
+    @Override
+    public List<IPlotData> getAllResults() {
+        ArrayList<IPlotData> data = new ArrayList<IPlotData>();
+        for(OutputFilter f : outputFilters){
+            IAnalysisResults result = results.get(f.getAnalysisType());
+            data.add(f.getPlot(result));
+        }
+        return data;
+    }
+
+
+    private void clearData(){
+        outputFilters = new ArrayList<OutputFilter>();
+        results = new HashMap<AnalysisType, IAnalysisResults>();
+        requestedAnalysis = new ArrayList<IAnalysis>();
+    }
+
 
 
 }

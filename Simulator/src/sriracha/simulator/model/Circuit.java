@@ -1,9 +1,8 @@
 package sriracha.simulator.model;
 
 import sriracha.simulator.model.interfaces.ICollectElements;
-import sriracha.simulator.solver.interfaces.IEquation;
+import sriracha.simulator.solver.IEquation;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Circuit implements ICollectElements{

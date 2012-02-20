@@ -4,9 +4,11 @@ import sriracha.math.MathActivator;
 import sriracha.math.interfaces.IComplex;
 import sriracha.simulator.model.*;
 import sriracha.simulator.model.interfaces.ICollectElements;
-import sriracha.simulator.solver.*;
-import sriracha.simulator.solver.interfaces.IAnalysis;
-import sriracha.simulator.solver.interfaces.OutputData;
+import sriracha.simulator.solver.analysis.AnalysisType;
+import sriracha.simulator.solver.analysis.IAnalysis;
+import sriracha.simulator.solver.analysis.ac.ACAnalysis;
+import sriracha.simulator.solver.analysis.ac.ACSubType;
+import sriracha.simulator.solver.output.filtering.*;
 
 import java.util.*;
 
@@ -82,17 +84,17 @@ public class CircuitBuilder {
         else if (plotTypeStr.equalsIgnoreCase("DC"))
             plotType = AnalysisType.DC;
         else if (plotTypeStr.equalsIgnoreCase("TRAN") || plotTypeStr.equalsIgnoreCase("NOISE") || plotTypeStr.equalsIgnoreCase("DISTO"))
-            throw new UnsupportedOperationException("This type of analysis is currently not supported: " + line);
+            throw new UnsupportedOperationException("This format of analysis is currently not supported: " + line);
         else 
-            throw new ParseException("Invalid Plot analysis type: " + line);
+            throw new ParseException("Invalid Plot analysis format: " + line);
         
-        ArrayList<OutputData> outputDataList = new ArrayList<OutputData>();
+        ArrayList<ResultInfo> resultInfoList = new ArrayList<ResultInfo>();
         for (int i = 2; i < params.length; i++)
         {
             char firstChar = Character.toUpperCase(params[i].charAt(0));
             if (firstChar == 'V' || firstChar == 'I')
             {
-                OutputType outputType = StringToOutputType(params[i].substring(1, params[i].indexOf('(')), line);
+                DataFormat dataFormat = StringToOutputType(params[i].substring(1, params[i].indexOf('(')), line);
                 String[] nodeList = parseBracketContents(params[i].substring(params[i].indexOf('('), params[i].length()));
                 
                 for (String node : nodeList)
@@ -102,9 +104,9 @@ public class CircuitBuilder {
                 if (firstChar == 'V')
                 {
                     if (nodeList.length == 1)
-                        outputDataList.add(new Voltage(outputType, circuit.getNodeIndex(nodeList[0])));
+                        resultInfoList.add(new VoltageInfo(dataFormat, circuit.getNodeIndex(nodeList[0])));
                     else if (nodeList.length == 2)
-                        outputDataList.add(new Voltage(outputType, circuit.getNodeIndex(nodeList[0]), circuit.getNodeIndex(nodeList[1])));
+                        resultInfoList.add(new VoltageInfo(dataFormat, circuit.getNodeIndex(nodeList[0]), circuit.getNodeIndex(nodeList[1])));
                     else 
                         throw new ParseException("Voltages can only be requested between 1 or 2 nodes: " + line);
                 }
@@ -113,7 +115,7 @@ public class CircuitBuilder {
                     if (nodeList.length != 1 || Character.toUpperCase(nodeList[0].charAt(0)) != 'V')
                         throw new ParseException("Currents can only be requested at a single voltage source: " + line);
                     
-                    outputDataList.add(new Current(outputType,  nodeList[0], circuit));
+                    resultInfoList.add(new CurrentInfo(dataFormat,  nodeList[0], circuit));
                 }                    
             }
             else 
@@ -121,28 +123,28 @@ public class CircuitBuilder {
         }
 
         OutputFilter outputFilter = new OutputFilter(plotType);
-        for (OutputData data : outputDataList)
-            outputFilter.addData(data);
+        for (ResultInfo info : resultInfoList)
+            outputFilter.addData(info);
         
         return outputFilter;
     }
 
-    private OutputType StringToOutputType(String outputString, String line)
+    private DataFormat StringToOutputType(String outputString, String line)
     {
         if (outputString.equals(""))
-            return OutputType.Complex;
+            return DataFormat.Complex;
         else if (outputString.equalsIgnoreCase("R"))
-            return OutputType.Real;
+            return DataFormat.Real;
         else if (outputString.equalsIgnoreCase("I"))
-            return OutputType.Imaginary;
+            return DataFormat.Imaginary;
         else if (outputString.equalsIgnoreCase("M"))
-            return OutputType.Magnitude;
+            return DataFormat.Magnitude;
         else if (outputString.equalsIgnoreCase("P"))
-            return OutputType.Phase;
+            return DataFormat.Phase;
         else if (outputString.equalsIgnoreCase("DB"))
-            return OutputType.Decibels;
+            return DataFormat.Decibels;
         
-        throw new ParseException("Invalid output type: " + line);
+        throw new ParseException("Invalid output format: " + line);
     }
 
     private String[] parseBracketContents(String bracketString)
@@ -197,32 +199,32 @@ public class CircuitBuilder {
         if (line.startsWith(".AC"))
             return parseSmallSignal(line);
         else 
-            throw new UnsupportedOperationException("This type of analysis is currently not supported: " + line);
+            throw new UnsupportedOperationException("This format of analysis is currently not supported: " + line);
     }
     
-    private SmallSignal parseSmallSignal(String line) 
+    private ACAnalysis parseSmallSignal(String line)
     {
         String[] params = line.split("\\s+");
 
         if (params.length != 5)
             throw new ParseException("Incorrect number of parameters for AC analysis: " + line);
 
-        SSType ssType;
+        ACSubType subType;
         
         if (params[1].equals("LIN"))
-            ssType = SSType.Linear;
+            subType = ACSubType.Linear;
         else if (params[1].equals("OCT"))
-            ssType = SSType.Octave;
+            subType = ACSubType.Octave;
         else if (params[1].equals("DEC"))
-            ssType = SSType.Decade;
+            subType = ACSubType.Decade;
         else
-            throw new ParseException("Invalid scale type. Scale must be LIN, OCT, or DEC: " + line);
+            throw new ParseException("Invalid scale format. Scale must be LIN, OCT, or DEC: " + line);
 
         int numPoints = Integer.parseInt(params[2]);
         double rangeStart = Double.parseDouble(params[3]);
         double rangeStop = Double.parseDouble(params[4]);
         
-        return new SmallSignal(ssType, rangeStart, rangeStop, numPoints);
+        return new ACAnalysis(subType, rangeStart, rangeStop, numPoints);
     }
 
     private void parseSubCircuitTemplate(String[] lines)
@@ -284,7 +286,7 @@ public class CircuitBuilder {
                 break;
 
             default:
-                throw new ParseException("Unrecognized element type: " + elementType);
+                throw new ParseException("Unrecognized element format: " + elementType);
         }
     }
 
@@ -358,7 +360,7 @@ public class CircuitBuilder {
             return new SourceValue(MathActivator.Activator.complex(real, imaginary));
         } 
         else
-            throw new ParseException("Invalid source type: " + params[0]);
+            throw new ParseException("Invalid source format: " + params[0]);
     }
     
     private void createResistor(ICollectElements elementCollection, String name, String node1, String node2, String value) {
