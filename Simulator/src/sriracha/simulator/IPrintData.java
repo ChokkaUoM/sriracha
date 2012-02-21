@@ -2,7 +2,7 @@ package sriracha.simulator;
 
 import java.util.List;
 
-public interface IPlotData {
+public interface IPrintData {
 
     public List<IDataPoint> getData();
 }

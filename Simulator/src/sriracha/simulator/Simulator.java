@@ -35,14 +35,12 @@ public class Simulator implements ISimulator {
 
     private HashMap<AnalysisType, IAnalysisResults> results;
     
-  //  private List<IPlotData> filteredResults;
 
     private Simulator() {
         requestedAnalysis = new ArrayList<IAnalysis>();
         outputFilters = new ArrayList<OutputFilter>();
         results = new HashMap<AnalysisType, IAnalysisResults>();
-        //filteredResults = new ArrayList<IPlotData>();
-        
+
     }
     
     private void saveAll(){
@@ -104,8 +102,8 @@ public class Simulator implements ISimulator {
     }
 
     @Override
-    public IPlotData requestPlot(String filter) {
-        OutputFilter f = builder.parsePlot(filter);
+    public IPrintData requestPlot(String filter) {
+        OutputFilter f = builder.parsePrint(filter);
         outputFilters.add(f);
         IAnalysisResults r =  results.get(f.getAnalysisType());
         return f.getPlot(r);
@@ -113,15 +111,15 @@ public class Simulator implements ISimulator {
 
     /**
      * list of computed and filtered results.
-     * each IPlotData corresponds to a .PLOT statement
+     * each IPrintData corresponds to a .PRINT statement
      * They are found in the list in the same order as
      * results were requested or found in the netlist.
      *
      * @return all computed results so far
      */
     @Override
-    public List<IPlotData> getAllResults() {
-        ArrayList<IPlotData> data = new ArrayList<IPlotData>();
+    public List<IPrintData> getAllResults() {
+        ArrayList<IPrintData> data = new ArrayList<IPrintData>();
         for(OutputFilter f : outputFilters){
             IAnalysisResults result = results.get(f.getAnalysisType());
             data.add(f.getPlot(result));

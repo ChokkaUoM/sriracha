@@ -1,11 +1,11 @@
 package sriracha.simulator.solver.output.filtering;
 
-import sriracha.simulator.IPlotData;
+import sriracha.simulator.IPrintData;
 import sriracha.simulator.solver.analysis.AnalysisType;
 import sriracha.simulator.solver.analysis.IAnalysisResults;
 import sriracha.simulator.solver.analysis.IResultVector;
 import sriracha.simulator.solver.output.FilteredVector;
-import sriracha.simulator.solver.output.PlotData;
+import sriracha.simulator.solver.output.PrintData;
 
 import java.util.ArrayList;
 
@@ -43,10 +43,10 @@ public class OutputFilter {
         return analysisType + ": " + requestedInfo;
     }
 
-    public IPlotData getPlot(IAnalysisResults results) {
+    public IPrintData getPlot(IAnalysisResults results) {
         if(requestedInfo.size() == 0) return null;
 
-        PlotData data = new PlotData();
+        PrintData data = new PrintData();
         for(IResultVector vector : results.getData()){
             FilteredVector fVector = new FilteredVector(requestedInfo.size());
             fVector.setX(vector.getX());

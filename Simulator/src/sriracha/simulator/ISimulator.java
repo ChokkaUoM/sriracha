@@ -28,17 +28,17 @@ public interface ISimulator {
      * ex.: ".PLOT V(1) I(Vin) V(5, 4)"
      * @param filter string representation of output spec
      */
-    public IPlotData requestPlot(String filter);
+    public IPrintData requestPlot(String filter);
 
     /**
      * list of computed and filtered results.
-     * each IPlotData corresponds to a .PLOT statement
+     * each IPrintData corresponds to a .PRINT statement
      * They are found in the list in the same order as
      * results were requested or found in the netlist.
      *
      * @return all computed results so far
      */
-    public List<IPlotData> getAllResults();
+    public List<IPrintData> getAllResults();
 
 
 

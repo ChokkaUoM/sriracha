@@ -31,6 +31,15 @@ public class FilteredVector implements IDataPoint {
     }
 
     @Override
+    public int totalVectorLength() {
+        int l =0;
+        for(double[] da : data){
+            l+=da.length;
+        }
+        return l;
+    }
+
+    @Override
     public String toString() {
         
         StringBuilder sb = new StringBuilder();

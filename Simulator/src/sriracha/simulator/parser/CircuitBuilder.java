@@ -62,28 +62,28 @@ public class CircuitBuilder {
             {                
                 analysisTypes.add(parseAnalysis(line));
             }
-            else if (line.startsWith(".PLOT"))
+            else if (line.startsWith(".PRINT"))
             {
-                outputFilters.add(parsePlot(line));
+                outputFilters.add(parsePrint(line));
             }
         }
     }
 
-    public OutputFilter parsePlot(String line)
+    public OutputFilter parsePrint(String line)
     {
         String[] params = tokenizeLine(line);        
 
         if (params.length < 3)
-            throw new ParseException("Not enough parameters for .PLOT: " + line);
+            throw new ParseException("Not enough parameters for .PRINT: " + line);
 
-        String plotTypeStr = params[1];
-        AnalysisType plotType;
+        String printTypeStr = params[1];
+        AnalysisType printType;
         
-        if (plotTypeStr.equalsIgnoreCase("AC"))
-            plotType = AnalysisType.AC;
-        else if (plotTypeStr.equalsIgnoreCase("DC"))
-            plotType = AnalysisType.DC;
-        else if (plotTypeStr.equalsIgnoreCase("TRAN") || plotTypeStr.equalsIgnoreCase("NOISE") || plotTypeStr.equalsIgnoreCase("DISTO"))
+        if (printTypeStr.equalsIgnoreCase("AC"))
+            printType = AnalysisType.AC;
+        else if (printTypeStr.equalsIgnoreCase("DC"))
+            printType = AnalysisType.DC;
+        else if (printTypeStr.equalsIgnoreCase("TRAN") || printTypeStr.equalsIgnoreCase("NOISE") || printTypeStr.equalsIgnoreCase("DISTO"))
             throw new UnsupportedOperationException("This format of analysis is currently not supported: " + line);
         else 
             throw new ParseException("Invalid Plot analysis format: " + line);
@@ -122,7 +122,7 @@ public class CircuitBuilder {
                 throw new UnsupportedOperationException("The expression '" + params[i] + "' is not supported. Line: " + line);
         }
 
-        OutputFilter outputFilter = new OutputFilter(plotType);
+        OutputFilter outputFilter = new OutputFilter(printType);
         for (ResultInfo info : resultInfoList)
             outputFilter.addData(info);
         

@@ -1,4 +1,4 @@
-import sriracha.simulator.IPlotData;
+import sriracha.simulator.IPrintData;
 import sriracha.simulator.ISimulator;
 import sriracha.simulator.Simulator;
 import sriracha.simulator.parser.CircuitBuilder;
@@ -16,24 +16,23 @@ public class Console {
 
     public static void main(String[] args) throws IOException {
 
-        String netlist =
-                "V1 n1 0 AC 5 30\n" +
-                        "R1 n2 0 5\n" +
-                        "I1 n1 n2 3\n" +
-                        "C1 n1 0 0.4\n" +
-                        "L1 n1 0 0.2\n" +
-                        ".AC LIN 10 100 200\n" +
-                        ".PLOT AC V(n1)";
+        FileReader reader = new FileReader(args[0]);
 
-        gnuplotOutput(netlist);
+        gnuplotOutput(reader.getContents(), args[1]);
+
+
+        
+
     }
 
-    public static void gnuplotOutput(String netlist) {
-        //FileReader reader = new FileReader(netlist);
+    public static void gnuplotOutput(String netlist, String cmdFile) {
         ISimulator sim = Simulator.Instance;
         sim.setNetlist(netlist);
-        List<IPlotData> results = sim.getAllResults();
-        System.out.println(results);
+        List<IPrintData> results = sim.getAllResults();
+        
+        GnuplotFileMaker gnu = new GnuplotFileMaker(results, cmdFile);
+        gnu.writeFiles();
+        
     }
 
 
@@ -45,7 +44,7 @@ public class Console {
                         "C1 n1 0 0.4\n" +
                         "L1 n1 0 0.2\n" +
                         ".AC DEC 10 1 10000\n" +
-                        ".PLOT AC I(V1) VM(n2, n1)";
+                        ".PRINT AC I(V1) VM(n2, n1)";
 
         CircuitBuilder builder = new CircuitBuilder(netlist);
         System.out.println(builder.getCircuit());
