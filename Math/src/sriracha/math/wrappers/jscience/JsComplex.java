@@ -5,7 +5,7 @@ import sriracha.math.interfaces.IComplex;
 
 class JsComplex implements IComplex {
 
-    public Complex value;
+    Complex value;
 
     public JsComplex(double real, double imag) {
         value = Complex.valueOf(real, imag);

@@ -4,7 +4,7 @@ import sriracha.simulator.model.Circuit;
 
 public abstract class Analysis {
 
-    protected AnalysisType type;
+    private AnalysisType type;
 
     public AnalysisType getType() {
         return type;

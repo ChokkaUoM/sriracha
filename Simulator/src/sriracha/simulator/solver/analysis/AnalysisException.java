@@ -7,7 +7,7 @@ package sriracha.simulator.solver.analysis;
  * Time: 2:40 PM
  * To change this template use File | Settings | File Templates.
  */
-public class AnalysisException extends Exception {
+class AnalysisException extends Exception {
 
     public AnalysisException(String message) {
         super(message);

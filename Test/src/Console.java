@@ -30,16 +30,6 @@ public class Console {
         }
         FileReader reader = new FileReader(args[0]);
 
-
-        String netlist = "Phased Sources\n" +
-                "\n" +
-                "V1 1 0 AC 6 180\n" +
-                "V2 2 1 AC 8 0\n" +
-                "\n" +
-                ".AC LIN 1 100 100\n" +
-                ".PRINT AC V(2)\n" +
-                ".END";
-
         ISimulator sim = Simulator.Instance;
         sim.setNetlist(reader.getContents());
         List<IPrintData> results = sim.getAllResults();

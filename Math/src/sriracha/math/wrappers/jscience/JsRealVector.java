@@ -21,6 +21,33 @@ public class JsRealVector extends JsVector implements IRealVector {
         this.vector = Float64Vector.valueOf(vector);
     }
 
+    @Override
+    public IVector opposite() {
+        return new JsRealVector(getVector().opposite());
+    }
+
+    @Override
+    public IVector minus(IVector vector) {
+        return plus(vector.opposite());
+    }
+
+    @Override
+    public IVector plus(IVector v) {
+        if (v instanceof JsRealVector) {
+            return new JsRealVector(((JsRealVector) v).vector.plus(vector));
+        } else if (v instanceof JsComplexVector) {
+            return new JsComplexVector(makeComplex(this).getVector().plus(((JsComplexVector) v).getVector()));
+        }
+
+        return null;
+
+
+    }
+
+    @Override
+    public IVector times(double d) {
+        return new JsRealVector(getVector().times(d));
+    }
 
     @Override
     public double getValue(int i) {

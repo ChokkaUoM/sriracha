@@ -16,7 +16,7 @@ public class Capacitor extends CircuitElement {
         initialVoltage = 0;
     }
 
-    public Capacitor(String name, double capacitance, double ic) {
+    private Capacitor(String name, double capacitance, double ic) {
         super(name);
         this.capacitance = capacitance;
         this.initialVoltage = ic;

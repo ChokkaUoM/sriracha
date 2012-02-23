@@ -31,6 +31,27 @@ class JsComplexVector extends JsVector implements IComplexVector {
         return ComplexVector.valueOf(arr);
     }
 
+
+    @Override
+    public IVector times(double d) {
+        return new JsComplexVector(getVector().times(Complex.valueOf(d, 0)));
+    }
+
+    @Override
+    public IVector opposite() {
+        return new JsComplexVector(getVector().opposite());
+    }
+
+    @Override
+    public IVector plus(IVector v) {
+        if (v instanceof JsComplexVector) {
+            return new JsComplexVector(((JsComplexVector) v).getVector().plus(getVector()));
+        } else if (v instanceof JsRealVector) {
+            return plus(makeComplex((JsRealVector) v));
+        }
+        return null;
+    }
+
     @Override
     ComplexVector getVector() {
         return (ComplexVector) vector;

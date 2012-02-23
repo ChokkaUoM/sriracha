@@ -5,7 +5,8 @@ import sriracha.simulator.solver.analysis.dc.DCEquation;
 
 public class CCVS extends ControlledSource {
 
-    int i0Index, ieIndex;
+    private int i0Index;
+    private int ieIndex;
 
     /**
      * Current Controlled Voltage Source
@@ -14,7 +15,7 @@ public class CCVS extends ControlledSource {
      * @param name - CCVS netlist name
      * @param gm   - factor in source equation
      */
-    protected CCVS(String name, double gm) {
+    private CCVS(String name, double gm) {
         super(name, gm);
     }
 

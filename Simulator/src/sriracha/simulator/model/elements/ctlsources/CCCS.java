@@ -5,7 +5,7 @@ import sriracha.simulator.solver.analysis.dc.DCEquation;
 
 public class CCCS extends ControlledSource {
 
-    int currentIndex;
+    private int currentIndex;
 
     /**
      * Current controlled Current Source
@@ -14,7 +14,7 @@ public class CCCS extends ControlledSource {
      * @param name - name from netlist
      * @param gm   - factor in source equation
      */
-    public CCCS(String name, double gm) {
+    private CCCS(String name, double gm) {
         super(name, gm);
     }
 

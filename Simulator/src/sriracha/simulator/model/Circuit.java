@@ -62,7 +62,7 @@ public class Circuit implements ICollectElements {
      *
      * @return number of nodes
      */
-    public int getNodeCount() {
+    int getNodeCount() {
         return nodeMap.size() - 1;
     }
 

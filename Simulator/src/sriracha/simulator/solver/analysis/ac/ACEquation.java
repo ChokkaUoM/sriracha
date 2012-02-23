@@ -24,7 +24,7 @@ public class ACEquation {
     private IComplexVector b;
 
 
-    ACEquation(int circuitNodeCount) {
+    private ACEquation(int circuitNodeCount) {
         C = activator.realMatrix(circuitNodeCount, circuitNodeCount);
         G = activator.complexMatrix(circuitNodeCount, circuitNodeCount);
         b = activator.complexVector(circuitNodeCount);

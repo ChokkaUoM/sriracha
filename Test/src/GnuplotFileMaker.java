@@ -5,7 +5,7 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 
-public class GnuplotFileMaker {
+class GnuplotFileMaker {
 
     private List<IPrintData> results;
 

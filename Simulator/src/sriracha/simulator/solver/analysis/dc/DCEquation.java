@@ -23,7 +23,7 @@ public class DCEquation {
     private IRealVector b;
 
 
-    public DCEquation(int nodeCount) {
+    private DCEquation(int nodeCount) {
         C = MathActivator.Activator.realMatrix(nodeCount, nodeCount);
         b = MathActivator.Activator.realVector(nodeCount);
     }

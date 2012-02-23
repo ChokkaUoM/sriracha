@@ -11,18 +11,20 @@ public abstract class ControlledSource extends CircuitElement {
      * control nodes positive and negative
      * positive current flows rom positive to negative node
      */
-    protected int ncPlus, ncMinus;
+    int ncPlus;
+    int ncMinus;
 
     /**
      * Node indices for source
      * for current source: Current flows from nPlus, through source, out nMinus
      */
-    protected int nPlus, nMinus;
+    int nPlus;
+    int nMinus;
 
     /**
      * Factor for controlled source equation
      */
-    protected double gm;
+    double gm;
 
 
     /**
@@ -46,7 +48,7 @@ public abstract class ControlledSource extends CircuitElement {
      *
      * @param gm - factor in source equation
      */
-    protected ControlledSource(String name, double gm) {
+    ControlledSource(String name, double gm) {
         super(name);
         this.gm = gm;
     }

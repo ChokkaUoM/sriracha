@@ -7,8 +7,8 @@ import java.text.DecimalFormat;
 public class FilteredVector implements IDataPoint {
 
 
-    double x;
-    double[][] data;
+    private double x;
+    private double[][] data;
 
     public FilteredVector(int length) {
         data = new double[length][];
@@ -45,7 +45,8 @@ public class FilteredVector implements IDataPoint {
     public String toString() {
 
         StringBuilder sb = new StringBuilder();
-        sb.append(format(x) + "\t");
+        sb.append(format(x));
+        sb.append("\t");
         for (int i = 0; i < data.length; i++) {
             for (int j = 0; j < data[i].length; j++) {
                 sb.append(format(data[i][j]));

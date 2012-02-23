@@ -21,11 +21,11 @@ import java.util.*;
 
 public class CircuitBuilder {
 
-    HashMap<String, SubCircuitTemplate> subcircuitTemplates = new HashMap<String, SubCircuitTemplate>();
+    private HashMap<String, SubCircuitTemplate> subcircuitTemplates = new HashMap<String, SubCircuitTemplate>();
 
-    Circuit circuit;
-    ArrayList<Analysis> analysisTypes = new ArrayList<Analysis>();
-    ArrayList<OutputFilter> outputFilters = new ArrayList<OutputFilter>();
+    private Circuit circuit;
+    private ArrayList<Analysis> analysisTypes = new ArrayList<Analysis>();
+    private ArrayList<OutputFilter> outputFilters = new ArrayList<OutputFilter>();
 
     public Circuit getCircuit() {
         return circuit;
@@ -60,8 +60,8 @@ public class CircuitBuilder {
                     subCircuitLines.add(lines[i]);
                     i++;
                 }
-
-                parseSubCircuitTemplate(subCircuitLines.subList(startingLine, i).toArray(new String[0]));
+                Collection<String> sslines = subCircuitLines.subList(startingLine, i);
+                parseSubCircuitTemplate(sslines.toArray(new String[sslines.size()]));
                 i++;    // advance past the .ENDS line
             } else if (line.startsWith(".AC") || line.startsWith(".DC")) {
                 analysisTypes.add(parseAnalysis(line));
@@ -181,7 +181,7 @@ public class CircuitBuilder {
         if (bracketLevel != 0)
             throw new ParseException("Unmatched brackets: " + line);
 
-        return params.toArray(new String[0]);
+        return params.toArray(new String[params.size()]);
     }
 
     public Analysis parseAnalysis(String line) {
@@ -241,9 +241,7 @@ public class CircuitBuilder {
         if (params.length < 4)
             throw new ParseException("Not enough parameters for a circuit element: " + line);
 
-        String[] additionalParams = new String[params.length - 3];
-        for (int i = 3; i < params.length; i++)
-            additionalParams[i - 3] = params[i];
+        String[] additionalParams = Arrays.copyOfRange(params, 3, params.length);
 
 
         switch (elementType) {

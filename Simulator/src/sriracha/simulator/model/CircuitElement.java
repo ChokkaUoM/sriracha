@@ -30,12 +30,12 @@ public abstract class CircuitElement {
      *
      * @param indices the ordered node indices
      */
-    public abstract void setNodeIndices(int... indices);
+    protected abstract void setNodeIndices(int... indices);
 
     /**
      * @return an array containing the matrix indices for the nodes in this circuit element
      */
-    public abstract int[] getNodeIndices();
+    protected abstract int[] getNodeIndices();
 
     /**
      * Some elements add extra variables to the matrix. This method serves to set the index for the
@@ -62,7 +62,7 @@ public abstract class CircuitElement {
      * when adding multiple elements with the same properties.
      * Node information will of course not be copied and have to be entered afterwards
      */
-    public abstract CircuitElement buildCopy(String name);
+    protected abstract CircuitElement buildCopy(String name);
 
     /**
      * Stamps the equation for DC analysis.

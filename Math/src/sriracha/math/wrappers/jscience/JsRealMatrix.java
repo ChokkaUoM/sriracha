@@ -28,8 +28,7 @@ public class JsRealMatrix extends JsMatrix implements IRealMatrix {
         if (b instanceof JsComplexVector) {
             return new JsComplexVector(makeComplex(this).getMatrix().solve(((JsComplexVector) b).getVector()));
         } else if (b instanceof JsRealVector) {
-            JsRealVector vect = new JsRealVector(getMatrix().solve(((JsRealVector) b).getVector()));
-            return vect;
+            return new JsRealVector(getMatrix().solve(((JsRealVector) b).getVector()));
         }
 
         return null;

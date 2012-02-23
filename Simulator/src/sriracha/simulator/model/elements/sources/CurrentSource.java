@@ -16,7 +16,7 @@ public class CurrentSource extends Source {
         super(name, dcValue, MathActivator.Activator.complex(0, 0));
     }
 
-    public CurrentSource(String name, double dcValue, IComplex acPhasorValue) {
+    private CurrentSource(String name, double dcValue, IComplex acPhasorValue) {
         super(name, dcValue, acPhasorValue);
     }
 

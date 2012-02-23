@@ -6,9 +6,9 @@ import sriracha.simulator.solver.analysis.IResultVector;
 /**
  * Contains the results for a single
  */
-public class ACResult implements IResultVector{
-    double w;
-    IComplexVector vector;
+public class ACResult implements IResultVector {
+    private double w;
+    private IComplexVector vector;
 
     ACResult(double w, IComplexVector vector) {
         this.w = w;

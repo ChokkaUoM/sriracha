@@ -2,8 +2,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-public class FileReader {
-    
+class FileReader {
+
     private String path;
 
 
@@ -16,9 +16,9 @@ public class FileReader {
 
         File file = new File(path);
 
-        if(!file.isFile()) return null;
+        if (!file.isFile()) return null;
 
-        StringBuilder fileContents = new StringBuilder((int)file.length());
+        StringBuilder fileContents = new StringBuilder((int) file.length());
 
 
         Scanner scanner = null;
@@ -28,11 +28,14 @@ public class FileReader {
             //will not happen
         }
 
+        if (scanner == null) return null;
+
         String lineSeparator = System.getProperty("line.separator");
 
         try {
-            while(scanner.hasNextLine()) {
-                fileContents.append(scanner.nextLine() + lineSeparator);
+            while (scanner.hasNextLine()) {
+                fileContents.append(scanner.nextLine());
+                fileContents.append(lineSeparator);
             }
             return fileContents.toString();
         } finally {
@@ -40,7 +43,5 @@ public class FileReader {
         }
     }
 
-    
-    
-    
+
 }
