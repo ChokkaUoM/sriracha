@@ -1,20 +1,18 @@
 package sriracha.simulator.model;
 
-import sriracha.simulator.model.interfaces.ICollectElements;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * Information necessary for building a new subcircuit object
  */
-public class SubCircuitTemplate implements ICollectElements{
+public class SubCircuitTemplate implements ICollectElements {
 
     /**
      * corresponds to the name given to the subcircuit definition in the netlist
      */
     private String name;
-    
+
     private int nodeCount;
 
 
@@ -36,8 +34,7 @@ public class SubCircuitTemplate implements ICollectElements{
     private ArrayList<CircuitElement> elements;
 
     /**
-     *
-     * @param name - name given to the subcircuit definition in the netlist
+     * @param name      - name given to the subcircuit definition in the netlist
      * @param nodeCount - number of external nodes in subcircuit template
      */
     public SubCircuitTemplate(String name, int nodeCount) {
@@ -50,11 +47,12 @@ public class SubCircuitTemplate implements ICollectElements{
     /**
      * Adds a new element to the template using an internal numbering system that does
      * not correspond to a matrix index. They are the indices mapped in the internalNodeMap
-     * @see this.addInternalNodeMapping()
+     *
      * @param element - new element with nodes numbered with internal system.
+     * @see this.addInternalNodeMapping()
      */
     @Override
-    public void addElement(CircuitElement element){
+    public void addElement(CircuitElement element) {
         elements.add(element);
     }
 
@@ -76,18 +74,20 @@ public class SubCircuitTemplate implements ICollectElements{
     }
 
     /**
-     * Returns the number of external nodes 
+     * Returns the number of external nodes
+     *
      * @return
      */
-    public int getExternalNodeCount(){
+    public int getExternalNodeCount() {
         return nodeCount;
     }
 
     /**
      * Returns the number of internal nodes (total - external)
+     *
      * @return internal node count
      */
-    public int getInternalNodeCount(){
+    public int getInternalNodeCount() {
         return internalNodeMap.size() - nodeCount;
     }
 

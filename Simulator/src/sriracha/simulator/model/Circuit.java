@@ -1,11 +1,11 @@
 package sriracha.simulator.model;
 
-import sriracha.simulator.model.interfaces.ICollectElements;
-import sriracha.simulator.solver.IEquation;
-
+import java.util.Collection;
 import java.util.HashMap;
 
-public class Circuit implements ICollectElements{
+public class Circuit implements ICollectElements {
+
+    private String name;
 
     private HashMap<String, CircuitElement> elements;
 
@@ -16,14 +16,15 @@ public class Circuit implements ICollectElements{
      */
     private HashMap<String, Integer> nodeMap;
 
-    public Circuit() {
+    public Circuit(String name) {
+        this.name = name;
         elements = new HashMap<String, CircuitElement>();
         nodeMap = new HashMap<String, Integer>();
         nodeMap.put("0", -1);
     }
 
     @Override
-    public void addElement(CircuitElement e){
+    public void addElement(CircuitElement e) {
         elements.put(e.name, e);
     }
 
@@ -41,21 +42,19 @@ public class Circuit implements ICollectElements{
         return nodeMap.get(nodeName);
     }
 
-    public int getNodeIndex(String nodeName){
+    public int getNodeIndex(String nodeName) {
         return nodeMap.get(nodeName);
     }
-    
-    public CircuitElement getElement(String name){
-        if(elements.containsKey(name)){
+
+    public CircuitElement getElement(String name) {
+        if (elements.containsKey(name)) {
             return elements.get(name);
         }
         return null;
     }
 
-    public void applyStamp(IEquation equation) {
-        for (CircuitElement e : elements.values()) {
-            e.applyStamp(equation);
-        }
+    public Collection<CircuitElement> getElements() {
+        return elements.values();
     }
 
     /**
@@ -89,12 +88,15 @@ public class Circuit implements ICollectElements{
         }
         return evCount + getNodeCount();
     }
+
     @Override
     public String toString() {
         String s = "";
-        for(CircuitElement e : elements.values()){
+        for (CircuitElement e : elements.values()) {
             s += e + "\n";
         }
         return s;
     }
+
+
 }

@@ -3,18 +3,17 @@ package sriracha.math.wrappers.jscience;
 import org.jscience.mathematics.number.Complex;
 import sriracha.math.interfaces.IComplex;
 
-class JsComplex implements IComplex{
+class JsComplex implements IComplex {
 
     public Complex value;
 
-    public JsComplex(double real, double imag){
+    public JsComplex(double real, double imag) {
         value = Complex.valueOf(real, imag);
     }
 
-    public JsComplex(Complex c){
+    public JsComplex(Complex c) {
         value = c;
     }
-
 
 
     @Override
@@ -34,7 +33,7 @@ class JsComplex implements IComplex{
 
     @Override
     public void setReal(double real) {
-          value = Complex.valueOf(real, value.getImaginary());
+        value = Complex.valueOf(real, value.getImaginary());
     }
 
     @Override
@@ -55,5 +54,9 @@ class JsComplex implements IComplex{
     @Override
     public String toString() {
         return value.toString();    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
+    static Complex make(IComplex complex) {
+        return Complex.valueOf(complex.getReal(), complex.getImag());
     }
 }

@@ -1,6 +1,4 @@
-package sriracha.simulator.model.interfaces;
-
-import sriracha.simulator.model.CircuitElement;
+package sriracha.simulator.model;
 
 /**
  * Created by IntelliJ IDEA.

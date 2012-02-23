@@ -1,8 +1,10 @@
-package sriracha.simulator.model;
+package sriracha.simulator.model.elements;
 
-import sriracha.simulator.solver.IEquation;
+import sriracha.simulator.model.CircuitElement;
+import sriracha.simulator.solver.analysis.ac.ACEquation;
+import sriracha.simulator.solver.analysis.dc.DCEquation;
 
-public class Inductor extends CircuitElement  {
+public class Inductor extends CircuitElement {
 
     private int nPlus, nMinus;
 
@@ -17,17 +19,17 @@ public class Inductor extends CircuitElement  {
 
 
     /**
-     * @param inductance     - inductance
+     * @param inductance - inductance
      */
-    public Inductor(String name, double inductance){
+    public Inductor(String name, double inductance) {
         super(name);
         this.inductance = inductance;
         initialCurrent = 0;
     }
 
     /**
-     * @param inductance     - inductance
-     * @param ic - the initial current flowing through the inductor.
+     * @param inductance - inductance
+     * @param ic         - the initial current flowing through the inductor. for not yet implemented transient analysis
      */
     public Inductor(String name, double inductance, double ic) {
         super(name);
@@ -35,18 +37,25 @@ public class Inductor extends CircuitElement  {
         initialCurrent = ic;
     }
 
+
     @Override
-    public void applyStamp(IEquation equation) {
-        equation.applyRealStamp(currentIndex, nPlus, 1);
-        equation.applyRealStamp(currentIndex, nMinus, -1);
-        equation.applyRealStamp(nPlus, currentIndex, 1);
-        equation.applyRealStamp(nMinus, currentIndex, -1);
-
-        equation.applyComplexStamp(currentIndex, currentIndex, inductance);
-
+    public void applyDC(DCEquation equation) {
+        equation.applyMatrixStamp(currentIndex, nPlus, -1);
+        equation.applyMatrixStamp(currentIndex, nMinus, 1);
+        equation.applyMatrixStamp(nPlus, currentIndex, -1);
+        equation.applyMatrixStamp(nMinus, currentIndex, 1);
     }
-    
-    
+
+    @Override
+    public void applyAC(ACEquation equation) {
+        equation.applyRealMatrixStamp(currentIndex, nPlus, -1);
+        equation.applyRealMatrixStamp(currentIndex, nMinus, 1);
+        equation.applyRealMatrixStamp(nPlus, currentIndex, -1);
+        equation.applyRealMatrixStamp(nMinus, currentIndex, 1);
+
+        equation.applyComplexMatrixStamp(currentIndex, currentIndex, -inductance);
+    }
+
 
     @Override
     public int getNodeCount() {

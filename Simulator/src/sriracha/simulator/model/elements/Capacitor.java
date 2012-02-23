@@ -1,6 +1,8 @@
-package sriracha.simulator.model;
+package sriracha.simulator.model.elements;
 
-import sriracha.simulator.solver.IEquation;
+import sriracha.simulator.model.CircuitElement;
+import sriracha.simulator.solver.analysis.ac.ACEquation;
+import sriracha.simulator.solver.analysis.dc.DCEquation;
 
 public class Capacitor extends CircuitElement {
 
@@ -31,6 +33,7 @@ public class Capacitor extends CircuitElement {
     public void setNodeIndices(int... indices) {
         nPlus = indices[0];
         nMinus = indices[1];
+
     }
 
     /**
@@ -38,16 +41,20 @@ public class Capacitor extends CircuitElement {
      */
     @Override
     public int[] getNodeIndices() {
-        return new int[] { nPlus, nMinus };
+        return new int[]{nPlus, nMinus};
+    }
+
+
+    @Override
+    public void applyDC(DCEquation equation) {
     }
 
     @Override
-    public void applyStamp(IEquation equation) {
-        equation.applyComplexStamp(nPlus, nPlus, capacitance);
-        equation.applyComplexStamp(nPlus, nMinus, -capacitance);
-        equation.applyComplexStamp(nMinus, nPlus, -capacitance);
-        equation.applyComplexStamp(nMinus, nMinus, capacitance);
-
+    public void applyAC(ACEquation equation) {
+        equation.applyComplexMatrixStamp(nPlus, nPlus, capacitance);
+        equation.applyComplexMatrixStamp(nPlus, nMinus, -capacitance);
+        equation.applyComplexMatrixStamp(nMinus, nPlus, -capacitance);
+        equation.applyComplexMatrixStamp(nMinus, nMinus, capacitance);
 
     }
 

@@ -11,17 +11,4 @@ public class EquationGenerator {
     }
 
 
-    public IEquation generate() {
-
-
-        LinearEquation equation = new LinearEquation(circuit.getMatrixSize());
-        
-        circuit.assignAdditionalVarIndices();
-        
-        circuit.applyStamp(equation);
-
-        return equation;
-    }
-
-
 }

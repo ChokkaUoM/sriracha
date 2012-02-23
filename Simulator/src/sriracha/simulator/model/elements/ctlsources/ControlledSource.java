@@ -1,10 +1,11 @@
-package sriracha.simulator.model;
+package sriracha.simulator.model.elements.ctlsources;
+
+import sriracha.simulator.model.CircuitElement;
 
 /**
- * Base class for current sources.
- * Uses small signal model
+ * Base class for Controlled sources.
  */
-public abstract class ControlledSource extends Source {
+public abstract class ControlledSource extends CircuitElement {
 
     /**
      * control nodes positive and negative
@@ -12,7 +13,15 @@ public abstract class ControlledSource extends Source {
      */
     protected int ncPlus, ncMinus;
 
-    //factor for source
+    /**
+     * Node indices for source
+     * for current source: Current flows from nPlus, through source, out nMinus
+     */
+    protected int nPlus, nMinus;
+
+    /**
+     * Factor for controlled source equation
+     */
     protected double gm;
 
 
@@ -25,7 +34,8 @@ public abstract class ControlledSource extends Source {
      */
     @Override
     public void setNodeIndices(int... indices) {
-        super.setNodeIndices(indices);
+        nPlus = indices[0];
+        nMinus = indices[1];
         ncPlus = indices[2];
         ncMinus = indices[3];
 
@@ -34,7 +44,7 @@ public abstract class ControlledSource extends Source {
     /**
      * Constructor for controlled sources
      *
-     * @param gm     - factor in source equation
+     * @param gm - factor in source equation
      */
     protected ControlledSource(String name, double gm) {
         super(name);

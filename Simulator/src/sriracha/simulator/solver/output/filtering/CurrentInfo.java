@@ -3,7 +3,7 @@ package sriracha.simulator.solver.output.filtering;
 import sriracha.math.interfaces.IComplex;
 import sriracha.math.interfaces.IComplexVector;
 import sriracha.simulator.model.Circuit;
-import sriracha.simulator.model.VoltageSource;
+import sriracha.simulator.model.elements.sources.VoltageSource;
 
 public class CurrentInfo extends ResultInfo {
     private String sourceName;
@@ -12,6 +12,7 @@ public class CurrentInfo extends ResultInfo {
 
     /**
      * keeps a reference to the circuit so that it can extract the correct index after equation generation.
+     *
      * @param sourceName
      * @param circuit
      */
@@ -23,8 +24,8 @@ public class CurrentInfo extends ResultInfo {
 
     @Override
     public double[] extractFrom(IComplexVector data) {
-        VoltageSource vs = (VoltageSource)circuit.getElement(sourceName);
-        if(vs == null) return null;
+        VoltageSource vs = (VoltageSource) circuit.getElement(sourceName);
+        if (vs == null) return null;
         int index = vs.getCurrentVarIndex();
         IComplex val = data.getValue(index);
         return getFromType(val);

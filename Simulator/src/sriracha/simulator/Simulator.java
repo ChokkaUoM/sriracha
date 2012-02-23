@@ -2,10 +2,8 @@ package sriracha.simulator;
 
 import sriracha.simulator.model.Circuit;
 import sriracha.simulator.parser.CircuitBuilder;
-import sriracha.simulator.solver.EquationGenerator;
-import sriracha.simulator.solver.IEquation;
+import sriracha.simulator.solver.analysis.Analysis;
 import sriracha.simulator.solver.analysis.AnalysisType;
-import sriracha.simulator.solver.analysis.IAnalysis;
 import sriracha.simulator.solver.analysis.IAnalysisResults;
 import sriracha.simulator.solver.output.filtering.OutputFilter;
 
@@ -14,53 +12,47 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Main Class for interaction with the Simulator, abstracts away all the sub-components 
- *
+ * Main Class for interaction with the Simulator, abstracts away all the sub-components
  */
 public class Simulator implements ISimulator {
 
     public static Simulator Instance = new Simulator();
-    
+
     private Circuit circuit;
 
     private CircuitBuilder builder;
-    
-    private EquationGenerator generator;
 
-    private IEquation equation;
-
-    private List<IAnalysis> requestedAnalysis;
+    private List<Analysis> requestedAnalysis;
 
     private List<OutputFilter> outputFilters;
 
     private HashMap<AnalysisType, IAnalysisResults> results;
-    
+
 
     private Simulator() {
-        requestedAnalysis = new ArrayList<IAnalysis>();
+        requestedAnalysis = new ArrayList<Analysis>();
         outputFilters = new ArrayList<OutputFilter>();
         results = new HashMap<AnalysisType, IAnalysisResults>();
 
     }
-    
-    private void saveAll(){
-        for(IAnalysis a : requestedAnalysis){
-            save(a, equation);
+
+    private void saveAll() {
+        for (Analysis analysis : requestedAnalysis) {
+            save(analysis);
         }
     }
-    
-    private void save(IAnalysis analysis, IEquation equation){
-        results.put(analysis.getSubType(), analysis.analyse(equation));      
+
+    private void save(Analysis analysis) {
+        results.put(analysis.getType(), analysis.run());
     }
 
     /**
      * Sets a new Circuit, and remakes the this.generator and this.equation Fields
+     *
      * @param circuit
      */
     private void setCircuit(Circuit circuit) {
         this.circuit = circuit;
-        generator = new EquationGenerator(circuit);
-        equation = generator.generate();
         saveAll();
 
     }
@@ -68,6 +60,7 @@ public class Simulator implements ISimulator {
 
     /**
      * Parses the netlist and builds an internal representation
+     *
      * @param netlist
      * @return
      */
@@ -78,34 +71,32 @@ public class Simulator implements ISimulator {
 
         builder = new CircuitBuilder(netlist);
         setCircuit(builder.getCircuit());
-        
+
         requestedAnalysis.addAll(builder.getAnalysisTypes());
+
+        for (Analysis a : requestedAnalysis) {
+            a.extractEquation(circuit);
+        }
 
         outputFilters.addAll(builder.getOutputFilters());
 
-        runAll();
+        saveAll();
     }
-    
-    
-    private void runAll(){
-        results.clear();
-        for(IAnalysis a : requestedAnalysis){
-            results.put(a.getSubType(), a.analyse(equation));
-        }
-    }
+
 
     @Override
     public void addAnalysis(String analysis) {
-        IAnalysis a = builder.parseAnalysis(analysis);
+        Analysis a = builder.parseAnalysis(analysis);
         requestedAnalysis.add(a);
-        save(a, equation);
+        a.extractEquation(circuit);
+        save(a);
     }
 
     @Override
-    public IPrintData requestPlot(String filter) {
+    public IPrintData requestPrintData(String filter) {
         OutputFilter f = builder.parsePrint(filter);
         outputFilters.add(f);
-        IAnalysisResults r =  results.get(f.getAnalysisType());
+        IAnalysisResults r = results.get(f.getAnalysisType());
         return f.getPlot(r);
     }
 
@@ -120,7 +111,7 @@ public class Simulator implements ISimulator {
     @Override
     public List<IPrintData> getAllResults() {
         ArrayList<IPrintData> data = new ArrayList<IPrintData>();
-        for(OutputFilter f : outputFilters){
+        for (OutputFilter f : outputFilters) {
             IAnalysisResults result = results.get(f.getAnalysisType());
             data.add(f.getPlot(result));
         }
@@ -128,12 +119,11 @@ public class Simulator implements ISimulator {
     }
 
 
-    private void clearData(){
+    private void clearData() {
         outputFilters = new ArrayList<OutputFilter>();
         results = new HashMap<AnalysisType, IAnalysisResults>();
-        requestedAnalysis = new ArrayList<IAnalysis>();
+        requestedAnalysis = new ArrayList<Analysis>();
     }
-
 
 
 }

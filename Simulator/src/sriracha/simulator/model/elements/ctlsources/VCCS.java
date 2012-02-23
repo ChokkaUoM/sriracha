@@ -1,6 +1,7 @@
-package sriracha.simulator.model;
+package sriracha.simulator.model.elements.ctlsources;
 
-import sriracha.simulator.solver.IEquation;
+import sriracha.simulator.solver.analysis.ac.ACEquation;
+import sriracha.simulator.solver.analysis.dc.DCEquation;
 
 public class VCCS extends ControlledSource {
 
@@ -15,7 +16,7 @@ public class VCCS extends ControlledSource {
      * I is the current from the source
      *
      * @param name - VCCS name from netlist
-     * @param gm     - factor in source current equation
+     * @param gm   - factor in source current equation
      */
     public VCCS(String name, double gm) {
         super(name, gm);
@@ -23,11 +24,19 @@ public class VCCS extends ControlledSource {
 
 
     @Override
-    public void applyStamp(IEquation equation) {
-        equation.applyRealStamp(ncPlus, nPlus, gm);
-        equation.applyRealStamp(ncPlus, nMinus, -gm);
-        equation.applyRealStamp(ncMinus, nPlus, -gm);
-        equation.applyRealStamp(ncMinus, nMinus, gm);
+    public void applyAC(ACEquation equation) {
+        equation.applyRealMatrixStamp(ncPlus, nPlus, gm);
+        equation.applyRealMatrixStamp(ncPlus, nMinus, -gm);
+        equation.applyRealMatrixStamp(ncMinus, nPlus, -gm);
+        equation.applyRealMatrixStamp(ncMinus, nMinus, gm);
+    }
+
+    @Override
+    public void applyDC(DCEquation equation) {
+        equation.applyMatrixStamp(ncPlus, nPlus, gm);
+        equation.applyMatrixStamp(ncPlus, nMinus, -gm);
+        equation.applyMatrixStamp(ncMinus, nPlus, -gm);
+        equation.applyMatrixStamp(ncMinus, nMinus, gm);
     }
 
     @Override

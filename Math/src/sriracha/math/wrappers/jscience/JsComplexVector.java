@@ -7,13 +7,13 @@ import sriracha.math.interfaces.IComplex;
 import sriracha.math.interfaces.IComplexVector;
 import sriracha.math.interfaces.IVector;
 
-class JsComplexVector extends JsVector implements IComplexVector{
-    
-    public JsComplexVector(int dimension){
+class JsComplexVector extends JsVector implements IComplexVector {
+
+    public JsComplexVector(int dimension) {
         vector = buildZeroVector(dimension);
     }
-    
-    JsComplexVector(ComplexVector vector){
+
+    JsComplexVector(ComplexVector vector) {
         this.vector = vector;
     }
 
@@ -22,23 +22,34 @@ class JsComplexVector extends JsVector implements IComplexVector{
     }
 
 
-    private ComplexVector buildZeroVector(int dim){
+    private ComplexVector buildZeroVector(int dim) {
         Complex arr[] = new Complex[dim];
-        for(int i = 0; i < dim; i++){
+        for (int i = 0; i < dim; i++) {
             arr[i] = Complex.ZERO;
         }
 
         return ComplexVector.valueOf(arr);
     }
-    
+
+    @Override
+    ComplexVector getVector() {
+        return (ComplexVector) vector;
+    }
+
     @Override
     public IComplex getValue(int i) {
-        return new JsComplex (((ComplexVector)vector).get(i));
+        return new JsComplex(((ComplexVector) vector).get(i));
     }
 
     @Override
     public void setValue(int i, IComplex value) {
-        ((ComplexVector)vector).set(i, Complex.valueOf(value.getReal(), value.getImag()));
+        getVector().set(i, JsComplex.make(value));
+    }
+
+    @Override
+    public void addValue(int i, IComplex value) {
+
+        getVector().set(i, getVector().get(i).plus(JsComplex.make(value)));
     }
 
     @Override

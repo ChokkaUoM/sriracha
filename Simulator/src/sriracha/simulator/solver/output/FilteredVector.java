@@ -2,6 +2,8 @@ package sriracha.simulator.solver.output;
 
 import sriracha.simulator.IDataPoint;
 
+import java.text.DecimalFormat;
+
 public class FilteredVector implements IDataPoint {
 
 
@@ -12,7 +14,7 @@ public class FilteredVector implements IDataPoint {
         data = new double[length][];
     }
 
-    public void put(int i, double[] value){
+    public void put(int i, double[] value) {
         data[i] = value;
     }
 
@@ -32,26 +34,30 @@ public class FilteredVector implements IDataPoint {
 
     @Override
     public int totalVectorLength() {
-        int l =0;
-        for(double[] da : data){
-            l+=da.length;
+        int l = 0;
+        for (double[] da : data) {
+            l += da.length;
         }
         return l;
     }
 
     @Override
     public String toString() {
-        
+
         StringBuilder sb = new StringBuilder();
-        for(int i =0; i< data.length; i++){
-            sb.append('[');
-            for(int j =0; j< data[i].length; j++){
-                sb.append(Math.round(data[i][j]*100)/100.0);
-                if(j +1 < data[i].length) sb.append(", ");
+        sb.append(format(x) + "\t");
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[i].length; j++) {
+                sb.append(format(data[i][j]));
+                if (j + 1 < data[i].length || i + 1 < data.length) sb.append("\t");
             }
-            sb.append(']');
         }
-        
-        return x + ": " + sb.toString() + "\n";
+
+        return sb.toString() + "\n";
+    }
+
+    private static String format(double val) {
+        DecimalFormat format = new DecimalFormat("0.000000E00");
+        return format.format(val);
     }
 }

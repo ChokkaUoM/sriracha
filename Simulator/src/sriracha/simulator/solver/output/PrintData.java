@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Similar to a IAnalysisResults object except this one has been filtered
  * by a .PRINT statement.
- *
+ * <p/>
  * This is the implementation for the IPrintData interface which is exposed to the frontend
  * for returning results.
  */
@@ -21,7 +21,7 @@ public class PrintData implements IPrintData {
         data = new ArrayList<IDataPoint>();
     }
 
-    public void addResult(IDataPoint vector){
+    public void addResult(IDataPoint vector) {
         data.add(vector);
     }
 
@@ -33,7 +33,11 @@ public class PrintData implements IPrintData {
 
     @Override
     public String toString() {
-        return data.toString();
+        StringBuilder sb = new StringBuilder();
+        for (IDataPoint point : data) {
+            sb.append(point.toString());
+        }
+        return sb.toString();
     }
 }
 

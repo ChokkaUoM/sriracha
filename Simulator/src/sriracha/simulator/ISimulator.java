@@ -11,14 +11,16 @@ public interface ISimulator {
      * Sets the current netlist.
      * If the initial netlist contains analysis and output filtering statements
      * the results will all be streamed right away.
+     *
      * @param netlist
      */
     public void setNetlist(String netlist);
 
     /**
-     * adds an analysis request to the simulator. The string should be one line that 
+     * adds an analysis request to the simulator. The string should be one line that
      * matches what you would find in a netlist.
      * ex.: ".AC LIN 100 1000 2000"
+     *
      * @param analysis string representation of analysis spec
      */
     public void addAnalysis(String analysis);
@@ -26,9 +28,10 @@ public interface ISimulator {
     /**
      * Corresponds to one of spices output specification lines.
      * ex.: ".PLOT V(1) I(Vin) V(5, 4)"
+     *
      * @param filter string representation of output spec
      */
-    public IPrintData requestPlot(String filter);
+    public IPrintData requestPrintData(String filter);
 
     /**
      * list of computed and filtered results.
@@ -41,7 +44,4 @@ public interface ISimulator {
     public List<IPrintData> getAllResults();
 
 
-
-
-    
 }

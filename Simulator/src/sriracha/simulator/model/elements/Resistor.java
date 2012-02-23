@@ -1,6 +1,8 @@
-package sriracha.simulator.model;
+package sriracha.simulator.model.elements;
 
-import sriracha.simulator.solver.IEquation;
+import sriracha.simulator.model.CircuitElement;
+import sriracha.simulator.solver.analysis.ac.ACEquation;
+import sriracha.simulator.solver.analysis.dc.DCEquation;
 
 public class Resistor extends CircuitElement {
 
@@ -11,6 +13,8 @@ public class Resistor extends CircuitElement {
      */
     private double resistance;
 
+    private double G;
+
     /**
      * Standard Resistor Constructor
      *
@@ -19,6 +23,25 @@ public class Resistor extends CircuitElement {
     public Resistor(String name, double resistance) {
         super(name);
         this.resistance = resistance;
+        G = 1.0 / resistance;
+
+    }
+
+
+    @Override
+    public void applyDC(DCEquation equation) {
+        equation.applyMatrixStamp(nodeA, nodeA, G);
+        equation.applyMatrixStamp(nodeB, nodeB, G);
+        equation.applyMatrixStamp(nodeA, nodeB, -G);
+        equation.applyMatrixStamp(nodeB, nodeA, -G);
+    }
+
+    @Override
+    public void applyAC(ACEquation equation) {
+        equation.applyRealMatrixStamp(nodeA, nodeA, G);
+        equation.applyRealMatrixStamp(nodeB, nodeB, G);
+        equation.applyRealMatrixStamp(nodeA, nodeB, -G);
+        equation.applyRealMatrixStamp(nodeB, nodeA, -G);
     }
 
 
@@ -33,16 +56,6 @@ public class Resistor extends CircuitElement {
         return new int[]{nodeA, nodeB};
     }
 
-    @Override
-    public void applyStamp(IEquation equation) {
-        double G = 1.0/resistance; //conductance
-        equation.applyRealStamp(nodeA, nodeA, G);
-        equation.applyRealStamp(nodeB, nodeB, G);
-        equation.applyRealStamp(nodeA, nodeB, -G);
-        equation.applyRealStamp(nodeB, nodeA, -G);
-
-
-    }
 
     @Override
     public int getNodeCount() {

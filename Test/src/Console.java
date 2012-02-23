@@ -2,7 +2,7 @@ import sriracha.simulator.IPrintData;
 import sriracha.simulator.ISimulator;
 import sriracha.simulator.Simulator;
 import sriracha.simulator.parser.CircuitBuilder;
-import sriracha.simulator.solver.analysis.IAnalysis;
+import sriracha.simulator.solver.analysis.Analysis;
 import sriracha.simulator.solver.output.filtering.OutputFilter;
 
 import java.io.IOException;
@@ -16,23 +16,36 @@ public class Console {
 
     public static void main(String[] args) throws IOException {
 
-        FileReader reader = new FileReader(args[0]);
+        gnuplot(args);
 
-        gnuplotOutput(reader.getContents(), args[1]);
+        // System.out.println(Double.parseDouble("1.23E-2"));
 
-
-        
 
     }
 
-    public static void gnuplotOutput(String netlist, String cmdFile) {
+    private static void gnuplot(String[] args) {
+        if (args.length < 2) {
+            System.out.println("Insufficient args, should be: java -jar TestConsole.jar netlist gnuplotCommandFile");
+            System.exit(0);
+        }
+        FileReader reader = new FileReader(args[0]);
+
+
+        String netlist = "Phased Sources\n" +
+                "\n" +
+                "V1 1 0 AC 6 180\n" +
+                "V2 2 1 AC 8 0\n" +
+                "\n" +
+                ".AC LIN 1 100 100\n" +
+                ".PRINT AC V(2)\n" +
+                ".END";
+
         ISimulator sim = Simulator.Instance;
-        sim.setNetlist(netlist);
+        sim.setNetlist(reader.getContents());
         List<IPrintData> results = sim.getAllResults();
-        
-        GnuplotFileMaker gnu = new GnuplotFileMaker(results, cmdFile);
+
+        GnuplotFileMaker gnu = new GnuplotFileMaker(results, "out");
         gnu.writeFiles();
-        
     }
 
 
@@ -49,7 +62,7 @@ public class Console {
         CircuitBuilder builder = new CircuitBuilder(netlist);
         System.out.println(builder.getCircuit());
 
-        for (IAnalysis analysis : builder.getAnalysisTypes())
+        for (Analysis analysis : builder.getAnalysisTypes())
             System.out.println(analysis);
 
         for (OutputFilter filter : builder.getOutputFilters())
