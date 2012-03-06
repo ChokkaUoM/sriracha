@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="wrap_content" android:layout_height="fill_parent"
+              android:orientation="vertical">
+    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
+        <ImageView style="@style/CircuitMenuItemImage.Element"
+                   android:layout_centerInParent="true"
+                   android:src="@drawable/back_button"
+                   android:onClick="backButtonOnClick"
+                />
+    </RelativeLayout>
+
+    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
+        <ImageView style="@style/CircuitMenuItemImage.Element"
+                   android:layout_alignParentLeft="true"
+                   android:src="@drawable/sources_voltage"
+                />
+        <ImageView style="@style/CircuitMenuItemImage.Element"
+                   android:layout_alignParentRight="true"
+                   android:src="@drawable/sources_current"
+                />
+    </RelativeLayout>
+
+    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
+        <ImageView style="@style/CircuitMenuItemImage.Element"
+                   android:layout_alignParentLeft="true"
+                   android:src="@drawable/sources_dependent_voltage"
+                />
+        <ImageView style="@style/CircuitMenuItemImage.Element"
+                   android:layout_alignParentRight="true"
+                   android:src="@drawable/sources_dependent_current"
+                />
+    </RelativeLayout>
+
+    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
+        <ImageView style="@style/CircuitMenuItemImage.Element"
+                   android:layout_alignParentLeft="true"
+                   android:src="@drawable/sources_vcc"
+                />
+        <ImageView style="@style/CircuitMenuItemImage.Element"
+                   android:layout_alignParentRight="true"
+                   android:src="@drawable/sources_ground"
+                />
+    </RelativeLayout>
+
+    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
+        <ImageView style="@style/CircuitMenuItemImage.Element"
+                   android:layout_centerInParent="true"
+                   android:src="@drawable/circuitmenu_wire"
+                />
+    </RelativeLayout>
+
+    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
+        <ImageView style="@style/CircuitMenuItemImage.Element"
+                   android:layout_alignParentLeft="true"
+                   android:src="@drawable/circuitmenu_select"
+                />
+        <ImageView style="@style/CircuitMenuItemImage.Element"
+                   android:layout_alignParentRight="true"
+                   android:src="@drawable/circuitmenu_hand"
+                />
+    </RelativeLayout>
+</LinearLayout>
