@@ -14,10 +14,14 @@
         <ImageView style="@style/CircuitMenuItemImage.Element"
                    android:layout_alignParentLeft="true"
                    android:src="@drawable/sources_voltage"
+                   android:id="@+id/sources_voltage"
+                   android:onClick="circuitElementOnClick"
                 />
         <ImageView style="@style/CircuitMenuItemImage.Element"
                    android:layout_alignParentRight="true"
                    android:src="@drawable/sources_current"
+                   android:id="@+id/sources_current"
+                   android:onClick="circuitElementOnClick"
                 />
     </RelativeLayout>
 
