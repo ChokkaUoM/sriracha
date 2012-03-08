@@ -14,7 +14,7 @@ public class CCCS extends ControlledSource {
      * @param name - name from netlist
      * @param gm   - factor in source equation
      */
-    private CCCS(String name, double gm) {
+    public CCCS(String name, double gm) {
         super(name, gm);
     }
 

@@ -15,7 +15,7 @@ public class CCVS extends ControlledSource {
      * @param name - CCVS netlist name
      * @param gm   - factor in source equation
      */
-    private CCVS(String name, double gm) {
+    public CCVS(String name, double gm) {
         super(name, gm);
     }
 

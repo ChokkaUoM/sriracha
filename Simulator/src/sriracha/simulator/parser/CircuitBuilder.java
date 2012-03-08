@@ -9,6 +9,7 @@ import sriracha.simulator.model.SubCircuitTemplate;
 import sriracha.simulator.model.elements.Capacitor;
 import sriracha.simulator.model.elements.Inductor;
 import sriracha.simulator.model.elements.Resistor;
+import sriracha.simulator.model.elements.ctlsources.*;
 import sriracha.simulator.model.elements.sources.CurrentSource;
 import sriracha.simulator.model.elements.sources.VoltageSource;
 import sriracha.simulator.solver.analysis.Analysis;
@@ -265,6 +266,22 @@ public class CircuitBuilder {
                 createCapacitor(elementCollection, params[0], params[1], params[2], params[3]);
                 break;
 
+            case 'g':
+                createVCCS(elementCollection, params[0], params[1], params[2], params[3], params[4], params[5]);
+                break;
+
+            case 'e':
+                createVCVS(elementCollection, params[0], params[1], params[2], params[3], params[4], params[5]);
+                break;
+
+            case 'f':
+                createCCCS(elementCollection, params[0], params[1], params[2], params[3], params[4]);
+                break;
+
+            case 'h':
+                createCCVS(elementCollection, params[0], params[1], params[2], params[3], params[4]);
+                break;
+
             case 'x':
                 createSubcircuit(elementCollection, params[0], params[params.length - 1], Arrays.copyOfRange(params, 1, params.length - 1));
                 break;
@@ -361,6 +378,44 @@ public class CircuitBuilder {
         int node2Index = elementCollection.assignNodeMapping(node2);
         i.setNodeIndices(node1Index, node2Index);
         elementCollection.addElement(i);
+    }
+
+    private void createVCCS(ICollectElements elementCollection, String name, String node1, String node2, String control1, String control2, String value) {
+        VCCS vccs = new VCCS(name, parseDouble(value));
+        createVoltageControlledSource(elementCollection, node1, node2, control1, control2, vccs);
+    }
+
+    private void createVCVS(ICollectElements elementCollection, String name, String node1, String node2, String control1, String control2, String value) {
+        VCVS vcvs = new VCVS(name, parseDouble(value));
+        createVoltageControlledSource(elementCollection, node1, node2, control1, control2, vcvs);
+    }
+
+
+    private void createCCCS(ICollectElements elementCollection, String name, String node1, String node2, String control, String value) {
+        CCCS cccs = new CCCS(name, parseDouble(value));
+        createCurrentControlledSource(elementCollection, node1, node2, control, cccs);
+    }
+
+    private void createCCVS(ICollectElements elementCollection, String name, String node1, String node2, String control, String value) {
+        CCVS ccvs = new CCVS(name, parseDouble(value));
+        createCurrentControlledSource(elementCollection, node1, node2, control, ccvs);
+    }
+
+    private void createVoltageControlledSource(ICollectElements elementCollection, String node1, String node2, String control1, String control2, ControlledSource vcvs) {
+        int node1Index = elementCollection.assignNodeMapping(node1);
+        int node2Index = elementCollection.assignNodeMapping(node2);
+        int controlNode1Index = elementCollection.assignNodeMapping(control1);
+        int controlNode2Index = elementCollection.assignNodeMapping(control2);
+        vcvs.setNodeIndices(node1Index, node2Index, controlNode1Index, controlNode2Index);
+        elementCollection.addElement(vcvs);
+    }
+
+    private void createCurrentControlledSource(ICollectElements elementCollection, String node1, String node2, String control, ControlledSource source) {
+        int node1Index = elementCollection.assignNodeMapping(node1);
+        int node2Index = elementCollection.assignNodeMapping(node2);
+        int controlVSIndex = elementCollection.assignNodeMapping(control);
+        source.setNodeIndices(node1Index, node2Index, controlVSIndex);
+        elementCollection.addElement(source);
     }
 
     /**
