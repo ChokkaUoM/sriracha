@@ -34,7 +34,7 @@ public class Console {
         sim.setNetlist(reader.getContents());
         List<IPrintData> results = sim.getAllResults();
 
-        GnuplotFileMaker gnu = new GnuplotFileMaker(results, "out");
+        GnuplotFileMaker gnu = new GnuplotFileMaker(results, args[1]);
         gnu.writeFiles();
     }
 

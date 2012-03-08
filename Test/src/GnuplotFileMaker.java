@@ -12,6 +12,7 @@ class GnuplotFileMaker {
     private String cmdFile;
 
     private String[] dataFiles;
+    private String[] spiceFiles;
 
     public GnuplotFileMaker(String cmdFile) {
         this.cmdFile = cmdFile;
@@ -50,15 +51,15 @@ class GnuplotFileMaker {
 
     private void generateDataFileNames() {
         dataFiles = new String[results.size()];
+        spiceFiles = new String[results.size()];
         for (int i = 0; i < results.size(); i++) {
-            dataFiles[i] = cmdFile + ".data" + (i + 1);
+            dataFiles[i] = "scs.out" + (i + 1);
+            spiceFiles[i] = "spice.out" + (i + 1);
         }
     }
 
     private void writeCmdFile() {
         BufferedOutputStream stream = openNew(cmdFile);
-
-        String with = " with lines";
 
         StringBuilder fileContent = new StringBuilder();
 
@@ -70,7 +71,8 @@ class GnuplotFileMaker {
 
             int columns = results.get(i).getData().get(0).totalVectorLength();
             for (int j = 0; j < columns; j++) {
-                fileContent.append(quote(dataFiles[i]) + " using 1:" + (j + 2) + with);
+                fileContent.append(quote(dataFiles[i]) + " using 1:" + (j + 2) + " with lines, ");
+                fileContent.append(quote(spiceFiles[i]) + " using 1:" + (j + 2) + " with points");
                 if (j + 1 < columns) {
                     fileContent.append(", ");
                 }
