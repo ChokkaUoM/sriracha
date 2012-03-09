@@ -11,20 +11,22 @@ import java.util.List;
 /**
  * Eventually this should be an interactive test console for playing around with various parts of the simulator.
  */
-public class Console {
+public class Console
+{
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException
+    {
 
         gnuplot(args);
-
-        // System.out.println(Double.parseDouble("1.23E-2"));
 
 
     }
 
-    private static void gnuplot(String[] args) {
-        if (args.length < 2) {
+    private static void gnuplot(String[] args)
+    {
+        if (args.length < 2)
+        {
             System.out.println("Insufficient args, should be: java -jar TestConsole.jar netlist gnuplotCommandFile");
             System.exit(0);
         }
@@ -39,7 +41,8 @@ public class Console {
     }
 
 
-    public static void testBasicParsing() throws IOException {
+    public static void testBasicParsing() throws IOException
+    {
         String netlist =
                 "V1 n1 0 AC 5 30\n" +
                         "R1 n2 0 5\n" +
@@ -59,7 +62,8 @@ public class Console {
             System.out.println(filter);
     }
 
-    public static void testSubcircuitParsing() throws IOException {
+    public static void testSubcircuitParsing() throws IOException
+    {
         String netlist =
                 ".SUBCKT TwoResistors nIn nOut\n" +
                         "R1 nIn n1 10\n" +

@@ -4,19 +4,22 @@ import sriracha.simulator.model.CircuitElement;
 import sriracha.simulator.solver.analysis.ac.ACEquation;
 import sriracha.simulator.solver.analysis.dc.DCEquation;
 
-public class Capacitor extends CircuitElement {
+public class Capacitor extends CircuitElement
+{
 
     private int nPlus, nMinus;
 
     private double capacitance, initialVoltage;
 
-    public Capacitor(String name, double capacitance) {
+    public Capacitor(String name, double capacitance)
+    {
         super(name);
         this.capacitance = capacitance;
         initialVoltage = 0;
     }
 
-    private Capacitor(String name, double capacitance, double ic) {
+    private Capacitor(String name, double capacitance, double ic)
+    {
         super(name);
         this.capacitance = capacitance;
         this.initialVoltage = ic;
@@ -30,7 +33,8 @@ public class Capacitor extends CircuitElement {
      * @param indices the ordered node indices
      */
     @Override
-    public void setNodeIndices(int... indices) {
+    public void setNodeIndices(int... indices)
+    {
         nPlus = indices[0];
         nMinus = indices[1];
 
@@ -40,17 +44,20 @@ public class Capacitor extends CircuitElement {
      * @return an array containing the matrix indices for the nodes in this circuit element
      */
     @Override
-    public int[] getNodeIndices() {
+    public int[] getNodeIndices()
+    {
         return new int[]{nPlus, nMinus};
     }
 
 
     @Override
-    public void applyDC(DCEquation equation) {
+    public void applyDC(DCEquation equation)
+    {
     }
 
     @Override
-    public void applyAC(ACEquation equation) {
+    public void applyAC(ACEquation equation)
+    {
         equation.applyComplexMatrixStamp(nPlus, nPlus, capacitance);
         equation.applyComplexMatrixStamp(nPlus, nMinus, -capacitance);
         equation.applyComplexMatrixStamp(nMinus, nPlus, -capacitance);
@@ -59,12 +66,14 @@ public class Capacitor extends CircuitElement {
     }
 
     @Override
-    public int getNodeCount() {
+    public int getNodeCount()
+    {
         return 2;
     }
 
     @Override
-    public int getExtraVariableCount() {
+    public int getExtraVariableCount()
+    {
         return 0;
     }
 
@@ -74,12 +83,14 @@ public class Capacitor extends CircuitElement {
      * Node information will of course not be copied and have to be entered afterwards
      */
     @Override
-    public Capacitor buildCopy(String name) {
+    public Capacitor buildCopy(String name, CircuitElement referencedElement)
+    {
         return new Capacitor(name, capacitance, initialVoltage);
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return super.toString() + " " + capacitance;
     }
 }

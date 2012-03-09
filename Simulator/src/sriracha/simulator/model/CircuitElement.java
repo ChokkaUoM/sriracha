@@ -6,7 +6,8 @@ import sriracha.simulator.solver.analysis.dc.DCEquation;
 /**
  * Base class for all circuit elements including sources and subcircuits
  */
-public abstract class CircuitElement {
+public abstract class CircuitElement
+{
 
     /**
      * Element name as described in the netlist
@@ -19,7 +20,8 @@ public abstract class CircuitElement {
      *
      * @param name element name from netlist
      */
-    protected CircuitElement(String name) {
+    protected CircuitElement(String name)
+    {
         this.name = name;
     }
 
@@ -44,7 +46,8 @@ public abstract class CircuitElement {
      *
      * @param i index for the first of the extra variables required.
      */
-    public void setFirstVarIndex(int i) {
+    public void setFirstVarIndex(int i)
+    {
     }
 
     /**
@@ -61,8 +64,9 @@ public abstract class CircuitElement {
      * This is used to build a copy of the circuit element during netlist parsing
      * when adding multiple elements with the same properties.
      * Node information will of course not be copied and have to be entered afterwards
+     * if referencedElement is not applicable pass null
      */
-    protected abstract CircuitElement buildCopy(String name);
+    protected abstract CircuitElement buildCopy(String name, CircuitElement referencedElement);
 
     /**
      * Stamps the equation for DC analysis.
@@ -80,13 +84,24 @@ public abstract class CircuitElement {
 
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         String s = name + " ";
         int[] nodes = getNodeIndices();
-        for (int i : nodes) {
+        for (int i : nodes)
+        {
             s += i + " ";
         }
 
         return s.trim();
     }
+
+    /**
+     * circuit elements that use element referencing should override this method and return the appropriate element
+     *
+     * @return referenced element if applicable, null otherwise
+     */
+    public CircuitElement getReferencedElement()
+    {return null;}
+
 }

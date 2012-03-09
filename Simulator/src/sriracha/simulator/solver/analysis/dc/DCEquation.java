@@ -7,14 +7,8 @@ import sriracha.simulator.model.Circuit;
 import sriracha.simulator.model.CircuitElement;
 import sriracha.simulator.solver.analysis.IAnalysisResults;
 
-/**
- * Created by IntelliJ IDEA.
- * User: antoine
- * Date: 22/02/12
- * Time: 1:22 PM
- * To change this template use File | Settings | File Templates.
- */
-public class DCEquation {
+public class DCEquation
+{
 
 
     private IRealMatrix C;
@@ -23,15 +17,18 @@ public class DCEquation {
     private IRealVector b;
 
 
-    private DCEquation(int nodeCount) {
+    private DCEquation(int nodeCount)
+    {
         C = MathActivator.Activator.realMatrix(nodeCount, nodeCount);
         b = MathActivator.Activator.realVector(nodeCount);
     }
 
-    public static DCEquation generate(Circuit circuit) {
+    public static DCEquation generate(Circuit circuit)
+    {
         DCEquation equation = new DCEquation(circuit.getMatrixSize());
 
-        for (CircuitElement element : circuit.getElements()) {
+        for (CircuitElement element : circuit.getElements())
+        {
             element.applyDC(equation);
         }
 
@@ -40,12 +37,14 @@ public class DCEquation {
     }
 
 
-    public IAnalysisResults run() {
+    public IAnalysisResults run()
+    {
         return null;
     }
 
 
-    public void applyMatrixStamp(int i, int j, double value) {
+    public void applyMatrixStamp(int i, int j, double value)
+    {
 
         //no stamps to ground
         if (i == -1 || j == -1) return;
@@ -56,7 +55,8 @@ public class DCEquation {
 
     }
 
-    public void applySourceVectorStamp(int i, double d) {
+    public void applySourceVectorStamp(int i, double d)
+    {
         //no stamps to ground
         if (i == -1) return;
 

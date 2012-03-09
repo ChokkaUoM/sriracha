@@ -1,9 +1,11 @@
 package sriracha.simulator.model.elements.ctlsources;
 
+import sriracha.simulator.model.CircuitElement;
 import sriracha.simulator.solver.analysis.ac.ACEquation;
 import sriracha.simulator.solver.analysis.dc.DCEquation;
 
-public class VCCS extends ControlledSource {
+public class VCCS extends VCSource
+{
 
 
     private int currentIndex;
@@ -18,35 +20,49 @@ public class VCCS extends ControlledSource {
      * @param name - VCCS name from netlist
      * @param gm   - factor in source current equation
      */
-    public VCCS(String name, double gm) {
+    public VCCS(String name, double gm)
+    {
         super(name, gm);
     }
 
 
     @Override
-    public void applyAC(ACEquation equation) {
-        equation.applyRealMatrixStamp(ncPlus, nPlus, gm);
-        equation.applyRealMatrixStamp(ncPlus, nMinus, -gm);
-        equation.applyRealMatrixStamp(ncMinus, nPlus, -gm);
-        equation.applyRealMatrixStamp(ncMinus, nMinus, gm);
+    public void applyAC(ACEquation equation)
+    {
+        equation.applyRealMatrixStamp(ncPlus, currentIndex, 1);
+        equation.applyRealMatrixStamp(ncMinus, currentIndex, -1);
+        equation.applyRealMatrixStamp(currentIndex, currentIndex, -1 / gm);
+        equation.applyRealMatrixStamp(currentIndex, nPlus, 1);
+        equation.applyRealMatrixStamp(currentIndex, nMinus, -1);
+
     }
 
     @Override
-    public void applyDC(DCEquation equation) {
-        equation.applyMatrixStamp(ncPlus, nPlus, gm);
-        equation.applyMatrixStamp(ncPlus, nMinus, -gm);
-        equation.applyMatrixStamp(ncMinus, nPlus, -gm);
-        equation.applyMatrixStamp(ncMinus, nMinus, gm);
+    public void applyDC(DCEquation equation)
+    {
+        equation.applyMatrixStamp(ncPlus, currentIndex, 1);
+        equation.applyMatrixStamp(ncMinus, currentIndex, -1);
+        equation.applyMatrixStamp(currentIndex, currentIndex, -1 / gm);
+        equation.applyMatrixStamp(currentIndex, nPlus, 1);
+        equation.applyMatrixStamp(currentIndex, nMinus, -1);
     }
 
     @Override
-    public int getNodeCount() {
+    public int getNodeCount()
+    {
         return 2;
     }
 
     @Override
-    public int getExtraVariableCount() {
-        return 0;
+    public int getExtraVariableCount()
+    {
+        return 1;
+    }
+
+    @Override
+    public void setFirstVarIndex(int i)
+    {
+        currentIndex = i;
     }
 
     /**
@@ -55,7 +71,8 @@ public class VCCS extends ControlledSource {
      * Node information will of course not be copied and have to be entered afterwards
      */
     @Override
-    public VCCS buildCopy(String name) {
+    public VCCS buildCopy(String name, CircuitElement referencedElement)
+    {
         return new VCCS(name, gm);
     }
 

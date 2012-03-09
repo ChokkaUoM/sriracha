@@ -4,7 +4,8 @@ import sriracha.simulator.model.CircuitElement;
 import sriracha.simulator.solver.analysis.ac.ACEquation;
 import sriracha.simulator.solver.analysis.dc.DCEquation;
 
-public class Inductor extends CircuitElement {
+public class Inductor extends CircuitElement
+{
 
     private int nPlus, nMinus;
 
@@ -21,7 +22,8 @@ public class Inductor extends CircuitElement {
     /**
      * @param inductance - inductance
      */
-    public Inductor(String name, double inductance) {
+    public Inductor(String name, double inductance)
+    {
         super(name);
         this.inductance = inductance;
         initialCurrent = 0;
@@ -31,7 +33,8 @@ public class Inductor extends CircuitElement {
      * @param inductance - inductance
      * @param ic         - the initial current flowing through the inductor. for not yet implemented transient analysis
      */
-    public Inductor(String name, double inductance, double ic) {
+    public Inductor(String name, double inductance, double ic)
+    {
         super(name);
         this.inductance = inductance;
         initialCurrent = ic;
@@ -39,7 +42,8 @@ public class Inductor extends CircuitElement {
 
 
     @Override
-    public void applyDC(DCEquation equation) {
+    public void applyDC(DCEquation equation)
+    {
         equation.applyMatrixStamp(currentIndex, nPlus, -1);
         equation.applyMatrixStamp(currentIndex, nMinus, 1);
         equation.applyMatrixStamp(nPlus, currentIndex, -1);
@@ -47,7 +51,8 @@ public class Inductor extends CircuitElement {
     }
 
     @Override
-    public void applyAC(ACEquation equation) {
+    public void applyAC(ACEquation equation)
+    {
         equation.applyRealMatrixStamp(currentIndex, nPlus, -1);
         equation.applyRealMatrixStamp(currentIndex, nMinus, 1);
         equation.applyRealMatrixStamp(nPlus, currentIndex, -1);
@@ -58,12 +63,14 @@ public class Inductor extends CircuitElement {
 
 
     @Override
-    public int getNodeCount() {
+    public int getNodeCount()
+    {
         return 2;
     }
 
     @Override
-    public int getExtraVariableCount() {
+    public int getExtraVariableCount()
+    {
         return 1;
     }
 
@@ -73,12 +80,14 @@ public class Inductor extends CircuitElement {
      * Node information will of course not be copied and have to be entered afterwards
      */
     @Override
-    public Inductor buildCopy(String name) {
+    public Inductor buildCopy(String name, CircuitElement referencedElement)
+    {
         return new Inductor(name, inductance, initialCurrent);
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return super.toString() + " " + inductance;
     }
 
@@ -90,7 +99,8 @@ public class Inductor extends CircuitElement {
      * @param indices the ordered node indices
      */
     @Override
-    public void setNodeIndices(int... indices) {
+    public void setNodeIndices(int... indices)
+    {
         nPlus = indices[0];
         nMinus = indices[1];
 
@@ -100,12 +110,14 @@ public class Inductor extends CircuitElement {
      * @return an array containing the matrix indices for the nodes in this circuit element
      */
     @Override
-    public int[] getNodeIndices() {
+    public int[] getNodeIndices()
+    {
         return new int[]{nPlus, nMinus};
     }
 
     @Override
-    public void setFirstVarIndex(int i) {
+    public void setFirstVarIndex(int i)
+    {
         currentIndex = i;
     }
 }
