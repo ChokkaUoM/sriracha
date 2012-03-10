@@ -2,22 +2,40 @@ package sriracha.simulator.solver.output.filtering;
 
 import sriracha.math.interfaces.IComplex;
 import sriracha.math.interfaces.IComplexVector;
+import sriracha.math.interfaces.IRealVector;
+import sriracha.math.interfaces.IVector;
 
-public abstract class ResultInfo
+public abstract class NodeInfo
 {
 
-    protected DataFormat format;
+    protected NodeDataFormat format;
 
 
-    protected ResultInfo(DataFormat format)
+    protected NodeInfo(NodeDataFormat format)
     {
         this.format = format;
     }
 
+    public double[] extractFrom(IVector data)
+    {
+        if (data instanceof IComplexVector)
+        {
+            return extractFrom((IComplexVector) data);
+        } else if (data instanceof IRealVector)
+        {
+            return extractFrom((IRealVector) data);
+        }
+        return null;
+    }
+
     public abstract double[] extractFrom(IComplexVector data);
+
+    public abstract double[] extractFrom(IRealVector data);
 
     protected double[] getFromType(IComplex val)
     {
+
+
         switch (format)
         {
             case Complex:
@@ -38,7 +56,7 @@ public abstract class ResultInfo
         }
     }
 
-    protected String getFormatName(DataFormat format)
+    protected String getFormatName(NodeDataFormat format)
     {
         switch (format)
         {

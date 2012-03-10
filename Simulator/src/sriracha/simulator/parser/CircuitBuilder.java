@@ -8,11 +8,14 @@ import sriracha.simulator.model.elements.Inductor;
 import sriracha.simulator.model.elements.Resistor;
 import sriracha.simulator.model.elements.ctlsources.*;
 import sriracha.simulator.model.elements.sources.CurrentSource;
+import sriracha.simulator.model.elements.sources.Source;
 import sriracha.simulator.model.elements.sources.VoltageSource;
 import sriracha.simulator.solver.analysis.Analysis;
 import sriracha.simulator.solver.analysis.AnalysisType;
 import sriracha.simulator.solver.analysis.ac.ACAnalysis;
 import sriracha.simulator.solver.analysis.ac.ACSubType;
+import sriracha.simulator.solver.analysis.dc.DCAnalysis;
+import sriracha.simulator.solver.analysis.dc.DCSweep;
 import sriracha.simulator.solver.output.filtering.*;
 
 import java.util.*;
@@ -99,13 +102,13 @@ public class CircuitBuilder
         else
             throw new ParseException("Invalid Plot analysis format: " + line);
 
-        ArrayList<ResultInfo> resultInfoList = new ArrayList<ResultInfo>();
+        ArrayList<NodeInfo> resultInfoList = new ArrayList<NodeInfo>();
         for (int i = 2; i < params.length; i++)
         {
             char firstChar = Character.toUpperCase(params[i].charAt(0));
             if (firstChar == 'V' || firstChar == 'I')
             {
-                DataFormat dataFormat = StringToOutputType(params[i].substring(1, params[i].indexOf('(')), line);
+                NodeDataFormat dataFormat = StringToOutputType(params[i].substring(1, params[i].indexOf('(')), line);
                 String[] nodeList = parseBracketContents(params[i].substring(params[i].indexOf('('), params[i].length()));
 
                 for (String node : nodeList)
@@ -132,26 +135,26 @@ public class CircuitBuilder
         }
 
         OutputFilter outputFilter = new OutputFilter(printType);
-        for (ResultInfo info : resultInfoList)
+        for (NodeInfo info : resultInfoList)
             outputFilter.addData(info);
 
         return outputFilter;
     }
 
-    private DataFormat StringToOutputType(String outputString, String line)
+    private NodeDataFormat StringToOutputType(String outputString, String line)
     {
         if (outputString.equals(""))
-            return DataFormat.Complex;
+            return NodeDataFormat.Complex;
         else if (outputString.equalsIgnoreCase("R"))
-            return DataFormat.Real;
+            return NodeDataFormat.Real;
         else if (outputString.equalsIgnoreCase("I"))
-            return DataFormat.Imaginary;
+            return NodeDataFormat.Imaginary;
         else if (outputString.equalsIgnoreCase("M"))
-            return DataFormat.Magnitude;
+            return NodeDataFormat.Magnitude;
         else if (outputString.equalsIgnoreCase("P"))
-            return DataFormat.Phase;
+            return NodeDataFormat.Phase;
         else if (outputString.equalsIgnoreCase("DB"))
-            return DataFormat.Decibels;
+            return NodeDataFormat.Decibels;
 
         throw new ParseException("Invalid output format: " + line);
     }
@@ -207,8 +210,31 @@ public class CircuitBuilder
     {
         if (line.startsWith(".AC"))
             return parseSmallSignal(line);
+        else if (line.startsWith(".DC"))
+            return parseDCAnalysis(line);
         else
             throw new UnsupportedOperationException("This format of analysis is currently not supported: " + line);
+    }
+
+    private DCAnalysis parseDCAnalysis(String line)
+    {
+        String[] params = line.split("\\s+");
+
+        if (!(params.length == 5 || params.length == 9))
+            throw new ParseException("Incorrect number of parameters for DC analysis: " + line);
+
+        Source s1 = (Source) circuit.getElement(params[1]);
+
+        DCSweep sweep1 = new DCSweep(s1, parseDouble(params[2]), parseDouble(params[3]), Integer.parseInt(params[4]));
+
+        DCSweep sweep2 = null;
+        if (params.length == 9)
+        {
+            sweep2 = new DCSweep((Source) circuit.getElement(params[5]), parseDouble(params[6]), parseDouble(params[7]),
+                    Integer.parseInt(params[8]));
+        }
+
+        return new DCAnalysis(sweep1, sweep2);
     }
 
     private ACAnalysis parseSmallSignal(String line)

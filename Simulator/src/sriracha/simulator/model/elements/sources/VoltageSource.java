@@ -27,6 +27,11 @@ public class VoltageSource extends Source
 
     private int currentIndex;
 
+    @Override
+    public void modifyStamp(double newDCValue, DCEquation equation)
+    {
+        equation.applySourceVectorStamp(currentIndex, newDCValue - dcValue);
+    }
 
     @Override
     public void applyDC(DCEquation equation)

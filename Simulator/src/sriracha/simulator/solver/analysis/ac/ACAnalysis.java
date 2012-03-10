@@ -5,7 +5,8 @@ import sriracha.simulator.model.Circuit;
 import sriracha.simulator.solver.analysis.Analysis;
 import sriracha.simulator.solver.analysis.AnalysisType;
 
-public final class ACAnalysis extends Analysis {
+public final class ACAnalysis extends Analysis
+{
 
     private ACSubType subType;
 
@@ -21,7 +22,8 @@ public final class ACAnalysis extends Analysis {
      * @param fEnd    stop frequency
      * @param points  for Linear total number of frequency points or number per decade/octave
      */
-    public ACAnalysis(ACSubType subType, double fStart, double fEnd, int points) {
+    public ACAnalysis(ACSubType subType, double fStart, double fEnd, int points)
+    {
         super(AnalysisType.AC);
         this.subType = subType;
         this.fStart = fStart;
@@ -36,18 +38,23 @@ public final class ACAnalysis extends Analysis {
      * @param base
      * @return
      */
-    private ACResults logScaleRun(int base) {
+    private ACResults logScaleRun(int base)
+    {
         ACResults results = new ACResults();
         double currentFrequency = fStart;
         int magnitudeScale = 1;
-        while (currentFrequency <= fEnd) {
+        while (currentFrequency <= fEnd)
+        {
             currentFrequency = fStart * magnitudeScale;
-            if (points == 1) {
+            if (points == 1)
+            {
                 results.addVector(currentFrequency, equation.solve(currentFrequency));
-            } else {
+            } else
+            {
                 double range = currentFrequency * (base - 1);
                 double interval = range / (points - 1);
-                for (int i = 0; i < points && currentFrequency <= fEnd; i++) {
+                for (int i = 0; i < points && currentFrequency <= fEnd; i++)
+                {
                     IComplexVector soln = equation.solve(currentFrequency);
                     results.addVector(currentFrequency, soln);
                     currentFrequency += interval;
@@ -62,21 +69,26 @@ public final class ACAnalysis extends Analysis {
     }
 
     @Override
-    public void extractEquation(Circuit circuit) {
-        circuit.assignAdditionalVarIndices();
+    public void extractSolvingInfo(Circuit circuit)
+    {
         equation = ACEquation.generate(circuit);
     }
 
     @Override
-    public ACResults run() {
+    public ACResults run()
+    {
         ACResults results = new ACResults();
-        switch (subType) {
+        switch (subType)
+        {
             case Linear:
-                if (points == 1) { //to avoid divide by 0 issues
+                if (points == 1)
+                { //to avoid divide by 0 issues
                     results.addVector(fStart, equation.solve(fStart));
-                } else {
+                } else
+                {
                     double interval = (fEnd - fStart) / (points - 1);
-                    for (int i = 0; i < points; i++) {
+                    for (int i = 0; i < points; i++)
+                    {
                         double omega = fStart + interval * i;
                         IComplexVector soln = equation.solve(omega);
                         results.addVector(omega, soln);
@@ -94,7 +106,8 @@ public final class ACAnalysis extends Analysis {
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return ".AC " + subType + " " + points + " " + fStart + " " + fEnd;
     }
 }

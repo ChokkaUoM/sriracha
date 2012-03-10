@@ -1,8 +1,9 @@
 package sriracha.simulator.solver.analysis;
 
-import sriracha.math.interfaces.IComplexVector;
+import sriracha.math.interfaces.IVector;
 
-public interface IResultVector {
+public interface IResultVector
+{
 
     /**
      * gets the x value this analysis was done against.
@@ -13,6 +14,6 @@ public interface IResultVector {
     /**
      * @return - The completed Solved Vector
      */
-    public IComplexVector getData();
+    public IVector getData();
 
 }

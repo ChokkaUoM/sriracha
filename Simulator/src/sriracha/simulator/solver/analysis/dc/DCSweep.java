@@ -1,39 +1,42 @@
 package sriracha.simulator.solver.analysis.dc;
 
 
+import sriracha.simulator.model.elements.sources.Source;
+
 public class DCSweep
 {
-    private String srcName;
+    private Source source;
 
-    private double vStart, vEnd, vStep;
+    private double startValue, endValue;
+    private double step;
 
 
-    public DCSweep(String srcName, double vStart, double vEnd, double vStep)
+    public DCSweep(Source source, double startValue, double vEnd, double step)
     {
-        this.srcName = srcName;
-        this.vStart = vStart;
-        this.vEnd = vEnd;
-        this.vStep = vStep;
+        this.source = source;
+        this.startValue = startValue;
+        this.endValue = vEnd;
+        this.step = step;
     }
 
 
-    public String getSrcName()
+    public Source getSource()
     {
-        return srcName;
+        return source;
     }
 
-    public double getvStart()
+    public double getStartValue()
     {
-        return vStart;
+        return startValue;
     }
 
-    public double getvEnd()
+    public double getEndValue()
     {
-        return vEnd;
+        return endValue;
     }
 
-    public double getvStep()
+    public double getStep()
     {
-        return vStep;
+        return step;
     }
 }

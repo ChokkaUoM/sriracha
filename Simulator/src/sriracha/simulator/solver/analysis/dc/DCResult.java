@@ -1,6 +1,7 @@
 package sriracha.simulator.solver.analysis.dc;
 
 import sriracha.math.interfaces.IRealVector;
+import sriracha.simulator.solver.analysis.IResultVector;
 
 /**
  * Created by IntelliJ IDEA.
@@ -9,24 +10,36 @@ import sriracha.math.interfaces.IRealVector;
  * Time: 2:08 PM
  * To change this template use File | Settings | File Templates.
  */
-public class DCResult
+public class DCResult implements IResultVector
 {
-    private double w;
+    private double dcValue;
     private IRealVector vector;
 
-    public DCResult(double w, IRealVector vector)
+    public DCResult(double dcValue, IRealVector vector)
     {
-        this.w = w;
+        this.dcValue = dcValue;
         this.vector = vector;
     }
 
-    public double getW()
+    public double getDcValue()
     {
-        return w;
+        return dcValue;
     }
 
     public IRealVector getVector()
     {
         return vector;
+    }
+
+    @Override
+    public double getX()
+    {
+        return dcValue;
+    }
+
+    @Override
+    public IRealVector getData()
+    {
+        return vector;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

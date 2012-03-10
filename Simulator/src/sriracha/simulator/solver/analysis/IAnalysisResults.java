@@ -1,7 +1,5 @@
 package sriracha.simulator.solver.analysis;
 
-import sriracha.math.interfaces.IComplexVector;
-
 import java.util.List;
 
 /**
@@ -10,9 +8,6 @@ import java.util.List;
  */
 public interface IAnalysisResults
 {
-
-
-    public void addVector(double x, IComplexVector vector);
 
     public List<IResultVector> getData();
 

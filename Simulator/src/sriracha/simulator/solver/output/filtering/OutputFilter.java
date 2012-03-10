@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class OutputFilter
 {
 
-    private ArrayList<ResultInfo> requestedInfo;
+    private ArrayList<NodeInfo> requestedInfo;
 
     private AnalysisType analysisType;
 
@@ -20,16 +20,16 @@ public class OutputFilter
     public OutputFilter(AnalysisType analysisType)
     {
         this.analysisType = analysisType;
-        requestedInfo = new ArrayList<ResultInfo>();
+        requestedInfo = new ArrayList<NodeInfo>();
     }
 
-    public void addData(ResultInfo info)
+    public void addData(NodeInfo info)
     {
         if (!requestedInfo.contains(info))
             requestedInfo.add(info);
     }
 
-    public void removeData(ResultInfo info)
+    public void removeData(NodeInfo info)
     {
         if (requestedInfo.contains(info))
             requestedInfo.remove(info);
@@ -72,7 +72,7 @@ public class OutputFilter
 
         data.addLabel(analysisXLabel(analysisType));
 
-        for (ResultInfo ri : requestedInfo)
+        for (NodeInfo ri : requestedInfo)
         {
             data.addLabel(ri.toString());
         }
@@ -83,7 +83,7 @@ public class OutputFilter
             fVector.setX(vector.getX());
 
             int i = 0;
-            for (ResultInfo info : requestedInfo)
+            for (NodeInfo info : requestedInfo)
             {
                 fVector.put(i++, info.extractFrom(vector.getData()));
             }

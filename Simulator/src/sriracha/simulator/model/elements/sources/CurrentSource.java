@@ -34,6 +34,12 @@ public class CurrentSource extends Source
         return new int[]{nPlus, nMinus};
     }
 
+    @Override
+    public void modifyStamp(double newDCValue, DCEquation equation)
+    {
+        equation.applySourceVectorStamp(nMinus, newDCValue - dcValue);
+        equation.applySourceVectorStamp(nPlus, dcValue - newDCValue);
+    }
 
     @Override
     public void applyDC(DCEquation equation)

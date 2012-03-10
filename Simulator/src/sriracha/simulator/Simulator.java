@@ -59,6 +59,7 @@ public class Simulator implements ISimulator
     private void setCircuit(Circuit circuit)
     {
         this.circuit = circuit;
+        circuit.assignAdditionalVarIndices();
         //    System.out.println(circuit);
         saveAll();
 
@@ -84,7 +85,7 @@ public class Simulator implements ISimulator
 
         for (Analysis a : requestedAnalysis)
         {
-            a.extractEquation(circuit);
+            a.extractSolvingInfo(circuit);
         }
 
         outputFilters.addAll(builder.getOutputFilters());
@@ -98,7 +99,7 @@ public class Simulator implements ISimulator
     {
         Analysis a = builder.parseAnalysis(analysis);
         requestedAnalysis.add(a);
-        a.extractEquation(circuit);
+        a.extractSolvingInfo(circuit);
         save(a);
     }
 

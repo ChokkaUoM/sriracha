@@ -69,7 +69,7 @@ public class JsRealVector extends JsVector implements IRealVector
     }
 
     @Override
-    public IVector times(double d)
+    public IRealVector times(double d)
     {
         return new JsRealVector(getVector().times(d));
     }
@@ -93,7 +93,7 @@ public class JsRealVector extends JsVector implements IRealVector
     }
 
     @Override
-    public IVector clone()
+    public IRealVector clone()
     {
         return new JsRealVector(Float64Vector.valueOf(vector.copy()));
     }

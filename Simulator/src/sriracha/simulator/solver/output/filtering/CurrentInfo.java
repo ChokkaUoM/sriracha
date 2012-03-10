@@ -2,10 +2,11 @@ package sriracha.simulator.solver.output.filtering;
 
 import sriracha.math.interfaces.IComplex;
 import sriracha.math.interfaces.IComplexVector;
+import sriracha.math.interfaces.IRealVector;
 import sriracha.simulator.model.Circuit;
 import sriracha.simulator.model.elements.sources.VoltageSource;
 
-public class CurrentInfo extends ResultInfo
+public class CurrentInfo extends NodeInfo
 {
     private String sourceName;
 
@@ -17,7 +18,7 @@ public class CurrentInfo extends ResultInfo
      * @param sourceName
      * @param circuit
      */
-    public CurrentInfo(DataFormat format, String sourceName, Circuit circuit)
+    public CurrentInfo(NodeDataFormat format, String sourceName, Circuit circuit)
     {
         super(format);
         this.sourceName = sourceName;
@@ -32,6 +33,16 @@ public class CurrentInfo extends ResultInfo
         int index = vs.getCurrentVarIndex();
         IComplex val = data.getValue(index);
         return getFromType(val);
+    }
+
+    @Override
+    public double[] extractFrom(IRealVector data)
+    {
+        VoltageSource vs = (VoltageSource) circuit.getElement(sourceName);
+        if (vs == null) return null;
+        int index = vs.getCurrentVarIndex();
+        double val = data.getValue(index);
+        return new double[]{val};
     }
 
     @Override

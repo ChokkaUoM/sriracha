@@ -5,7 +5,6 @@ import sriracha.math.interfaces.IRealMatrix;
 import sriracha.math.interfaces.IRealVector;
 import sriracha.simulator.model.Circuit;
 import sriracha.simulator.model.CircuitElement;
-import sriracha.simulator.solver.analysis.IAnalysisResults;
 
 public class DCEquation
 {
@@ -36,10 +35,9 @@ public class DCEquation
 
     }
 
-
-    public IAnalysisResults run()
+    public IRealVector solve()
     {
-        return null;
+        return C.solve(b);
     }
 
 
@@ -53,6 +51,17 @@ public class DCEquation
             C.addValue(i, j, value);
 
 
+    }
+
+    private DCEquation(IRealMatrix c, IRealVector b)
+    {
+        this.C = c;
+        this.b = b;
+    }
+
+    public DCEquation clone()
+    {
+        return new DCEquation(C.clone(), b.clone());
     }
 
     public void applySourceVectorStamp(int i, double d)

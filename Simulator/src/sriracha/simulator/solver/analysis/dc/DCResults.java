@@ -1,6 +1,6 @@
 package sriracha.simulator.solver.analysis.dc;
 
-import sriracha.math.interfaces.IComplexVector;
+import sriracha.math.interfaces.IRealVector;
 import sriracha.simulator.solver.analysis.IAnalysisResults;
 import sriracha.simulator.solver.analysis.IResultVector;
 
@@ -16,10 +16,9 @@ public class DCResults implements IAnalysisResults
         data = new ArrayList<IResultVector>();
     }
 
-    @Override
-    public void addVector(double w, IComplexVector vector)
+    public void addVector(double dcValue, IRealVector vector)
     {
-        //  data.add(new DCResult(w, vector));
+        data.add(new DCResult(dcValue, vector));
     }
 
 

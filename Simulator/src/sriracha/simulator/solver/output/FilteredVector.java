@@ -70,7 +70,7 @@ public class FilteredVector implements IDataPoint
 
     private static String format(double val)
     {
-        DecimalFormat format = new DecimalFormat("+0.00000E00;-0.0000E00");
+        DecimalFormat format = new DecimalFormat("0.000000E00;-0.0000E00");
         return format.format(val);
     }
 }

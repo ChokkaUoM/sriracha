@@ -10,21 +10,25 @@ import java.util.List;
 /**
  * Contains the results for a specific .AC analysis request
  */
-public class ACResults implements IAnalysisResults {
+public class ACResults implements IAnalysisResults
+{
 
     private List<IResultVector> data;
 
-    public ACResults() {
+    public ACResults()
+    {
         data = new ArrayList<IResultVector>();
     }
 
-    @Override
-    public void addVector(double w, IComplexVector vector){
+    public void addVector(double w, IComplexVector vector)
+    {
         data.add(new ACResult(w, vector));
     }
 
+
     @Override
-    public List<IResultVector> getData() {
+    public List<IResultVector> getData()
+    {
         return data;
     }
 
