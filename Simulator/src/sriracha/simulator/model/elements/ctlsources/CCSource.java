@@ -36,6 +36,25 @@ public abstract class CCSource extends ControlledSource
     }
 
     @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append(name + " ");
+        int[] nodes = getNodeIndices();
+        for (int i : nodes)
+        {
+            sb.append(i);
+            sb.append(' ');
+        }
+
+        sb.append(dummySource.name);
+        sb.append(' ');
+        sb.append(gm);
+
+        return sb.toString();
+    }
+
+    @Override
     public CircuitElement getReferencedElement()
     {
         return dummySource;

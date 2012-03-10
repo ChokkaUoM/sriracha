@@ -29,10 +29,10 @@ public class VCVS extends VCSource
     @Override
     public void applyAC(ACEquation equation)
     {
-        equation.applyRealMatrixStamp(ncPlus, currentIndex, gm);
-        equation.applyRealMatrixStamp(ncMinus, currentIndex, -gm);
-        equation.applyRealMatrixStamp(nPlus, currentIndex, 1);
-        equation.applyRealMatrixStamp(nMinus, currentIndex, -1);
+        equation.applyRealMatrixStamp(currentIndex, ncPlus, gm);
+        equation.applyRealMatrixStamp(currentIndex, ncMinus, -gm);
+        equation.applyRealMatrixStamp(nPlus, currentIndex, -1);
+        equation.applyRealMatrixStamp(nMinus, currentIndex, 1);
         equation.applyRealMatrixStamp(currentIndex, nPlus, -1);
         equation.applyRealMatrixStamp(currentIndex, nMinus, 1);
     }
@@ -40,10 +40,10 @@ public class VCVS extends VCSource
     @Override
     public void applyDC(DCEquation equation)
     {
-        equation.applyMatrixStamp(ncPlus, currentIndex, gm);
-        equation.applyMatrixStamp(ncMinus, currentIndex, -gm);
-        equation.applyMatrixStamp(nPlus, currentIndex, 1);
-        equation.applyMatrixStamp(nMinus, currentIndex, -1);
+        equation.applyMatrixStamp(currentIndex, ncPlus, gm);
+        equation.applyMatrixStamp(currentIndex, ncMinus, -gm);
+        equation.applyMatrixStamp(nPlus, currentIndex, -1);
+        equation.applyMatrixStamp(nMinus, currentIndex, 1);
         equation.applyMatrixStamp(currentIndex, nPlus, -1);
         equation.applyMatrixStamp(currentIndex, nMinus, 1);
     }
@@ -77,4 +77,6 @@ public class VCVS extends VCSource
     {
         currentIndex = i;
     }
+
+
 }

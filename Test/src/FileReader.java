@@ -2,19 +2,24 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-class FileReader {
+class FileReader
+{
 
     private String path;
 
 
-    public FileReader(String path) {
+    public FileReader(String path)
+    {
         this.path = path;
     }
 
 
-    public String getContents() {
+    public String getContents()
+    {
 
         File file = new File(path);
+
+        System.out.println(file.getAbsolutePath());
 
         if (!file.isFile()) return null;
 
@@ -22,9 +27,11 @@ class FileReader {
 
 
         Scanner scanner = null;
-        try {
+        try
+        {
             scanner = new Scanner(file);
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e)
+        {
             //will not happen
         }
 
@@ -32,13 +39,16 @@ class FileReader {
 
         String lineSeparator = System.getProperty("line.separator");
 
-        try {
-            while (scanner.hasNextLine()) {
+        try
+        {
+            while (scanner.hasNextLine())
+            {
                 fileContents.append(scanner.nextLine());
                 fileContents.append(lineSeparator);
             }
             return fileContents.toString();
-        } finally {
+        } finally
+        {
             scanner.close();
         }
     }

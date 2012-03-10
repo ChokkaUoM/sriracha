@@ -9,50 +9,82 @@ import sriracha.simulator.solver.output.PrintData;
 
 import java.util.ArrayList;
 
-public class OutputFilter {
+public class OutputFilter
+{
 
     private ArrayList<ResultInfo> requestedInfo;
 
     private AnalysisType analysisType;
 
-    public OutputFilter(AnalysisType analysisType) {
+
+    public OutputFilter(AnalysisType analysisType)
+    {
         this.analysisType = analysisType;
         requestedInfo = new ArrayList<ResultInfo>();
     }
 
-    public void addData(ResultInfo info){
-        if(!requestedInfo.contains(info))
+    public void addData(ResultInfo info)
+    {
+        if (!requestedInfo.contains(info))
             requestedInfo.add(info);
     }
 
-    public void removeData(ResultInfo info){
-        if(requestedInfo.contains(info))
+    public void removeData(ResultInfo info)
+    {
+        if (requestedInfo.contains(info))
             requestedInfo.remove(info);
     }
 
-    public void clearFilter(){
+    public void clearFilter()
+    {
         requestedInfo.clear();
     }
 
-    public AnalysisType getAnalysisType() {
+    public AnalysisType getAnalysisType()
+    {
         return analysisType;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return analysisType + ": " + requestedInfo;
     }
 
-    public IPrintData getPlot(IAnalysisResults results) {
-        if(requestedInfo.size() == 0) return null;
+    private String analysisXLabel(AnalysisType analysis)
+    {
+        switch (analysis)
+        {
+            case AC:
+                return "freq(hz)";
+            case DC:
+                return "Volts";
+            default:
+                return null;
+        }
+    }
+
+    public IPrintData filterResults(IAnalysisResults results)
+    {
+        if (requestedInfo.size() == 0) return null;
 
         PrintData data = new PrintData();
-        for(IResultVector vector : results.getData()){
+
+        data.addLabel(analysisXLabel(analysisType));
+
+        for (ResultInfo ri : requestedInfo)
+        {
+            data.addLabel(ri.toString());
+        }
+
+        for (IResultVector vector : results.getData())
+        {
             FilteredVector fVector = new FilteredVector(requestedInfo.size());
             fVector.setX(vector.getX());
 
-            int i =0;
-            for(ResultInfo info : requestedInfo){
+            int i = 0;
+            for (ResultInfo info : requestedInfo)
+            {
                 fVector.put(i++, info.extractFrom(vector.getData()));
             }
 

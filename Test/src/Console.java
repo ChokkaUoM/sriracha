@@ -1,5 +1,4 @@
 import sriracha.simulator.IPrintData;
-import sriracha.simulator.ISimulator;
 import sriracha.simulator.Simulator;
 import sriracha.simulator.parser.CircuitBuilder;
 import sriracha.simulator.solver.analysis.Analysis;
@@ -14,29 +13,92 @@ import java.util.List;
 public class Console
 {
 
+    private static Simulator simulator;
+
 
     public static void main(String[] args) throws IOException
     {
+        Initilialize();
 
-        gnuplot(args);
+        if (args.length > 0)
+        {
+
+            if (args[0].charAt(0) == '-')
+            {
+                //act according to arg
+                String opt = args[0].substring(1);
+                if (opt.equals("gp"))
+                {
+                    //gnuplot, prepare output files for gnuplot test
+                    if (args.length < 3)
+                    {
+                        System.err.println("Insufficient args, should be:\n ... -gp netlist gnuplotCommandFile");
+                        System.exit(1);
+                    }
+                    gnuplot(args[1], args[2]);
+                } else if (opt.equals("b"))
+                {
+                    //batch, run file contents and exit
+                    if (args.length < 2)
+                    {
+                        System.err.println("Insufficient args, should be:\n ... -b netlist");
+                        System.exit(1);
+                    }
+                    runAndPrint(args[1]);
+                    System.exit(0);
+                }
+
+            } else
+            {
+                //default is filename, load circuit
+                FileReader r = new FileReader(args[0]);
+                String netlist = r.getContents();
+                simulator.setNetlist(netlist);
+            }
+
+
+        } else
+        {
+            //no args, running from IDE insert quick test stuff here ...
+            runAndPrint("out/artifacts/TestConsole/circuits/cccs");
+
+        }
+
+        //start shell
 
 
     }
 
-    private static void gnuplot(String[] args)
+
+    private static void Initilialize()
     {
-        if (args.length < 2)
+        simulator = Simulator.Instance;
+    }
+
+    private static void loadNetslist(String netlist)
+    {
+        FileReader reader = new FileReader(netlist);
+        simulator.setNetlist(reader.getContents());
+
+    }
+
+    private static void runAndPrint(String netlist)
+    {
+        loadNetslist(netlist);
+        List<IPrintData> results = simulator.getAllResults();
+        for (IPrintData d : results)
         {
-            System.out.println("Insufficient args, should be: java -jar TestConsole.jar netlist gnuplotCommandFile");
-            System.exit(0);
+            System.out.println(d);
         }
-        FileReader reader = new FileReader(args[0]);
+    }
 
-        ISimulator sim = Simulator.Instance;
-        sim.setNetlist(reader.getContents());
-        List<IPrintData> results = sim.getAllResults();
+    private static void gnuplot(String netlist, String gpCmdFile)
+    {
+        loadNetslist(netlist);
 
-        GnuplotFileMaker gnu = new GnuplotFileMaker(results, args[1]);
+        List<IPrintData> results = simulator.getAllResults();
+
+        GnuplotFileMaker gnu = new GnuplotFileMaker(results, gpCmdFile);
         gnu.writeFiles();
     }
 

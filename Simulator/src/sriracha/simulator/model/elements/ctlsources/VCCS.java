@@ -29,22 +29,22 @@ public class VCCS extends VCSource
     @Override
     public void applyAC(ACEquation equation)
     {
-        equation.applyRealMatrixStamp(ncPlus, currentIndex, 1);
-        equation.applyRealMatrixStamp(ncMinus, currentIndex, -1);
+        equation.applyRealMatrixStamp(currentIndex, ncPlus, 1);
+        equation.applyRealMatrixStamp(currentIndex, ncMinus, -1);
         equation.applyRealMatrixStamp(currentIndex, currentIndex, -1 / gm);
-        equation.applyRealMatrixStamp(currentIndex, nPlus, 1);
-        equation.applyRealMatrixStamp(currentIndex, nMinus, -1);
+        equation.applyRealMatrixStamp(nPlus, currentIndex, 1);
+        equation.applyRealMatrixStamp(nMinus, currentIndex, -1);
 
     }
 
     @Override
     public void applyDC(DCEquation equation)
     {
-        equation.applyMatrixStamp(ncPlus, currentIndex, 1);
-        equation.applyMatrixStamp(ncMinus, currentIndex, -1);
+        equation.applyMatrixStamp(currentIndex, ncPlus, 1);
+        equation.applyMatrixStamp(currentIndex, ncMinus, -1);
         equation.applyMatrixStamp(currentIndex, currentIndex, -1 / gm);
-        equation.applyMatrixStamp(currentIndex, nPlus, 1);
-        equation.applyMatrixStamp(currentIndex, nMinus, -1);
+        equation.applyMatrixStamp(nPlus, currentIndex, 1);
+        equation.applyMatrixStamp(nMinus, currentIndex, -1);
     }
 
     @Override

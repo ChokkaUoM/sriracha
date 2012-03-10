@@ -29,9 +29,10 @@ public class CCVS extends CCSource
     {
         equation.applyRealMatrixStamp(currentOutIndex, nPlus, 1);
         equation.applyRealMatrixStamp(currentOutIndex, nMinus, -1);
+        equation.applyRealMatrixStamp(currentOutIndex, dummySource.getCurrentVarIndex(), -gm);
+
         equation.applyRealMatrixStamp(nPlus, currentOutIndex, 1);
         equation.applyRealMatrixStamp(nMinus, currentOutIndex, -1);
-        equation.applyRealMatrixStamp(dummySource.getCurrentVarIndex(), currentOutIndex, -gm);
 
 
     }
@@ -41,9 +42,11 @@ public class CCVS extends CCSource
     {
         equation.applyMatrixStamp(currentOutIndex, nPlus, 1);
         equation.applyMatrixStamp(currentOutIndex, nMinus, -1);
+        equation.applyMatrixStamp(currentOutIndex, dummySource.getCurrentVarIndex(), -gm);
+
         equation.applyMatrixStamp(nPlus, currentOutIndex, 1);
         equation.applyMatrixStamp(nMinus, currentOutIndex, -1);
-        equation.applyMatrixStamp(dummySource.getCurrentVarIndex(), currentOutIndex, -gm);
+
     }
 
     @Override

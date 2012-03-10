@@ -41,4 +41,10 @@ public abstract class ControlledSource extends CircuitElement
         nPlus = indices[0];
         nMinus = indices[1];
     }
+
+    @Override
+    public String toString()
+    {
+        return super.toString() + " " + gm;
+    }
 }

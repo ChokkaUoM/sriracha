@@ -25,21 +25,15 @@ public class CCCS extends CCSource
     @Override
     public void applyAC(ACEquation equation)
     {
-        int cNodes[] = dummySource.getNodeIndices();
-        equation.applyRealMatrixStamp(currentIndex, cNodes[0], 1 / gm - 1);
-        equation.applyRealMatrixStamp(currentIndex, cNodes[1], 1 - 1 / gm);
-        equation.applyRealMatrixStamp(currentIndex, nPlus, 1);
-        equation.applyRealMatrixStamp(currentIndex, nMinus, -1);
+        equation.applyRealMatrixStamp(nPlus, dummySource.getCurrentVarIndex(), gm);
+        equation.applyRealMatrixStamp(nMinus, dummySource.getCurrentVarIndex(), -gm);
     }
 
     @Override
     public void applyDC(DCEquation equation)
     {
-        int cNodes[] = dummySource.getNodeIndices();
-        equation.applyMatrixStamp(currentIndex, cNodes[0], 1 / gm - 1);
-        equation.applyMatrixStamp(currentIndex, cNodes[1], 1 - 1 / gm);
-        equation.applyMatrixStamp(currentIndex, nPlus, 1);
-        equation.applyMatrixStamp(currentIndex, nMinus, -1);
+        equation.applyMatrixStamp(nPlus, dummySource.getCurrentVarIndex(), gm);
+        equation.applyMatrixStamp(nMinus, dummySource.getCurrentVarIndex(), -gm);
 
     }
 
@@ -52,7 +46,8 @@ public class CCCS extends CCSource
     @Override
     public int getExtraVariableCount()
     {
-        return 1;
+        return 0;
+        //  return 1;
     }
 
     /**

@@ -6,29 +6,35 @@ import org.jscience.mathematics.vector.Float64Vector;
 import org.jscience.mathematics.vector.Vector;
 import sriracha.math.interfaces.IVector;
 
-public abstract class JsVector implements IVector {
+public abstract class JsVector implements IVector
+{
 
     protected Vector vector;
 
-    JsVector(Vector vector) {
+    JsVector(Vector vector)
+    {
         this.vector = vector;
     }
 
-    JsVector() {
+    JsVector()
+    {
     }
 
-    Vector getVector() {
+    Vector getVector()
+    {
         return vector;
     }
 
 
-    protected static JsComplexVector makeComplex(JsRealVector vector) {
+    protected static JsComplexVector makeComplex(JsRealVector vector)
+    {
         Float64Vector realVector = vector.getVector();
         int dim = realVector.getDimension();
 
         Complex[] values = new Complex[dim];
 
-        for (int i = 0; i < dim; i++) {
+        for (int i = 0; i < dim; i++)
+        {
             values[i] = Complex.valueOf(realVector.get(i).doubleValue(), 0);
         }
 
@@ -37,14 +43,28 @@ public abstract class JsVector implements IVector {
 
 
     @Override
-    public int getDimension() {
+    public int getDimension()
+    {
         return vector.getDimension();
     }
 
 
     @Override
-    public IVector minus(IVector vector) {
+    public IVector minus(IVector vector)
+    {
         return plus(vector.opposite());
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < vector.getDimension(); i++)
+        {
+            sb.append(getVector().get(i) + "\t");
+            sb.append('\n');
+        }
+        return sb.toString();
     }
 
 
