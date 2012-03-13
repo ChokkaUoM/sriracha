@@ -6,7 +6,7 @@ import org.jscience.mathematics.vector.Float64Vector;
 import org.jscience.mathematics.vector.Vector;
 import sriracha.math.interfaces.IVector;
 
-public abstract class JsVector implements IVector
+abstract class JsVector implements IVector
 {
 
     protected Vector vector;

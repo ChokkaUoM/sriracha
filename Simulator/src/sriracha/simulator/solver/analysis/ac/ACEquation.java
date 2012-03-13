@@ -50,7 +50,7 @@ public class ACEquation
      * solves the equation for the specified frequency point
      *
      * @param frequency in Hz
-     * @return
+     * @return solution vector
      */
     IComplexVector solve(double frequency)
     {

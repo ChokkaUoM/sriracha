@@ -9,7 +9,7 @@ import sriracha.math.interfaces.IVector;
 
 import java.text.DecimalFormat;
 
-public class JsRealMatrix extends JsMatrix implements IRealMatrix
+class JsRealMatrix extends JsMatrix implements IRealMatrix
 {
 
 

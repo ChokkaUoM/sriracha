@@ -155,7 +155,7 @@ public class SubCircuit extends CircuitElement
     /**
      * Number of External nodes only
      *
-     * @return
+     * @return number of external ports
      */
     @Override
     public int getNodeCount()
@@ -166,7 +166,7 @@ public class SubCircuit extends CircuitElement
     /**
      * For subcircuits internal nodes count as extra variables
      *
-     * @return
+     * @return number of additional variables required
      */
     @Override
     public int getExtraVariableCount()

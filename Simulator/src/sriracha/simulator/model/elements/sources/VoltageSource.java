@@ -93,12 +93,18 @@ public class VoltageSource extends Source
         return new int[]{nPlus, nMinus};
     }
 
+
     @Override
     public void setFirstVarIndex(int i)
     {
         currentIndex = i;
     }
 
+    /**
+     * Voltage sources require the addition of a variable representing the current
+     * flowing through the source (positive current flows into the positive terminal through the source and out of the negative terminal)
+     * @return index for current variable
+     */
     public int getCurrentVarIndex()
     {
         return currentIndex;

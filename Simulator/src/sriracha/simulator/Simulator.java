@@ -69,8 +69,7 @@ public class Simulator implements ISimulator
     /**
      * Parses the netlist and builds an internal representation
      *
-     * @param netlist
-     * @return
+     * @param netlist - the text circuit and analysis description
      */
     @Override
     public void setNetlist(String netlist)

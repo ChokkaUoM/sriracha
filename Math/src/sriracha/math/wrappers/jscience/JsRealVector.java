@@ -8,7 +8,7 @@ import sriracha.math.interfaces.IVector;
 
 import java.text.DecimalFormat;
 
-public class JsRealVector extends JsVector implements IRealVector
+class JsRealVector extends JsVector implements IRealVector
 {
 
 

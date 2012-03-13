@@ -49,7 +49,6 @@ public class SubCircuitTemplate implements ICollectElements {
      * not correspond to a matrix index. They are the indices mapped in the internalNodeMap
      *
      * @param element - new element with nodes numbered with internal system.
-     * @see this.addInternalNodeMapping()
      */
     @Override
     public void addElement(CircuitElement element) {
@@ -76,7 +75,7 @@ public class SubCircuitTemplate implements ICollectElements {
     /**
      * Returns the number of external nodes
      *
-     * @return
+     * @return number of external nodes
      */
     public int getExternalNodeCount() {
         return nodeCount;

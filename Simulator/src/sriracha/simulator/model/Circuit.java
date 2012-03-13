@@ -3,6 +3,10 @@ package sriracha.simulator.model;
 import java.util.Collection;
 import java.util.HashMap;
 
+/**
+ * Circuit object, contains all of the elements and takes care of managing node to matrix index mappings.
+ * It also informs the simulator of the size of matrix it will need.
+ */
 public class Circuit implements ICollectElements {
 
     private String name;
@@ -16,6 +20,10 @@ public class Circuit implements ICollectElements {
      */
     private HashMap<String, Integer> nodeMap;
 
+    /**
+     * Circuit constructor.
+     * @param name - first line of Netlist
+     */
     public Circuit(String name) {
         this.name = name;
         elements = new HashMap<String, CircuitElement>();
@@ -29,7 +37,7 @@ public class Circuit implements ICollectElements {
     }
 
     /**
-     * Add new node mapping
+     * Add new node mapping, or returns existing
      *
      * @param nodeName - name of node from netlist
      * @return index for node
@@ -42,10 +50,19 @@ public class Circuit implements ICollectElements {
         return nodeMap.get(nodeName);
     }
 
+    /**
+     * returns the node index corresponding to the specified node name
+     * @param nodeName node name
+     * @return matrix index
+     */
     public int getNodeIndex(String nodeName) {
         return nodeMap.get(nodeName);
     }
 
+    /**
+     * @param name CircuitElement name
+     * @return the CircuitElement corresponding to this name, or null if not found
+     */
     public CircuitElement getElement(String name) {
         if (elements.containsKey(name)) {
             return elements.get(name);
@@ -53,6 +70,10 @@ public class Circuit implements ICollectElements {
         return null;
     }
 
+    /**
+     * The elements Might not be in the order they were found in the netlist.
+     * @return all of the elements in this Circuit
+     */
     public Collection<CircuitElement> getElements() {
         return elements.values();
     }
@@ -81,6 +102,9 @@ public class Circuit implements ICollectElements {
         }
     }
 
+    /**
+     * @return size of the matrix needed to hold equations for this circuit
+     */
     public int getMatrixSize() {
         int evCount = 0;
         for (CircuitElement e : elements.values()) {

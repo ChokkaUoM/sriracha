@@ -36,7 +36,7 @@ public final class ACAnalysis extends Analysis
      * Helper method for analyse(IEquation)
      *
      * @param base
-     * @return
+     * @return analysis results
      */
     private ACResults logScaleRun(int base)
     {

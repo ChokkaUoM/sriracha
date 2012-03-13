@@ -7,12 +7,12 @@ public interface IResultVector
 
     /**
      * gets the x value this analysis was done against.
-     * frequency for .AC, time for .TRANS ...
+     * frequency for .AC, voltage/current for .DC ...
      */
     public double getX();
 
     /**
-     * @return - The completed Solved Vector
+     * @return - The entire solution vector
      */
     public IVector getData();
 
