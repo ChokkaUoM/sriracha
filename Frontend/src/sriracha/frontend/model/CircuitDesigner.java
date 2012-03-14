@@ -1,7 +1,6 @@
 package sriracha.frontend.model;
 
 import sriracha.frontend.android.model.*;
-import sriracha.frontend.util.*;
 
 public class CircuitDesigner
 {
@@ -34,8 +33,8 @@ public class CircuitDesigner
         cursor = CursorState.ELEMENT;
     }
 
-    public CircuitElementView instantiateElement(Vector2 position)
+    public CircuitElementView instantiateElement(float positionX, float positionY)
     {
-        return cursor == CursorState.ELEMENT ? activator.instantiateElement(selectedElementId, position) : null;
+        return cursor == CursorState.ELEMENT ? activator.instantiateElement(selectedElementId, positionX, positionY) : null;
     }
 }

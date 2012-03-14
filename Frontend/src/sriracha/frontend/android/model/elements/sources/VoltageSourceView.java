@@ -4,13 +4,12 @@ import android.content.*;
 import sriracha.frontend.*;
 import sriracha.frontend.android.model.*;
 import sriracha.frontend.model.*;
-import sriracha.frontend.util.*;
 
 public class VoltageSourceView extends CircuitElementView
 {
-    public VoltageSourceView(Context context, CircuitElement element, Vector2 position)
+    public VoltageSourceView(Context context, CircuitElement element, float positionX, float positionY)
     {
-        super(context, element, position);
+        super(context, element, positionX, positionY);
     }
 
     @Override

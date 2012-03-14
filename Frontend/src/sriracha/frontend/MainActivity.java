@@ -3,12 +3,7 @@ package sriracha.frontend;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.*;
-import android.widget.*;
-import sriracha.frontend.android.model.*;
 import sriracha.frontend.model.*;
-import sriracha.frontend.model.elements.*;
-import sriracha.frontend.model.elements.sources.*;
-import sriracha.frontend.util.*;
 
 public class MainActivity extends Activity
 {
@@ -28,7 +23,7 @@ public class MainActivity extends Activity
         setContentView(R.layout.main);
 
         circuitDesigner = new CircuitDesigner(new CircuitElementActivator(this));
-        circuitDesignCanvas = new CircuitDesignCanvas(findViewById(R.id.canvas), circuitDesigner);
+        circuitDesignCanvas = new CircuitDesignCanvas(findViewById(R.id.circuit_design_canvas), circuitDesigner);
 
         showCircuitMenu(R.id.circuit_menu);
     }

@@ -2,30 +2,41 @@ package sriracha.frontend.model;
 
 import android.view.*;
 import android.widget.*;
+import sriracha.frontend.*;
 import sriracha.frontend.android.model.*;
-import sriracha.frontend.util.*;
 
-public class CircuitDesignCanvas implements View.OnTouchListener
+public class CircuitDesignCanvas extends GestureDetector.SimpleOnGestureListener implements View.OnTouchListener
 {
-    private View canvasView;
+    private ViewGroup canvasView;
     private CircuitDesigner circuitDesigner;
+    private GestureDetector gestureDetector;
+
+    private int elementCount;
 
     public CircuitDesignCanvas(View canvasView, CircuitDesigner circuitDesigner)
     {
-        this.canvasView = canvasView;
+        this.canvasView = (ViewGroup)canvasView;
         this.circuitDesigner = circuitDesigner;
 
+        gestureDetector = new GestureDetector(this);
         canvasView.setOnTouchListener(this);
     }
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent)
     {
-        CircuitElementView elementView = circuitDesigner.instantiateElement(new Vector2(motionEvent.getX(), motionEvent.getY()));
+        gestureDetector.onTouchEvent(motionEvent);
+        return true;
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent motionEvent)
+    {
+        CircuitElementView elementView = circuitDesigner.instantiateElement(motionEvent.getX(), motionEvent.getY());
         if (elementView != null)
         {
-            ((ViewGroup) view).addView(elementView, view.getWidth(), view.getHeight());
-            elementView.invalidate();
+            canvasView.addView(elementView);
+            elementView.updatePosition();
         }
         return true;
     }

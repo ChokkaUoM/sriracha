@@ -10,5 +10,6 @@
     </RelativeLayout>
     <RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
                     android:background="#300"
-                    android:id="@+id/canvas"></RelativeLayout>
+                    android:id="@+id/circuit_design_canvas">
+    </RelativeLayout>
 </LinearLayout>

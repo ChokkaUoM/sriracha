@@ -5,7 +5,6 @@ import sriracha.frontend.*;
 import sriracha.frontend.android.model.*;
 import sriracha.frontend.android.model.elements.sources.*;
 import sriracha.frontend.model.elements.sources.*;
-import sriracha.frontend.util.*;
 
 public class CircuitElementActivator
 {
@@ -16,15 +15,15 @@ public class CircuitElementActivator
         this.context = context;
     }
 
-    public CircuitElementView instantiateElement(int elementId, Vector2 position)
+    public CircuitElementView instantiateElement(int elementId, float positionX, float positionY)
     {
         switch (elementId)
         {
             case R.id.sources_voltage:
-                return new VoltageSourceView(context, new VoltageSource(), position);
+                return new VoltageSourceView(context, new VoltageSource(), positionX, positionY);
 
             case R.id.sources_current:
-                return new CurrentSourceView(context, new CurrentSource(), position);
+                return new CurrentSourceView(context, new CurrentSource(), positionX, positionY);
 
             default:
                 return null;

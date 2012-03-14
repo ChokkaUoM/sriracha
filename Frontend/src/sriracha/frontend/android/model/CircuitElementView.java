@@ -1,50 +1,87 @@
 package sriracha.frontend.android.model;
 
 import android.content.*;
-import android.graphics.*;
-import android.graphics.drawable.*;
 import android.view.*;
+import android.widget.*;
 import sriracha.frontend.model.*;
-import sriracha.frontend.util.*;
 
-public abstract class CircuitElementView extends View
+public abstract class CircuitElementView extends ImageView
 {
+    private static final int INVALID_POINTER_ID = -1;
+
     private CircuitElement element;
 
-    protected Bitmap bitmap;
+    private float positionX;
+    private float positionY;
 
-    protected Vector2 position;
-    private final Paint paint = new Paint();
+    private float touchDownDeltaX;
+    private float touchDownDeltaY;
+    private int activePointerId;
 
     public abstract int getDrawableId();
 
-    public CircuitElementView(Context context, CircuitElement element, Vector2 position)
+    public CircuitElementView(Context context, CircuitElement element, float positionX, float positionY)
     {
         super(context);
+
         this.element = element;
-        this.position = position;
-        bitmap = getBitmapFromDrawable();
-    }
+        this.positionX = positionX;
+        this.positionY = positionY;
 
-    private Bitmap getBitmapFromDrawable()
-    {
-        Drawable drawable = getContext().getResources().getDrawable(getDrawableId());
-        int width = drawable.getIntrinsicWidth();
-        int height = drawable.getIntrinsicHeight();
-
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-
-        drawable.setBounds(0, 0, width, height);
-        drawable.draw(canvas);
-
-        return bitmap;
+        setImageResource(getDrawableId());
+        setFocusable(true);
     }
 
     @Override
-    protected void onDraw(Canvas canvas)
+    public boolean onTouchEvent(MotionEvent event)
     {
-        super.onDraw(canvas);
-        canvas.drawBitmap(bitmap, position.getX(), position.getY(), paint);
+        switch (event.getAction() & MotionEvent.ACTION_MASK)
+        {
+            case MotionEvent.ACTION_DOWN:
+            {
+                touchDownDeltaX = event.getX();
+                touchDownDeltaY = event.getY();
+
+                // Save the ID of this pointer
+                activePointerId = event.getPointerId(0);
+                break;
+            }
+
+            case MotionEvent.ACTION_MOVE:
+            {
+                if (activePointerId == INVALID_POINTER_ID)
+                    break;
+
+                // Find the index of the active pointer and fetch its position
+                int pointerIndex = event.findPointerIndex(activePointerId);
+                positionX += event.getX(pointerIndex) - touchDownDeltaX;
+                positionY += event.getY(pointerIndex) - touchDownDeltaY;
+
+                updatePosition();
+                break;
+            }
+
+            case MotionEvent.ACTION_UP:
+                activePointerId = INVALID_POINTER_ID;
+                break;
+
+            case MotionEvent.ACTION_CANCEL:
+                activePointerId = INVALID_POINTER_ID;
+                break;
+
+            case MotionEvent.ACTION_POINTER_UP:
+                activePointerId = INVALID_POINTER_ID;
+                break;
+        }
+
+        return true;
+    }
+
+    public void updatePosition()
+    {
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) getLayoutParams();
+        params.leftMargin = (int) positionX;
+        params.topMargin = (int) positionY;
+        setLayoutParams(params);
     }
 }

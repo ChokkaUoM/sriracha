@@ -4,13 +4,12 @@ import android.content.*;
 import sriracha.frontend.*;
 import sriracha.frontend.android.model.*;
 import sriracha.frontend.model.*;
-import sriracha.frontend.util.*;
 
 public class CurrentSourceView extends CircuitElementView
 {
-    public CurrentSourceView(Context context, CircuitElement element, Vector2 position)
+    public CurrentSourceView(Context context, CircuitElement element, float positionX, float positionY)
     {
-        super(context, element, position);
+        super(context, element, positionX, positionY);
     }
 
     @Override

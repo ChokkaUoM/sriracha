@@ -28,7 +28,7 @@ public final class R {
         public static final int sources_voltage=0x7f02000e;
     }
     public static final class id {
-        public static final int canvas=0x7f060007;
+        public static final int circuit_design_canvas=0x7f060007;
         public static final int circuit_menu=0x7f060005;
         public static final int circuit_menu_container=0x7f060004;
         public static final int diodes_img=0x7f060002;
