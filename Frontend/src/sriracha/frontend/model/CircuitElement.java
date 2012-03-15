@@ -3,11 +3,15 @@ package sriracha.frontend.model;
 public abstract class CircuitElement
 {
     abstract public int getPortCount();
-
-    protected CircuitElement[] connections;
+    protected CircuitElementPort[] ports;
 
     public CircuitElement()
     {
-        connections = new CircuitElement[getPortCount()];
+        ports = new CircuitElementPort[getPortCount()];
+    }
+
+    public CircuitElementPort[] getPorts()
+    {
+        return ports;
     }
 }

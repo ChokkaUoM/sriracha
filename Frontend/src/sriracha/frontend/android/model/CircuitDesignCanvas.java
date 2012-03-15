@@ -6,7 +6,7 @@ import sriracha.frontend.model.*;
 import java.util.*;
 
 public class CircuitDesignCanvas extends GestureDetector.SimpleOnGestureListener
-        implements View.OnTouchListener, CircuitElementView.OnSelectedListener, CircuitElementView.OnDrawListener
+        implements View.OnTouchListener, CircuitElementView.OnElementClickListener, CircuitElementView.OnDrawListener
 {
     private CircuitDesigner circuitDesigner;
     private CircuitElementActivator activator;
@@ -16,7 +16,7 @@ public class CircuitDesignCanvas extends GestureDetector.SimpleOnGestureListener
 
     private ArrayList<CircuitElementView> elements;
     private ArrayList<CircuitWireView> wires;
-    private CircuitElementView firstWireEndpoint;
+    private CircuitElementPortView firstWirePort;
 
     public CircuitDesignCanvas(View canvasView, CircuitDesigner circuitDesigner, CircuitElementActivator activator)
     {
@@ -49,7 +49,7 @@ public class CircuitDesignCanvas extends GestureDetector.SimpleOnGestureListener
             elements.add(elementView);
             canvasView.addView(elementView);
             
-            elementView.setOnSelectedListener(this);
+            elementView.setOnElementClickListener(this);
             elementView.setOnDrawListener(this);
             elementView.updatePosition();
         }
@@ -57,7 +57,7 @@ public class CircuitDesignCanvas extends GestureDetector.SimpleOnGestureListener
     }
 
     @Override
-    public void onSelected(View view)
+    public void onElementClick(View view, float x, float y)
     {
         deselectElements(view);
 
@@ -66,14 +66,14 @@ public class CircuitDesignCanvas extends GestureDetector.SimpleOnGestureListener
             // The first endpoint of a wire
             if (circuitDesigner.getCanvasState() == CircuitDesigner.CanvasState.IDLE)
             {
-                firstWireEndpoint = (CircuitElementView) view;
+                firstWirePort = ((CircuitElementView) view).getClosestPort(x, y);
                 circuitDesigner.setCanvasState(CircuitDesigner.CanvasState.DRAWING_WIRE);
             }
             else if (circuitDesigner.getCanvasState() == CircuitDesigner.CanvasState.DRAWING_WIRE)
             {
-                if (firstWireEndpoint != view)
+                if (firstWirePort.getElement() != view)
                 {
-                    CircuitWireView wire = new CircuitWireView(canvasView.getContext(), firstWireEndpoint, (CircuitElementView) view);
+                    CircuitWireView wire = new CircuitWireView(canvasView.getContext(), firstWirePort, ((CircuitElementView) view).getClosestPort(x, y));
                     wires.add(wire);
                     canvasView.addView(wire);
                 }
@@ -87,7 +87,9 @@ public class CircuitDesignCanvas extends GestureDetector.SimpleOnGestureListener
     {
         for (CircuitElementView element : elements)
         {
-            if (element != exceptFor)
+            if (element == exceptFor && !element.isElementSelected())
+                element.setElementSelected(true);
+            else
                 element.setElementSelected(false);
         }
     }

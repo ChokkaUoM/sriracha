@@ -1,5 +1,7 @@
 package sriracha.frontend.model;
 
+import java.util.*;
+
 public class CircuitDesigner
 {
     public enum CursorState
@@ -11,6 +13,8 @@ public class CircuitDesigner
     {
         IDLE, DRAWING_WIRE
     }
+
+    private ArrayList<CircuitElement> elements = new ArrayList<CircuitElement>();
 
     private CursorState cursor = CursorState.HAND;
     private CanvasState canvasState = CanvasState.IDLE;
@@ -44,4 +48,13 @@ public class CircuitDesigner
         cursor = CursorState.ELEMENT;
     }
 
+    public void addElement(CircuitElement element)
+    {
+        elements.add(element);
+    }
+    
+    public void connectElements(CircuitElement element1, CircuitElement element2)
+    {
+
+    }
 }

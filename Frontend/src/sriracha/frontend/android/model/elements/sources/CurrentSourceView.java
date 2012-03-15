@@ -7,6 +7,8 @@ import sriracha.frontend.model.*;
 
 public class CurrentSourceView extends CircuitElementView
 {
+    CircuitElementPortView ports[];
+
     public CurrentSourceView(Context context, CircuitElement element, float positionX, float positionY)
     {
         super(context, element, positionX, positionY);
@@ -16,5 +18,17 @@ public class CurrentSourceView extends CircuitElementView
     public int getDrawableId()
     {
         return R.drawable.sources_current;
+    }
+    @Override
+    public CircuitElementPortView[] getElementPorts()
+    {
+        if (ports == null)
+        {
+            ports = new CircuitElementPortView[]{
+                    new CircuitElementPortView(this, 0.5f, 0),
+                    new CircuitElementPortView(this, 0.5f, 1),
+            };
+        }
+        return ports;
     }
 }
