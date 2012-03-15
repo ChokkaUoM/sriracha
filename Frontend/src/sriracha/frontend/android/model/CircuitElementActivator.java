@@ -1,8 +1,7 @@
-package sriracha.frontend.model;
+package sriracha.frontend.android.model;
 
 import android.content.*;
 import sriracha.frontend.*;
-import sriracha.frontend.android.model.*;
 import sriracha.frontend.android.model.elements.sources.*;
 import sriracha.frontend.model.elements.sources.*;
 

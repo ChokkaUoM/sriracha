@@ -9,23 +9,33 @@ package sriracha.frontend;
 
 public final class R {
     public static final class attr {
+        /** <p>Must be a boolean value, either "<code>true</code>" or "<code>false</code>".
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static final int state_draggable=0x7f010000;
     }
     public static final class drawable {
         public static final int back_button=0x7f020000;
-        public static final int circuitmenu_border=0x7f020001;
-        public static final int circuitmenu_diodes_and_transistors=0x7f020002;
-        public static final int circuitmenu_hand=0x7f020003;
-        public static final int circuitmenu_rlc=0x7f020004;
-        public static final int circuitmenu_select=0x7f020005;
-        public static final int circuitmenu_sources_and_ground=0x7f020006;
-        public static final int circuitmenu_sub_circuits=0x7f020007;
-        public static final int circuitmenu_wire=0x7f020008;
-        public static final int sources_current=0x7f020009;
-        public static final int sources_dependent_current=0x7f02000a;
-        public static final int sources_dependent_voltage=0x7f02000b;
-        public static final int sources_ground=0x7f02000c;
-        public static final int sources_vcc=0x7f02000d;
-        public static final int sources_voltage=0x7f02000e;
+        public static final int circuitelement_background=0x7f020001;
+        public static final int circuitmenu_border=0x7f020002;
+        public static final int circuitmenu_diodes_and_transistors=0x7f020003;
+        public static final int circuitmenu_focusedborder=0x7f020004;
+        public static final int circuitmenu_hand=0x7f020005;
+        public static final int circuitmenu_rlc=0x7f020006;
+        public static final int circuitmenu_select=0x7f020007;
+        public static final int circuitmenu_sources_and_ground=0x7f020008;
+        public static final int circuitmenu_sub_circuits=0x7f020009;
+        public static final int circuitmenu_wire=0x7f02000a;
+        public static final int sources_current=0x7f02000b;
+        public static final int sources_dependent_current=0x7f02000c;
+        public static final int sources_dependent_voltage=0x7f02000d;
+        public static final int sources_ground=0x7f02000e;
+        public static final int sources_vcc=0x7f02000f;
+        public static final int sources_voltage=0x7f020010;
     }
     public static final class id {
         public static final int circuit_design_canvas=0x7f060007;
@@ -54,4 +64,33 @@ public final class R {
         public static final int CircuitMenuItemImage_Element=0x7f050004;
         public static final int CircuitMenuItemText=0x7f050002;
     }
+    public static final class styleable {
+        /** Attributes that can be used with a CircuitElementViewState.
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #CircuitElementViewState_state_draggable sriracha.frontend:state_draggable}</code></td><td></td></tr>
+           </table>
+           @see #CircuitElementViewState_state_draggable
+         */
+        public static final int[] CircuitElementViewState = {
+            0x7f010000
+        };
+        /**
+          <p>This symbol is the offset where the {@link sriracha.frontend.R.attr#state_draggable}
+          attribute's value can be found in the {@link #CircuitElementViewState} array.
+
+
+          <p>Must be a boolean value, either "<code>true</code>" or "<code>false</code>".
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name android:state_draggable
+        */
+        public static final int CircuitElementViewState_state_draggable = 0;
+    };
 }

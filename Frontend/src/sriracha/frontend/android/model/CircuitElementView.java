@@ -3,20 +3,25 @@ package sriracha.frontend.android.model;
 import android.content.*;
 import android.view.*;
 import android.widget.*;
+import sriracha.frontend.*;
 import sriracha.frontend.model.*;
 
-public abstract class CircuitElementView extends ImageView
+public abstract class CircuitElementView extends ImageView implements View.OnTouchListener, View.OnLongClickListener
 {
+    private static final int[] STATE_DRAGGABLE = {R.attr.state_draggable};
+
     private static final int INVALID_POINTER_ID = -1;
 
     private CircuitElement element;
+
+    private boolean isDraggable;
 
     private float positionX;
     private float positionY;
 
     private float touchDownDeltaX;
     private float touchDownDeltaY;
-    private int activePointerId;
+    private int activePointerId = INVALID_POINTER_ID;
 
     public abstract int getDrawableId();
 
@@ -28,53 +33,74 @@ public abstract class CircuitElementView extends ImageView
         this.positionX = positionX;
         this.positionY = positionY;
 
-        setImageResource(getDrawableId());
         setFocusable(true);
+        setImageResource(getDrawableId());
+        setBackgroundResource(R.drawable.circuitelement_background);
+
+        setOnTouchListener(this);
+        setOnLongClickListener(this);
+    }
+
+    public boolean isDraggable() { return isDraggable; }
+    public void setDraggable(boolean draggable)
+    {
+        isDraggable = draggable;
+        if (!isDraggable)
+            activePointerId = INVALID_POINTER_ID;
+        refreshDrawableState();
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event)
+    public boolean onTouch(View view, MotionEvent motionEvent)
     {
-        switch (event.getAction() & MotionEvent.ACTION_MASK)
+        switch (motionEvent.getAction() & MotionEvent.ACTION_MASK)
         {
             case MotionEvent.ACTION_DOWN:
             {
-                touchDownDeltaX = event.getX();
-                touchDownDeltaY = event.getY();
+                touchDownDeltaX = motionEvent.getX();
+                touchDownDeltaY = motionEvent.getY();
 
                 // Save the ID of this pointer
-                activePointerId = event.getPointerId(0);
+                activePointerId = motionEvent.getPointerId(0);
+
+                if (!isDraggable())
+                    return false; // Let the parent take care of the event.
+
                 break;
             }
 
             case MotionEvent.ACTION_MOVE:
             {
+                if (!isDraggable())
+                    return false; // Let the parent take care of the event.
+
                 if (activePointerId == INVALID_POINTER_ID)
                     break;
 
                 // Find the index of the active pointer and fetch its position
-                int pointerIndex = event.findPointerIndex(activePointerId);
-                positionX += event.getX(pointerIndex) - touchDownDeltaX;
-                positionY += event.getY(pointerIndex) - touchDownDeltaY;
+                int pointerIndex = motionEvent.findPointerIndex(activePointerId);
+                positionX += motionEvent.getX(pointerIndex) - touchDownDeltaX;
+                positionY += motionEvent.getY(pointerIndex) - touchDownDeltaY;
 
                 updatePosition();
                 break;
             }
 
             case MotionEvent.ACTION_UP:
-                activePointerId = INVALID_POINTER_ID;
-                break;
-
             case MotionEvent.ACTION_CANCEL:
-                activePointerId = INVALID_POINTER_ID;
-                break;
-
             case MotionEvent.ACTION_POINTER_UP:
-                activePointerId = INVALID_POINTER_ID;
+                setDraggable(false);
                 break;
         }
 
         return true;
+    }
+
+    @Override
+    public boolean onLongClick(View view)
+    {
+        setDraggable(true);
+        return false;
     }
 
     public void updatePosition()
@@ -83,5 +109,14 @@ public abstract class CircuitElementView extends ImageView
         params.leftMargin = (int) positionX;
         params.topMargin = (int) positionY;
         setLayoutParams(params);
+    }
+
+    @Override
+    public int[] onCreateDrawableState(int extraSpace)
+    {
+        final int[] drawableState = super.onCreateDrawableState(extraSpace + 2);
+        if (isDraggable())
+            mergeDrawableStates(drawableState, STATE_DRAGGABLE);
+        return drawableState;
     }
 }

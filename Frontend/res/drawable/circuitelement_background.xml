@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res/sriracha.frontend">
+    <item app:state_draggable="true" android:drawable="@drawable/circuitmenu_focusedborder"/>
+    <item android:drawable="@drawable/circuitmenu_border"/>
+</selector>

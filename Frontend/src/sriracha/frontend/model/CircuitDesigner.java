@@ -1,30 +1,35 @@
 package sriracha.frontend.model;
 
-import sriracha.frontend.android.model.*;
-
 public class CircuitDesigner
 {
     public enum CursorState
     {
-        HAND, SELECTION, ELEMENT
+        ELEMENT, HAND, SELECTION, WIRE
+    }
+
+    private enum CanvasState
+    {
+        IDLE, DRAWING_WIRE
     }
 
     private CursorState cursor = CursorState.HAND;
+    private CanvasState canvasState = CanvasState.IDLE;
     private int selectedElementId;
-    private CircuitElementActivator activator;
-
-    public CircuitDesigner(CircuitElementActivator activator)
-    {
-        this.activator = activator;
-    }
 
     public CursorState getCursor() { return cursor; }
     public void setCursorToHand() { cursor = CursorState.HAND; }
     public void setCursorToSelection() { cursor = CursorState.SELECTION; }
+    public void setCursorToWire() { cursor = CursorState.WIRE; }
+
+    public int getSelectedElementId()
+    {
+        return selectedElementId;
+    }
 
     /**
      * Set a circuit element as selected so that tapping on the canvas instantiates it.
      * Do not set cursor to ELEMENT anywhere else.
+     *
      * @param circuitElementId
      */
     public void selectCircuitElement(int circuitElementId)
@@ -33,8 +38,4 @@ public class CircuitDesigner
         cursor = CursorState.ELEMENT;
     }
 
-    public CircuitElementView instantiateElement(float positionX, float positionY)
-    {
-        return cursor == CursorState.ELEMENT ? activator.instantiateElement(selectedElementId, positionX, positionY) : null;
-    }
 }
