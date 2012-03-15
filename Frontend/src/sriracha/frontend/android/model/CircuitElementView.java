@@ -27,10 +27,11 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
 
     private float touchDownDeltaX;
     private float touchDownDeltaY;
+    private float touchDownRawX;
+    private float touchDownRawY;
 
     private int activePointerId = INVALID_POINTER_ID;
     private int possibleClickPointerId = INVALID_POINTER_ID;
-    private long lastClickTime;
 
     public abstract int getDrawableId();
 
@@ -42,7 +43,7 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
         this.positionX = positionX;
         this.positionY = positionY;
 
-        setFocusable(true);
+        setFocusableInTouchMode(true);
         setImageResource(getDrawableId());
         setBackgroundResource(R.drawable.circuitelement_background);
 
@@ -91,6 +92,9 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
                 touchDownDeltaX = motionEvent.getX();
                 touchDownDeltaY = motionEvent.getY();
 
+                touchDownRawX = motionEvent.getRawX();
+                touchDownRawY = motionEvent.getRawY();
+
                 // Save the ID of this pointer
                 activePointerId = motionEvent.getPointerId(0);
                 possibleClickPointerId = activePointerId;
@@ -103,7 +107,9 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
 
             case MotionEvent.ACTION_MOVE:
             {
-                possibleClickPointerId = INVALID_POINTER_ID;
+                float distance = new PointF(motionEvent.getRawX() - touchDownRawX, motionEvent.getRawY() - touchDownRawY).length();
+                if (distance > 8)
+                    possibleClickPointerId = INVALID_POINTER_ID;
 
                 if (!isDraggable())
                     return false;
@@ -140,14 +146,13 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
 
     public void onClick(View view)
     {
-        lastClickTime = System.currentTimeMillis();
         setElementSelected(!isElementSelected());
     }
 
     @Override
     public boolean onLongClick(View view)
     {
-        if (System.currentTimeMillis() - lastClickTime < 600)
+        if (activePointerId == INVALID_POINTER_ID)
             return false;
 
         setDraggable(true);
