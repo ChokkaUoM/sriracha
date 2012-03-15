@@ -63,7 +63,7 @@ public class SubCircuit extends CircuitElement
                 copy = e.buildCopy(nname, null);
             } else
             {
-                //if there is a refernced element find the local copy for it.
+                //if there is a referenced element find the local copy for it.
                 CircuitElement refCopy = elements.get(nameElement(ref.name));
                 copy = e.buildCopy(nname, refCopy);
             }
@@ -72,7 +72,7 @@ public class SubCircuit extends CircuitElement
             int[] external = new int[internal.length];
             for (int i = 0; i < internal.length; i++)
             {
-                external[i] = nodes.get(internal[i]);
+                external[i] = internal[i] == -1 ? -1 : nodes.get(internal[i]);
             }
             copy.setNodeIndices(external);
 

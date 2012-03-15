@@ -6,7 +6,8 @@ import java.util.HashMap;
 /**
  * Information necessary for building a new subcircuit object
  */
-public class SubCircuitTemplate implements ICollectElements {
+public class SubCircuitTemplate implements ICollectElements
+{
 
     /**
      * corresponds to the name given to the subcircuit definition in the netlist
@@ -37,10 +38,12 @@ public class SubCircuitTemplate implements ICollectElements {
      * @param name      - name given to the subcircuit definition in the netlist
      * @param nodeCount - number of external nodes in subcircuit template
      */
-    public SubCircuitTemplate(String name, int nodeCount) {
+    public SubCircuitTemplate(String name, int nodeCount)
+    {
         this.name = name;
         this.nodeCount = nodeCount;
         internalNodeMap = new HashMap<String, Integer>();
+        internalNodeMap.put("0", -1);
         elements = new ArrayList<CircuitElement>();
     }
 
@@ -51,7 +54,8 @@ public class SubCircuitTemplate implements ICollectElements {
      * @param element - new element with nodes numbered with internal system.
      */
     @Override
-    public void addElement(CircuitElement element) {
+    public void addElement(CircuitElement element)
+    {
         elements.add(element);
     }
 
@@ -65,9 +69,11 @@ public class SubCircuitTemplate implements ICollectElements {
      * @return index for node
      */
     @Override
-    public int assignNodeMapping(String nodeName) {
-        if (!internalNodeMap.containsKey(nodeName)) {
-            internalNodeMap.put(nodeName, internalNodeMap.size());
+    public int assignNodeMapping(String nodeName)
+    {
+        if (!internalNodeMap.containsKey(nodeName))
+        {
+            internalNodeMap.put(nodeName, internalNodeMap.size() - 1);
         }
         return internalNodeMap.get(nodeName);
     }
@@ -77,21 +83,25 @@ public class SubCircuitTemplate implements ICollectElements {
      *
      * @return number of external nodes
      */
-    public int getExternalNodeCount() {
+    public int getExternalNodeCount()
+    {
         return nodeCount;
     }
 
     /**
      * Returns the number of internal nodes (total - external)
+     * does not count ground if present
      *
      * @return internal node count
      */
-    public int getInternalNodeCount() {
-        return internalNodeMap.size() - nodeCount;
+    public int getInternalNodeCount()
+    {
+        return internalNodeMap.size() - nodeCount - 1;
     }
 
 
-    public ArrayList<CircuitElement> getElements() {
+    public ArrayList<CircuitElement> getElements()
+    {
         return elements;
     }
 }

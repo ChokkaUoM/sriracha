@@ -60,8 +60,7 @@ public class DCAnalysis extends Analysis
         } else
         {
             //short mode
-            double step = sweep.getStep() == 1 ? 0 : (sweep.getEndValue() - sweep.getStartValue()) / (sweep.getStep() - 1);
-            for (double i = sweep.getStartValue(); i <= sweep.getEndValue(); i += step)
+            for (double i = sweep.getStartValue(); i <= sweep.getEndValue(); i += sweep.getStep())
             {
                 equation = originalEquation.clone();//this system could be optimized at some point
                 sweep.getSource().modifyStamp(i, equation);

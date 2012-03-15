@@ -66,12 +66,17 @@ public class CircuitBuilder
                 ArrayList<String> subCircuitLines = new ArrayList<String>();
                 while (!lines[i].startsWith(".ENDS"))
                 {
+                    if (lines[i].length() == 0 || lines[i].charAt(0) == '*' || Character.isWhitespace(lines[i].charAt(0)))
+                    {
+                        i++;
+                        continue;
+                    }
+
+
                     subCircuitLines.add(lines[i]);
                     i++;
                 }
-                Collection<String> sslines = subCircuitLines.subList(startingLine, i);
-                parseSubCircuitTemplate(sslines.toArray(new String[sslines.size()]));
-                i++;    // advance past the .ENDS line
+                parseSubCircuitTemplate(subCircuitLines.toArray(new String[subCircuitLines.size()]));
             } else if (line.startsWith(".AC") || line.startsWith(".DC"))
             {
                 analysisTypes.add(parseAnalysis(line));
