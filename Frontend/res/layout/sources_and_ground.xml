@@ -51,6 +51,7 @@
         <ImageView style="@style/CircuitMenuItemImage.Element"
                    android:layout_centerInParent="true"
                    android:src="@drawable/circuitmenu_wire"
+                   android:onClick="wireOnClick"
                 />
     </RelativeLayout>
 

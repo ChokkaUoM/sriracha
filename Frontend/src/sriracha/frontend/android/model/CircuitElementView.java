@@ -6,22 +6,28 @@ import android.widget.*;
 import sriracha.frontend.*;
 import sriracha.frontend.model.*;
 
-public abstract class CircuitElementView extends ImageView implements View.OnTouchListener, View.OnLongClickListener
+public abstract class CircuitElementView extends ImageView implements View.OnTouchListener/*, View.OnClickListener*/, View.OnLongClickListener
 {
     private static final int[] STATE_DRAGGABLE = {R.attr.state_draggable};
+    private static final int[] STATE_SELECTED = {R.attr.state_selected};
 
     private static final int INVALID_POINTER_ID = -1;
 
     private CircuitElement element;
 
     private boolean isDraggable;
+    private boolean isElementSelected;
+    private OnSelectedListener onSelectedListener;
 
     private float positionX;
     private float positionY;
 
     private float touchDownDeltaX;
     private float touchDownDeltaY;
+
     private int activePointerId = INVALID_POINTER_ID;
+    private int possibleClickPointerId = INVALID_POINTER_ID;
+    private long lastClickTime;
 
     public abstract int getDrawableId();
 
@@ -38,6 +44,7 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
         setBackgroundResource(R.drawable.circuitelement_background);
 
         setOnTouchListener(this);
+        //setOnClickListener(this);
         setOnLongClickListener(this);
     }
 
@@ -48,6 +55,20 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
         if (!isDraggable)
             activePointerId = INVALID_POINTER_ID;
         refreshDrawableState();
+    }
+
+    public boolean isElementSelected() { return isElementSelected; }
+    public void setElementSelected(boolean elementSelected)
+    {
+        isElementSelected = elementSelected;
+        if (elementSelected && onSelectedListener != null)
+            onSelectedListener.onSelected(this);
+        refreshDrawableState();
+    }
+
+    public void setOnSelectedListener(OnSelectedListener onSelectedListener)
+    {
+        this.onSelectedListener = onSelectedListener;
     }
 
     @Override
@@ -62,17 +83,20 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
 
                 // Save the ID of this pointer
                 activePointerId = motionEvent.getPointerId(0);
+                possibleClickPointerId = activePointerId;
 
                 if (!isDraggable())
-                    return false; // Let the parent take care of the event.
+                    return false;
 
                 break;
             }
 
             case MotionEvent.ACTION_MOVE:
             {
+                possibleClickPointerId = INVALID_POINTER_ID;
+
                 if (!isDraggable())
-                    return false; // Let the parent take care of the event.
+                    return false;
 
                 if (activePointerId == INVALID_POINTER_ID)
                     break;
@@ -87,6 +111,14 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
             }
 
             case MotionEvent.ACTION_UP:
+                setDraggable(false);
+                if (possibleClickPointerId != INVALID_POINTER_ID)
+                {
+                    possibleClickPointerId = INVALID_POINTER_ID;
+                    onClick(this);
+                }
+                break;
+
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_POINTER_UP:
                 setDraggable(false);
@@ -96,10 +128,21 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
         return true;
     }
 
+    //@Override
+    public void onClick(View view)
+    {
+        lastClickTime = System.currentTimeMillis();
+        setElementSelected(!isElementSelected());
+    }
+
     @Override
     public boolean onLongClick(View view)
     {
+        if (System.currentTimeMillis() - lastClickTime < 600)
+            return false;
+
         setDraggable(true);
+        setElementSelected(false);
         return false;
     }
 
@@ -117,6 +160,13 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
         final int[] drawableState = super.onCreateDrawableState(extraSpace + 2);
         if (isDraggable())
             mergeDrawableStates(drawableState, STATE_DRAGGABLE);
+        if (isElementSelected())
+            mergeDrawableStates(drawableState, STATE_SELECTED);
         return drawableState;
+    }
+
+    public interface OnSelectedListener
+    {
+        public void onSelected(View view);
     }
 }

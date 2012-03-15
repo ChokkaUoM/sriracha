@@ -2,5 +2,6 @@
 <resources>
     <declare-styleable name="CircuitElementViewState">
         <attr name="state_draggable" format="boolean"/>
+        <attr name="state_selected" format="boolean"/>
     </declare-styleable>
 </resources>

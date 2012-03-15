@@ -51,6 +51,11 @@ public class MainActivity extends Activity
                 child.setVisibility(View.GONE);
         }
     }
+    
+    public void wireOnClick(View view)
+    {
+        circuitDesigner.setCursorToWire();
+    }
 
     public void circuitElementOnClick(View view)
     {
