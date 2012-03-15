@@ -7,7 +7,7 @@ public class CircuitDesigner
         ELEMENT, HAND, SELECTION, WIRE
     }
 
-    private enum CanvasState
+    public enum CanvasState
     {
         IDLE, DRAWING_WIRE
     }
@@ -20,6 +20,12 @@ public class CircuitDesigner
     public void setCursorToHand() { cursor = CursorState.HAND; }
     public void setCursorToSelection() { cursor = CursorState.SELECTION; }
     public void setCursorToWire() { cursor = CursorState.WIRE; }
+
+    public CanvasState getCanvasState() { return canvasState; }
+    public void setCanvasState(CanvasState canvasState)
+    {
+        this.canvasState = canvasState;
+    }
 
     public int getSelectedElementId()
     {

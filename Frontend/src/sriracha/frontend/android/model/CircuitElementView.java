@@ -1,12 +1,13 @@
 package sriracha.frontend.android.model;
 
 import android.content.*;
+import android.graphics.*;
 import android.view.*;
 import android.widget.*;
 import sriracha.frontend.*;
 import sriracha.frontend.model.*;
 
-public abstract class CircuitElementView extends ImageView implements View.OnTouchListener/*, View.OnClickListener*/, View.OnLongClickListener
+public abstract class CircuitElementView extends ImageView implements View.OnTouchListener, View.OnLongClickListener
 {
     private static final int[] STATE_DRAGGABLE = {R.attr.state_draggable};
     private static final int[] STATE_SELECTED = {R.attr.state_selected};
@@ -17,7 +18,9 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
 
     private boolean isDraggable;
     private boolean isElementSelected;
+
     private OnSelectedListener onSelectedListener;
+    private OnDrawListener onDrawListener;
 
     private float positionX;
     private float positionY;
@@ -44,9 +47,11 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
         setBackgroundResource(R.drawable.circuitelement_background);
 
         setOnTouchListener(this);
-        //setOnClickListener(this);
         setOnLongClickListener(this);
     }
+
+    public float getPositionX() { return positionX; }
+    public float getPositionY() { return positionY; }
 
     public boolean isDraggable() { return isDraggable; }
     public void setDraggable(boolean draggable)
@@ -69,6 +74,11 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
     public void setOnSelectedListener(OnSelectedListener onSelectedListener)
     {
         this.onSelectedListener = onSelectedListener;
+    }
+
+    public void setOnDrawListener(OnDrawListener onDrawListener)
+    {
+        this.onDrawListener = onDrawListener;
     }
 
     @Override
@@ -128,7 +138,6 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
         return true;
     }
 
-    //@Override
     public void onClick(View view)
     {
         lastClickTime = System.currentTimeMillis();
@@ -165,8 +174,22 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
         return drawableState;
     }
 
+    @Override
+    protected void onDraw(Canvas canvas)
+    {
+        super.onDraw(canvas);
+        if (onDrawListener != null)
+            onDrawListener.onDraw(canvas);
+    }
+
+
     public interface OnSelectedListener
     {
         public void onSelected(View view);
+    }
+
+    public interface OnDrawListener
+    {
+        public void onDraw(Canvas canvas);
     }
 }

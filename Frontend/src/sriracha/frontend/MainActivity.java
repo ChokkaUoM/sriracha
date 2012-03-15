@@ -55,6 +55,7 @@ public class MainActivity extends Activity
     public void wireOnClick(View view)
     {
         circuitDesigner.setCursorToWire();
+
     }
 
     public void circuitElementOnClick(View view)
