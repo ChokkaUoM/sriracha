@@ -51,6 +51,8 @@
         <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
                    android:layout_centerInParent="true"
                    android:src="@drawable/circuitmenu_wire"
+                   android:tag="@string/selectable"
+                   android:id="@+id/wire"
                    android:onClick="wireOnClick"
                 />
     </RelativeLayout>
@@ -63,6 +65,10 @@
                 />
         <ImageView style="@style/CircuitMenuItemImage"
                    android:src="@drawable/circuitmenu_hand"
+                   android:background="@drawable/circuitmenu_itembackground"
+                   android:tag="@string/selectable"
+                   android:id="@+id/hand"
+                   android:onClick="handOnClick"
                 />
     </RelativeLayout>
 </LinearLayout>

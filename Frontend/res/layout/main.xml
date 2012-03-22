@@ -7,6 +7,7 @@
                     android:id="@+id/circuit_menu_container">
         <include android:id="@+id/circuit_menu" layout="@layout/circuit_menu"/>
         <include android:id="@+id/sources_and_ground" layout="@layout/sources_and_ground"/>
+        <include android:id="@+id/element_properties" layout="@layout/element_properties"/>
     </RelativeLayout>
     <RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
                     android:background="#300"

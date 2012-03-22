@@ -17,6 +17,9 @@ public class CircuitWireView extends View
         this.end = end;
     }
 
+    public CircuitElementPortView getStart() { return start; }
+    public CircuitElementPortView getEnd() { return end; }
+
     @Override
     protected void onDraw(Canvas canvas)
     {

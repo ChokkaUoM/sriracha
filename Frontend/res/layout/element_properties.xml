@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="wrap_content" android:layout_height="fill_parent"
+              android:orientation="vertical">
+    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
+        <ImageView style="@style/CircuitMenuItemImage.Element"
+                   android:layout_centerInParent="true"
+                   android:src="@drawable/back_button"
+                   android:onClick="sourcesAndGroundBackButtonOnClick"
+                />
+    </RelativeLayout>
+
+    <RelativeLayout style="@style/CircuitMenuItem.SubMenu"
+                    android:onClick="deleteOnClick"
+>
+        <TextView style="@style/CircuitMenuItemImage.Element"
+                   android:layout_alignParentLeft="true"
+                   android:text="Copy"
+                />
+        <TextView style="@style/CircuitMenuItemImage.Element"
+                   android:layout_alignParentRight="true"
+                   android:text="Delete"
+                />
+    </RelativeLayout>
+</LinearLayout>

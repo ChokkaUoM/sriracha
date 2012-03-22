@@ -25,7 +25,7 @@
         <item name="android:background">#0000</item>
     </style>
     <style name="CircuitMenuItemImage.Element">
-        <item name="android:background">@drawable/circuitmenu_border</item>
+        <item name="android:background">@drawable/circuitmenu_itembackground</item>
         <item name="android:layout_alignParentRight">false</item>
     </style>
 </resources>
