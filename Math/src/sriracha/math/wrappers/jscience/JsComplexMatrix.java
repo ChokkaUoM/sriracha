@@ -4,29 +4,38 @@ import org.jscience.mathematics.number.Complex;
 import org.jscience.mathematics.vector.ComplexMatrix;
 import sriracha.math.interfaces.*;
 
+import java.text.DecimalFormat;
 
-class JsComplexMatrix extends JsMatrix implements IComplexMatrix {
+
+class JsComplexMatrix extends JsMatrix implements IComplexMatrix
+{
 
 
     /**
      * Creates an mxn Complex matrix
      */
-    public JsComplexMatrix(int m, int n) {
+    public JsComplexMatrix(int m, int n)
+    {
         matrix = buildZeroMatrix(m, n);
     }
 
-    JsComplexMatrix(ComplexMatrix m) {
+    JsComplexMatrix(ComplexMatrix m)
+    {
         matrix = m;
     }
 
-    ComplexMatrix getMatrix() {
+    ComplexMatrix getMatrix()
+    {
         return (ComplexMatrix) matrix;
     }
 
-    private ComplexMatrix buildZeroMatrix(int m, int n) {
+    private ComplexMatrix buildZeroMatrix(int m, int n)
+    {
         Complex arr[][] = new Complex[m][n];
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
                 arr[i][j] = Complex.ZERO;
             }
         }
@@ -36,35 +45,64 @@ class JsComplexMatrix extends JsMatrix implements IComplexMatrix {
 
 
     @Override
-    public IComplex getValue(int i, int j) {
+    public IComplex getValue(int i, int j)
+    {
         return new JsComplex(getMatrix().get(i, j));
     }
 
     @Override
-    public void setValue(int i, int j, IComplex value) {
+    public void setValue(int i, int j, IComplex value)
+    {
         matrix.set(i, j, JsComplex.make(value));
 
     }
 
     @Override
-    public void addValue(int i, int j, IComplex value) {
+    public void addValue(int i, int j, IComplex value)
+    {
         Complex previousValue = (Complex) matrix.get(i, j);
         matrix.set(i, j, previousValue.plus(JsComplex.make(value)));
     }
 
     @Override
-    public IComplexVector solve(IVector b) {
-        if (b instanceof JsRealVector) {
+    public IComplexVector solve(IVector b)
+    {
+        if (b instanceof JsRealVector)
+        {
             JsComplexVector v = JsVector.makeComplex((JsRealVector) b);
             return new JsComplexVector(getMatrix().solve(v.getVector()));
-        } else {
+        } else
+        {
             return new JsComplexVector(getMatrix().solve(((JsComplexVector) b).getVector()));
         }
     }
 
     @Override
-    public IMatrix clone() {
+    public IMatrix clone()
+    {
         return new JsComplexMatrix(getMatrix().copy());
+    }
+
+
+    @Override
+    public String toString()
+    {
+        DecimalFormat format = new DecimalFormat("0.000E00");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < getMatrix().getNumberOfRows(); i++)
+        {
+            for (int j = 0; j < matrix.getNumberOfColumns(); j++)
+            {
+                Complex val = getMatrix().get(i, j);
+
+                sb.append(format.format(val.getReal()));
+                sb.append(" + ");
+                sb.append(format.format(val.getImaginary()));
+                sb.append("j\t");
+            }
+            sb.append('\n');
+        }
+        return sb.toString();
     }
 
 

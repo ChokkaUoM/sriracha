@@ -3,6 +3,7 @@ package sriracha.simulator.solver.analysis.dc;
 import sriracha.math.MathActivator;
 import sriracha.math.interfaces.IRealMatrix;
 import sriracha.math.interfaces.IRealVector;
+import sriracha.simulator.Options;
 import sriracha.simulator.model.Circuit;
 import sriracha.simulator.model.CircuitElement;
 
@@ -37,6 +38,14 @@ public class DCEquation
 
     public IRealVector solve()
     {
+
+        if (Options.isPrintMatrix())
+        {
+            System.out.println(C);
+            System.out.println("=\n");
+            System.out.println(b);
+        }
+
         return C.solve(b);
     }
 

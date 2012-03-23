@@ -1,4 +1,5 @@
 import sriracha.simulator.IPrintData;
+import sriracha.simulator.Options;
 import sriracha.simulator.Simulator;
 import sriracha.simulator.parser.CircuitBuilder;
 import sriracha.simulator.solver.analysis.Analysis;
@@ -36,8 +37,18 @@ public class Console
                         System.exit(1);
                     }
                     gnuplot(args[1], args[2]);
-                } else if (opt.equals("b"))
+                } else if (opt.equals("b") || opt.equals("d") || opt.equals("p"))
                 {
+                    if (opt.equals("d") || opt.equals("p"))
+                    {
+                        if (opt.equals("d"))
+                        {
+                            Options.setPrintCircuit(true);
+                            Options.setPrintMatrix(true);
+                        }
+                        Options.setPrintProgress(true);
+                    }
+
                     //batch, run file contents and exit
                     if (args.length < 2)
                     {

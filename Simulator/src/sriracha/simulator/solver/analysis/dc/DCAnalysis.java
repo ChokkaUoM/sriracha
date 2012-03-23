@@ -1,5 +1,6 @@
 package sriracha.simulator.solver.analysis.dc;
 
+import sriracha.simulator.Options;
 import sriracha.simulator.model.Circuit;
 import sriracha.simulator.solver.analysis.Analysis;
 import sriracha.simulator.solver.analysis.AnalysisType;
@@ -44,13 +45,17 @@ public class DCAnalysis extends Analysis
             for (double j = sweep2.getStartValue(); j <= sweep2.getEndValue(); j += sweep2.getStep())
             {
 
+
                 sweepEquation = originalEquation.clone();
                 sweep2.getSource().modifyStamp(j, sweepEquation);
 
                 for (double i = sweep.getStartValue(); i <= sweep.getEndValue(); i += sweep.getStep())
                 {
+                    if (Options.isPrintProgress()) System.out.println("DC cloning eq");
                     equation = sweepEquation.clone();//this system could be optimized at some point
+
                     sweep.getSource().modifyStamp(i, equation);
+                    if (Options.isPrintProgress()) System.out.println("DC solving point");
                     results.addVector(i, equation.solve());
 
                 }
@@ -62,8 +67,10 @@ public class DCAnalysis extends Analysis
             //short mode
             for (double i = sweep.getStartValue(); i <= sweep.getEndValue(); i += sweep.getStep())
             {
+                if (Options.isPrintProgress()) System.out.println("DC cloning eq");
                 equation = originalEquation.clone();//this system could be optimized at some point
                 sweep.getSource().modifyStamp(i, equation);
+                if (Options.isPrintProgress()) System.out.println("DC solving point");
                 results.addVector(i, equation.solve());
 
             }

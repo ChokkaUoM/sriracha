@@ -7,24 +7,32 @@ import sriracha.math.interfaces.IComplex;
 import sriracha.math.interfaces.IComplexVector;
 import sriracha.math.interfaces.IVector;
 
-class JsComplexVector extends JsVector implements IComplexVector {
+import java.text.DecimalFormat;
 
-    public JsComplexVector(int dimension) {
+class JsComplexVector extends JsVector implements IComplexVector
+{
+
+    public JsComplexVector(int dimension)
+    {
         vector = buildZeroVector(dimension);
     }
 
-    JsComplexVector(ComplexVector vector) {
+    JsComplexVector(ComplexVector vector)
+    {
         this.vector = vector;
     }
 
-    JsComplexVector(Vector<Complex> vector) {
+    JsComplexVector(Vector<Complex> vector)
+    {
         this.vector = ComplexVector.valueOf(vector);
     }
 
 
-    private ComplexVector buildZeroVector(int dim) {
+    private ComplexVector buildZeroVector(int dim)
+    {
         Complex arr[] = new Complex[dim];
-        for (int i = 0; i < dim; i++) {
+        for (int i = 0; i < dim; i++)
+        {
             arr[i] = Complex.ZERO;
         }
 
@@ -33,48 +41,74 @@ class JsComplexVector extends JsVector implements IComplexVector {
 
 
     @Override
-    public IVector times(double d) {
+    public IVector times(double d)
+    {
         return new JsComplexVector(getVector().times(Complex.valueOf(d, 0)));
     }
 
     @Override
-    public IVector opposite() {
+    public IVector opposite()
+    {
         return new JsComplexVector(getVector().opposite());
     }
 
     @Override
-    public IVector plus(IVector v) {
-        if (v instanceof JsComplexVector) {
+    public IVector plus(IVector v)
+    {
+        if (v instanceof JsComplexVector)
+        {
             return new JsComplexVector(((JsComplexVector) v).getVector().plus(getVector()));
-        } else if (v instanceof JsRealVector) {
+        } else if (v instanceof JsRealVector)
+        {
             return plus(makeComplex((JsRealVector) v));
         }
         return null;
     }
 
     @Override
-    ComplexVector getVector() {
+    ComplexVector getVector()
+    {
         return (ComplexVector) vector;
     }
 
     @Override
-    public IComplex getValue(int i) {
+    public IComplex getValue(int i)
+    {
         return new JsComplex(((ComplexVector) vector).get(i));
     }
 
     @Override
-    public void setValue(int i, IComplex value) {
+    public void setValue(int i, IComplex value)
+    {
         getVector().set(i, JsComplex.make(value));
     }
 
     @Override
-    public void addValue(int i, IComplex value) {
+    public void addValue(int i, IComplex value)
+    {
 
         getVector().set(i, getVector().get(i).plus(JsComplex.make(value)));
     }
 
     @Override
-    public IVector clone() {
+    public String toString()
+    {
+        DecimalFormat format = new DecimalFormat("0.000E00");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < vector.getDimension(); i++)
+        {
+            Complex val = getVector().get(i);
+            sb.append(format.format(val.getReal()));
+            sb.append(" + ");
+            sb.append(format.format(val.getImaginary()));
+            sb.append("j\n");
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public IVector clone()
+    {
         return new JsComplexVector(ComplexVector.valueOf(vector.copy()));
     }
 }

@@ -60,7 +60,11 @@ public class Simulator implements ISimulator
     {
         this.circuit = circuit;
         circuit.assignAdditionalVarIndices();
-        //    System.out.println(circuit);
+        if (Options.isPrintCircuit())
+        {
+            System.out.println(circuit);
+        }
+
         saveAll();
 
     }

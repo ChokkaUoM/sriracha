@@ -112,6 +112,7 @@ abstract class JsMatrix implements IMatrix
         {
             for (int j = 0; j < matrix.getNumberOfColumns(); j++)
             {
+
                 sb.append(matrix.get(i, j) + "\t");
             }
             sb.append('\n');

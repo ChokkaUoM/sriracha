@@ -5,6 +5,7 @@ import sriracha.math.interfaces.IComplex;
 import sriracha.math.interfaces.IComplexMatrix;
 import sriracha.math.interfaces.IComplexVector;
 import sriracha.math.interfaces.IRealMatrix;
+import sriracha.simulator.Options;
 import sriracha.simulator.model.Circuit;
 import sriracha.simulator.model.CircuitElement;
 
@@ -56,8 +57,14 @@ public class ACEquation
     {
 
         IComplexMatrix a = buildMatrixA(frequency);
-        //  System.out.println(C);
-        ///   System.out.println(b);
+
+        if (Options.isPrintMatrix())
+        {
+            System.out.println(a);
+            System.out.println("=\n");
+            System.out.println(b);
+        }
+
         return a.solve(b);
     }
 

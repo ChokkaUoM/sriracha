@@ -490,7 +490,7 @@ public class CircuitBuilder
     }
 
     /**
-     * parses a double and allows for Spice compatible postfixes
+     * parses a double and allows for Spice compatible postfixes (case insensitive)
      * T = 10^12
      * G = 10^9
      * Meg = 10^6
@@ -520,18 +520,22 @@ public class CircuitBuilder
 
         double factor = 1;
 
-        if (str2.startsWith("T"))
+        str2 = str2.toLowerCase();
+
+        if (str2.startsWith("t"))
             factor = Math.pow(10, 12);
-        else if (str2.startsWith("G"))
+        else if (str2.startsWith("g"))
             factor = Math.pow(10, 9);
-        else if (str2.startsWith("Meg"))
+        else if (str2.startsWith("meg"))
             factor = Math.pow(10, 6);
-        else if (str2.startsWith("K") || str2.startsWith("k"))
+        else if (str2.startsWith("k"))
             factor = Math.pow(10, 3);
         else if (str2.startsWith("m"))
             factor = Math.pow(10, -3);
         else if (str2.startsWith("u"))
             factor = Math.pow(10, -6);
+        else if (str2.startsWith("n"))
+            factor = Math.pow(10, -9);
         else if (str2.startsWith("p"))
             factor = Math.pow(10, -12);
         else if (str2.startsWith("f"))

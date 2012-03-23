@@ -1,6 +1,7 @@
 package sriracha.simulator.solver.analysis.ac;
 
 import sriracha.math.interfaces.IComplexVector;
+import sriracha.simulator.Options;
 import sriracha.simulator.model.Circuit;
 import sriracha.simulator.solver.analysis.Analysis;
 import sriracha.simulator.solver.analysis.AnalysisType;
@@ -55,6 +56,7 @@ public final class ACAnalysis extends Analysis
                 double interval = range / (points - 1);
                 for (int i = 0; i < points && currentFrequency <= fEnd; i++)
                 {
+                    if (Options.isPrintProgress()) System.out.println("AC solving point");
                     IComplexVector soln = equation.solve(currentFrequency);
                     results.addVector(currentFrequency, soln);
                     currentFrequency += interval;
@@ -90,6 +92,7 @@ public final class ACAnalysis extends Analysis
                     for (int i = 0; i < points; i++)
                     {
                         double omega = fStart + interval * i;
+                        if (Options.isPrintProgress()) System.out.println("AC solving point");
                         IComplexVector soln = equation.solve(omega);
                         results.addVector(omega, soln);
 
