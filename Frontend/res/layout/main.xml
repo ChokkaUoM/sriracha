@@ -9,8 +9,8 @@
         <include android:id="@+id/sources_and_ground" layout="@layout/sources_and_ground"/>
         <include android:id="@+id/element_properties" layout="@layout/element_properties"/>
     </RelativeLayout>
-    <RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+    <sriracha.frontend.android.model.CircuitDesignerCanvas android:layout_width="fill_parent" android:layout_height="fill_parent"
                     android:background="#300"
                     android:id="@+id/circuit_design_canvas">
-    </RelativeLayout>
+    </sriracha.frontend.android.model.CircuitDesignerCanvas>
 </LinearLayout>

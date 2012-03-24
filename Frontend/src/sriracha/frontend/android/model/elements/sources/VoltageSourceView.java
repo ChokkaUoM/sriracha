@@ -33,4 +33,16 @@ public class VoltageSourceView extends CircuitElementView
         }
         return ports;
     }
+
+    @Override
+    public String getType()
+    {
+        return "Voltage Source";
+    }
+
+    @Override
+    public String getNameTemplate()
+    {
+        return "%d";
+    }
 }

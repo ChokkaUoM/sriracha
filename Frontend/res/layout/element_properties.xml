@@ -10,16 +10,25 @@
                 />
     </RelativeLayout>
 
+    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
+        <TextView style="@style/CircuitMenuItemImage.Element"
+                  android:id="@+id/properties_type"/>
+    </RelativeLayout>
+    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
+        <TextView style="@style/CircuitMenuItemImage.Element"
+                  android:id="@+id/properties_name"/>
+    </RelativeLayout>
+
     <RelativeLayout style="@style/CircuitMenuItem.SubMenu"
                     android:onClick="deleteOnClick"
->
+            >
         <TextView style="@style/CircuitMenuItemImage.Element"
-                   android:layout_alignParentLeft="true"
-                   android:text="Copy"
+                  android:layout_alignParentLeft="true"
+                  android:text="Copy"
                 />
         <TextView style="@style/CircuitMenuItemImage.Element"
-                   android:layout_alignParentRight="true"
-                   android:text="Delete"
+                  android:layout_alignParentRight="true"
+                  android:text="Delete"
                 />
     </RelativeLayout>
 </LinearLayout>

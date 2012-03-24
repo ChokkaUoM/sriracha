@@ -5,6 +5,7 @@ import android.graphics.*;
 import android.view.*;
 import android.widget.*;
 import sriracha.frontend.*;
+import sriracha.frontend.android.*;
 import sriracha.frontend.model.*;
 
 public abstract class CircuitElementView extends ImageView implements View.OnTouchListener, View.OnLongClickListener
@@ -38,6 +39,9 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
     public abstract int getDrawableId();
 
     public abstract CircuitElementPortView[] getElementPorts();
+    
+    public abstract String getType();
+    public abstract String getNameTemplate();
 
     public CircuitElementView(Context context, CircuitElement element, float positionX, float positionY)
     {
@@ -142,6 +146,7 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
                 int pointerIndex = motionEvent.findPointerIndex(activePointerId);
                 positionX += motionEvent.getX(pointerIndex) - touchDownDeltaX;
                 positionY += motionEvent.getY(pointerIndex) - touchDownDeltaY;
+                snapToGrid();
 
                 updatePosition();
                 break;
@@ -163,6 +168,12 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
         }
 
         return true;
+    }
+    
+    private void snapToGrid()
+    {
+        positionX = CircuitDesigner.snap(positionX);
+        positionY = CircuitDesigner.snap(positionY);
     }
 
     public void onClick(float x, float y)

@@ -1,5 +1,39 @@
 package sriracha.frontend.android.model.elements;
 
-public class ResistorView
+import android.content.*;
+import sriracha.frontend.android.model.*;
+import sriracha.frontend.model.*;
+
+public class ResistorView extends CircuitElementView
 {
+    public ResistorView(Context context, CircuitElement element, float positionX, float positionY)
+    {
+        super(context, element, positionX, positionY);
+    }
+
+    @Override
+    public int getDrawableId()
+    {
+        // TODO
+        return -1;
+    }
+
+    @Override
+    public CircuitElementPortView[] getElementPorts()
+    {
+        // TODO
+        return new CircuitElementPortView[0];
+    }
+
+    @Override
+    public String getType()
+    {
+        return "Resistor";
+    }
+
+    @Override
+    public String getNameTemplate()
+    {
+        return "R%d";
+    }
 }

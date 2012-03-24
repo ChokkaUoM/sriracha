@@ -4,12 +4,12 @@ import android.content.*;
 import android.graphics.*;
 import android.view.*;
 
-public class CircuitWireView extends View
+public class WireView extends View
 {
     private CircuitElementPortView start;
     private CircuitElementPortView end;
 
-    public CircuitWireView(Context context, CircuitElementPortView start, CircuitElementPortView end)
+    public WireView(Context context, CircuitElementPortView start, CircuitElementPortView end)
     {
         super(context);
 

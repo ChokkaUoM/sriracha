@@ -10,6 +10,8 @@ import java.util.*;
 public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         implements View.OnTouchListener, CircuitElementView.OnElementClickListener, CircuitElementView.OnDrawListener
 {
+    public static final int GRID_SIZE = 40;
+    
     public enum CursorState
     {
         ELEMENT, HAND, SELECTION, WIRE
@@ -33,7 +35,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     private ViewGroup canvasView;
 
     private ArrayList<CircuitElementView> elements;
-    private ArrayList<CircuitWireView> wires;
+    private ArrayList<WireView> wires;
     private CircuitElementPortView firstWirePort;
 
     public CircuitDesigner(View canvasView, CircuitDesignerMenu circuitDesignerMenu, CircuitElementActivator activator)
@@ -46,7 +48,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         canvasView.setOnTouchListener(this);
 
         elements = new ArrayList<CircuitElementView>();
-        wires = new ArrayList<CircuitWireView>();
+        wires = new ArrayList<WireView>();
 
         setCursorToHand();
     }
@@ -116,7 +118,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
 
         deselectElements(null);
 
-        CircuitElementView elementView = instantiateElement(motionEvent.getX(), motionEvent.getY());
+        CircuitElementView elementView = instantiateElement(snap(motionEvent.getX()), snap(motionEvent.getY()));
         if (elementView != null)
         {
             elements.add(elementView);
@@ -145,7 +147,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
             {
                 if (firstWirePort.getElement() != view)
                 {
-                    CircuitWireView wire = new CircuitWireView(canvasView.getContext(), firstWirePort, ((CircuitElementView) view).getClosestPort(x, y));
+                    WireView wire = new WireView(canvasView.getContext(), firstWirePort, ((CircuitElementView) view).getClosestPort(x, y));
                     wires.add(wire);
                     canvasView.addView(wire);
                     deselectElements(null);
@@ -154,7 +156,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
             }
         } else if (getCursor() == CursorState.HAND)
         {
-            circuitDesignerMenu.showSubMenu(R.id.element_properties);
+            circuitDesignerMenu.showElementPropertiesMenu(selectedElement);
         }
     }
 
@@ -187,13 +189,16 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         if (getCursor() != CursorState.HAND || selectedElement == null)
             return;
 
-        for (CircuitWireView wire : wires)
+        ArrayList<WireView> toRemove = new ArrayList<WireView>();
+        for (WireView wire : wires)
         {
             if (wire.getStart().getElement() == selectedElement || wire.getEnd().getElement() == selectedElement)
-            {
-                wires.remove(wire);
-                canvasView.removeView(wire);
-            }
+                toRemove.add(wire);
+        }
+        for (WireView wire : toRemove)
+        {
+            wires.remove(wire);
+            canvasView.removeView(wire);
         }
         
         elements.remove(selectedElement);
@@ -207,7 +212,12 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     @Override
     public void onDraw(Canvas canvas)
     {
-        for (CircuitWireView wire : wires)
+        for (WireView wire : wires)
             wire.invalidate();
+    }
+    
+    public static int snap(float coord)
+    {
+        return (int)(coord / GRID_SIZE) * GRID_SIZE;
     }
 }

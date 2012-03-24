@@ -1,7 +1,9 @@
 package sriracha.frontend.android;
 
 import android.view.*;
+import android.widget.*;
 import sriracha.frontend.*;
+import sriracha.frontend.android.model.*;
 
 import java.util.*;
 
@@ -23,6 +25,20 @@ public class CircuitDesignerMenu
             else
                 child.setVisibility(View.GONE);
         }
+    }
+    
+    public void showElementPropertiesMenu(CircuitElementView selectedElement)
+    {
+        showSubMenu(R.id.element_properties);
+
+        if (selectedElement == null)
+            return;
+
+        TextView type = (TextView)getSelectedSubMenu().findViewById(R.id.properties_type);
+        TextView name = (TextView)getSelectedSubMenu().findViewById(R.id.properties_name);
+        
+        type.setText(selectedElement.getType());
+        name.setText(String.format(selectedElement.getNameTemplate(), 1));
     }
 
     public ViewGroup getSelectedSubMenu()

@@ -33,6 +33,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Simulator" />
     <orderEntry type="library" exported="" name="jscience" level="project" />
+    <orderEntry type="library" name="svg-android-1.1" level="project" />
   </component>
 </module>
 

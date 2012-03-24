@@ -31,4 +31,16 @@ public class CurrentSourceView extends CircuitElementView
         }
         return ports;
     }
+
+    @Override
+    public String getType()
+    {
+        return "Current Source";
+    }
+
+    @Override
+    public String getNameTemplate()
+    {
+        return "I%d";
+    }
 }
