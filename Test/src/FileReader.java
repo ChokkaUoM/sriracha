@@ -19,7 +19,7 @@ class FileReader
 
         File file = new File(path);
 
-        System.out.println(file.getAbsolutePath());
+        //  System.out.println(file.getAbsolutePath());
 
         if (!file.isFile()) return null;
 
