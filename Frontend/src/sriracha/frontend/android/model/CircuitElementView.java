@@ -2,10 +2,8 @@ package sriracha.frontend.android.model;
 
 import android.content.*;
 import android.graphics.*;
-import android.graphics.drawable.*;
 import android.view.*;
 import android.widget.*;
-import com.larvalabs.svgandroid.*;
 import sriracha.frontend.*;
 import sriracha.frontend.android.*;
 import sriracha.frontend.model.*;

@@ -1,8 +1,9 @@
 package sriracha.frontend.android.model;
 
 import android.graphics.*;
+import sriracha.frontend.android.*;
 
-public class CircuitElementPortView
+public class CircuitElementPortView implements IWireNode
 {
     private CircuitElementView element;
 
@@ -28,5 +29,55 @@ public class CircuitElementPortView
         float[] transformed = new float[2];
         matrix.mapPoints(transformed, new float[]{positionX, positionY});
         return transformed;
+    }
+
+    @Override
+    public int getX()
+    {
+        return (int) (element.getX() + element.getWidth() * getTransformedPosition()[0]);
+    }
+
+    @Override
+    public int getY()
+    {
+        return (int) (element.getY() + element.getHeight() * getTransformedPosition()[1]);
+    }
+
+    @Override
+    public void addSegment(WireSegment segment)
+    {
+    }
+
+    @Override
+    public void replaceSegment(WireSegment oldSegment, WireSegment newSegment)
+    {
+    }
+
+    @Override
+    public boolean duplicateOnMove(WireSegment segment)
+    {
+        return true;
+    }
+    @Override
+    public WireNode duplicate(WireSegment segment, WireManager wireManager)
+    {
+        WireNode newNode = new WireNode(getX(), getY());
+        wireManager.addNode(newNode);
+
+        // Connect the segment that's being moved to the new node.
+        if (segment.getStart() == this)
+            segment.setStart(newNode);
+        else
+            segment.setEnd(newNode);
+        newNode.addSegment(segment);
+
+        // Connect the old node and the new node with a brand new segment
+        WireSegment newSegment = new WireSegment(segment.getContext(), this, newNode);
+        wireManager.addSegment(newSegment);
+
+        newNode.addSegment(newSegment);
+        this.replaceSegment(segment, newSegment);
+
+        return newNode;
     }
 }

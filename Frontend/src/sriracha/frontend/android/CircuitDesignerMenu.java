@@ -66,6 +66,7 @@ public class CircuitDesignerMenu
     private View[] getAllSubMenus()
     {
         ViewGroup root = (ViewGroup) context.findViewById(R.id.circuit_menu_container);
+
         View subMenus[] = new ViewGroup[root.getChildCount()];
         for (int i = 0; i < root.getChildCount(); i++)
             subMenus[i] = root.getChildAt(i);

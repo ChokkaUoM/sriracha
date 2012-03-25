@@ -1,79 +1,103 @@
 package sriracha.frontend.android;
 
-import android.graphics.*;
+import android.content.*;
+import android.view.*;
 
 import java.util.*;
 
-public class WireManager implements WireView.OnAddVertex
+public class WireManager
 {
-    private ArrayList<WireView> wires = new ArrayList<WireView>();
+    private ArrayList<WireSegment> segments = new ArrayList<WireSegment>();
+    private ArrayList<IWireNode> nodes = new ArrayList<IWireNode>();
 
-    public ArrayList<WireView> getWires() { return wires; }
-    public void add(WireView wire)
+    private ViewGroup canvasView;
+    private Context context;
+
+    public WireManager(ViewGroup canvasView)
     {
-        wires.add(wire);
+        this.canvasView = canvasView;
+        context = canvasView.getContext();
     }
 
-    public boolean connectToExistingSegment(WireNode node)
+    public void addNode(IWireNode node)
     {
-        for (WireView wire : wires)
-        {
-            for (int i = 1; i < wire.getVertices().size(); i++)
-            {
-                WireNode start = wire.getVertices().get(i - 1);
-                WireNode end = wire.getVertices().get(i);
+        if (!nodes.contains(node))
+            nodes.add(node);
+    }
 
-                WireSegment segment = new WireSegment(wire, start, end);
-                if (segment.isPointOnSegment(node.x, node.y))
-                {
-                    segment.split(node.x, node.y);
-                    return true;
-                }
-            }
+    public void connectNewNode(IWireNode from, IWireNode to)
+    {
+        if (!nodes.contains(from))
+            throw new IllegalArgumentException("from");
+
+        // Add intermediate node to keep everything orthogonal
+        if (from.getX() != to.getX() && from.getY() != to.getY())
+        {
+            WireNode intermediate = new WireNode(from.getX(), to.getY());
+            connectNewNode(from, intermediate);
+            from = intermediate;
         }
-        return false;
+
+        nodes.add(to);
+
+        WireSegment segment = new WireSegment(context, from, to);
+        from.addSegment(segment);
+        to.addSegment(segment);
+        addSegment(segment);
+    }
+
+    public WireNode splitSegment(WireSegment segment, int x, int y)
+    {
+        if (!segment.isPointOnSegment(x, y))
+            throw new IllegalArgumentException("Point not on segment");
+
+        // Create two new segments by splitting the original one up.
+        WireNode node = new WireNode(x, y);
+        WireSegment firstHalf = new WireSegment(context, segment.getStart(), node);
+        WireSegment secondHalf = new WireSegment(context, node, segment.getEnd());
+
+        addSegment(firstHalf);
+        addSegment(secondHalf);
+
+        // Nodes know what segments they're attached to, so we update that information.
+        segment.getStart().replaceSegment(segment, firstHalf);
+        segment.getEnd().replaceSegment(segment, secondHalf);
+
+        // The new node needs to know about the two new segments.
+        node.addSegment(firstHalf);
+        node.addSegment(secondHalf);
+
+        // Get rid of the stale, old segment. We hates it.
+        removeSegment(segment);
+
+        return node;
+    }
+
+    public void addSegment(WireSegment segment)
+    {
+        segments.add(segment);
+        canvasView.addView(segment);
+    }
+    
+    private void removeSegment(WireSegment segment)
+    {
+        segments.remove(segment);
+        canvasView.removeView(segment);
     }
 
     public WireSegment getClosestSegment(float x, float y)
     {
-        for (WireView wire : wires)
+        for (WireSegment segment : segments)
         {
-            for (int i = 1; i < wire.getVertices().size(); i++)
-            {
-                WireNode start = wire.getVertices().get(i - 1);
-                WireNode end = wire.getVertices().get(i);
-
-                WireSegment segment = new WireSegment(wire, start, end);
-                if (i == 1)
-                    segment.setDuplicateStartOnMove(true);
-                if (i == wire.getVertices().size() - 1)
-                    segment.setDuplicateEndOnMove(true);
-
-                if (segment.getBounds().contains((int) x, (int) y))
-                    return segment;
-            }
+            if (segment.getBounds().contains((int) x, (int) y))
+                return segment;
         }
         return null;
     }
 
-    @Override
-    public void onAddVertex(WireView wireView)
+    public void invalidateAll()
     {
-        ArrayList<WireNode> allVertices = new ArrayList<WireNode>();
-        for (WireView wire : wires)
-        {
-            allVertices.addAll(wire.getVertices());
-        }
-
-        for (WireNode node1 : allVertices)
-        {
-            for (WireNode node2 : allVertices)
-            {
-                if (node1 != node2 && node1.x == node2.x && node1.y == node2.y)
-                {
-                    // TODO: consolidate nodes at same location
-                }
-            }
-        }
+        for (WireSegment segment : segments)
+            segment.invalidate();
     }
 }

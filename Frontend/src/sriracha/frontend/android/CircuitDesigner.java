@@ -42,8 +42,8 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     private ViewGroup canvasView;
 
     private ArrayList<CircuitElementView> elements;
-    private WireManager wireManager = new WireManager();
-    private WireView wireBeingDrawn;
+    private WireManager wireManager;
+    private IWireNode lastInsertedNode;
 
     public CircuitDesigner(View canvasView, CircuitDesignerMenu circuitDesignerMenu, CircuitElementActivator activator)
     {
@@ -52,9 +52,10 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
 
         gestureDetector = new GestureDetector(this);
         this.canvasView = (ViewGroup) canvasView;
-        canvasView.setOnTouchListener(this);
+        this.canvasView.setOnTouchListener(this);
 
         elements = new ArrayList<CircuitElementView>();
+        wireManager = new WireManager(this.canvasView);
 
         setCursorToHand();
     }
@@ -124,9 +125,9 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
 
                 boolean canMoveVertically = !selectedSegment.isVertical();
                 if (canMoveVertically)
-                    selectedSegmentStart = selectedSegment.getStart().y;
+                    selectedSegmentStart = selectedSegment.getStart().getY();
                 else
-                    selectedSegmentStart = selectedSegment.getStart().x;
+                    selectedSegmentStart = selectedSegment.getStart().getX();
 
                 touchDownX = motionEvent.getX();
                 touchDownY = motionEvent.getY();
@@ -144,18 +145,18 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                 // Find the index of the active pointer and fetch its position
                 int pointerIndex = motionEvent.findPointerIndex(activePointerId);
 
-                boolean canMoveVertically = !selectedSegment.isVertical();
-                if (canMoveVertically)
+                boolean canMoveHorizontally = selectedSegment.isVertical();
+                if (canMoveHorizontally)
                 {
-                    int deltaY = snap(motionEvent.getY(pointerIndex) - touchDownY);
-                    selectedSegment.setY((int) selectedSegmentStart + deltaY);
+                    int deltaX = snap(motionEvent.getX(pointerIndex) - touchDownX);
+                    selectedSegment.setX((int) selectedSegmentStart + deltaX, wireManager);
                 }
                 else
                 {
-                    int deltaX = snap(motionEvent.getX(pointerIndex) - touchDownX);
-                    selectedSegment.setX((int) selectedSegmentStart + deltaX);
+                    int deltaY = snap(motionEvent.getY(pointerIndex) - touchDownY);
+                    selectedSegment.setY((int) selectedSegmentStart + deltaY, wireManager);
                 }
-                selectedSegment.getWire().invalidate();
+                selectedSegment.invalidate();
 
                 break;
             }
@@ -176,13 +177,30 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         int snappedX = snap(motionEvent.getX());
         int snappedY = snap(motionEvent.getY());
 
-        if (getCursor() == CursorState.WIRE && wireBeingDrawn != null)
+        if (getCursor() == CursorState.WIRE && lastInsertedNode != null)
         {
-            WireNode newNode = wireBeingDrawn.connectToPoint(new Point(snappedX, snappedY));
-            if (wireManager.connectToExistingSegment(newNode))
+            // Possibilities: clicked on empty space, clicked on existing node, or clicked on existing wire segment.
+            WireSegment segment = wireManager.getClosestSegment(snappedX, snappedY);
+            if (segment == null)
             {
+                // Case 1: empty space.
+                // Add new node
+                WireNode newNode = new WireNode(snappedX, snappedY);
+                wireManager.connectNewNode(lastInsertedNode, newNode);
+                lastInsertedNode = newNode;
+            }
+            else
+            {
+                // Case 2, 3: existing segment/node.
+                // Add a new node. If we clicked on a node instead of a segment, we let
+                // the node consolidator take care of it later.
+                WireNode newNode = wireManager.splitSegment(segment, snappedX, snappedY);
+                wireManager.connectNewNode(lastInsertedNode, newNode);
+                // TODO: consolidate nodes now
+
+                // End the wire drawing now.
                 deselectElements(null);
-                wireBeingDrawn = null;
+                lastInsertedNode = null;
                 setCanvasState(CanvasState.IDLE);
             }
 
@@ -217,25 +235,18 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
             // The first endpoint of a wire
             if (getCanvasState() == CanvasState.IDLE)
             {
-                wireBeingDrawn = new WireView(canvasView.getContext(), ((CircuitElementView) view).getClosestPort(x, y));
-                wireBeingDrawn.setOnAddVertexListener(wireManager);
-                canvasView.addView(wireBeingDrawn);
+                lastInsertedNode = ((CircuitElementView) view).getClosestPort(x, y);
+                wireManager.addNode(lastInsertedNode);
                 setCanvasState(CanvasState.DRAWING_WIRE);
             }
             else if (getCanvasState() == CanvasState.DRAWING_WIRE)
             {
-                if (wireBeingDrawn.getStart().getElement() != view)
-                {
-                    wireBeingDrawn.setEnd(((CircuitElementView) view).getClosestPort(x, y));
-                    wireManager.add(wireBeingDrawn);
+                // Create new node, and end the wire at the new element
+                CircuitElementPortView port = ((CircuitElementView) view).getClosestPort(x, y);
+                wireManager.connectNewNode(lastInsertedNode, port);
 
-                    deselectElements(null);
-                }
-                else
-                {
-                    canvasView.removeView(wireBeingDrawn);
-                }
-                wireBeingDrawn = null;
+                deselectElements(null);
+                lastInsertedNode = null;
                 setCanvasState(CanvasState.IDLE);
             }
         }
@@ -275,13 +286,13 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         if (getCursor() != CursorState.HAND || selectedElement == null)
             return;
 
-        /*ArrayList<WireView> toRemove = new ArrayList<WireView>();
-        for (WireView wire : wires)
+        /*ArrayList<WireSegment> toRemove = new ArrayList<WireSegment>();
+        for (WireSegment wire : wires)
         {
             if (wire.getStart().getElement() == selectedElement || wire.getEnd().getElement() == selectedElement)
                 toRemove.add(wire);
         }
-        for (WireView wire : toRemove)
+        for (WireSegment wire : toRemove)
         {
             wires.remove(wire);
             canvasView.removeView(wire);
@@ -298,8 +309,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     @Override
     public void onDraw(Canvas canvas)
     {
-        for (WireView wire : wireManager.getWires())
-            wire.invalidate();
+        wireManager.invalidateAll();
     }
 
     public static int snap(float coord)

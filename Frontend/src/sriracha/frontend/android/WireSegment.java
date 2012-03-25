@@ -1,109 +1,99 @@
 package sriracha.frontend.android;
 
+import android.content.*;
 import android.graphics.*;
+import android.view.*;
 
-public class WireSegment
+public class WireSegment extends View
 {
     private static final int BOUNDS_PADDING = 20;
 
-    private WireView wire;
+    private IWireNode start;
+    private IWireNode end;
 
-    private WireNode start;
-    private WireNode end;
+    private final Paint paint = new Paint();
 
-    private boolean duplicateStartOnMove;
-    private boolean duplicateEndOnMove;
-
-    public WireSegment(WireView wire, WireNode start, WireNode end)
+    public WireSegment(Context context, IWireNode start, IWireNode end)
     {
-        this.wire = wire;
+        super(context);
+
         this.start = start;
         this.end = end;
+
+        paint.setColor(Color.GRAY);
+        paint.setStrokeWidth(4);
     }
 
-    public WireView getWire() { return wire; }
-    public WireNode getStart() { return start; }
-    public WireNode getEnd() { return end; }
+    public IWireNode getStart() { return start; }
+    public IWireNode getEnd() { return end; }
+    public void setStart(IWireNode node) { start = node; }
+    public void setEnd(IWireNode node) { end = node; }
 
-    public void setDuplicateStartOnMove(boolean duplicateStartOnMove)
+    @Override
+    protected void onDraw(Canvas canvas)
     {
-        this.duplicateStartOnMove = duplicateStartOnMove;
-    }
-    public void setDuplicateEndOnMove(boolean duplicateEndOnMove)
-    {
-        this.duplicateEndOnMove = duplicateEndOnMove;
-    }
-
-    public void setX(int x)
-    {
-        if (x != start.x)
-        {
-            if (start.hasNeighbourOpposite(end))
-                duplicateStartOnMove = true;
-            if (end.hasNeighbourOpposite(start))
-                duplicateEndOnMove = true;
-
-            if (duplicateStartOnMove)
-                wire.insertBefore(new WireNode(start), start);
-            if (duplicateEndOnMove)
-                wire.insertAfter(new WireNode(end), end);
-            duplicateStartOnMove = duplicateEndOnMove = false;
-        }
-
-        start.x = x;
-        end.x = x;
+        canvas.drawLine(start.getX(), start.getY(), end.getX(), end.getY(), paint);
+        canvas.drawCircle(end.getX(), end.getY(), 4, paint);
     }
 
-    public void setY(int y)
+    public void setX(int x, WireManager wireManager)
     {
-        if (y != start.y)
-        {
-            if (start.hasNeighbourOpposite(end))
-                duplicateStartOnMove = true;
-            if (end.hasNeighbourOpposite(start))
-                duplicateEndOnMove = true;
+        if (x == start.getX())
+            return;
 
-            if (duplicateStartOnMove)
-                wire.insertBefore(new WireNode(start), start);
-            if (duplicateEndOnMove)
-                wire.insertAfter(new WireNode(end), end);
-            duplicateStartOnMove = duplicateEndOnMove = false;
-        }
+        IWireNode startNode = start;
+        IWireNode endNode = end;
 
-        start.y = y;
-        end.y = y;
+        if (start.duplicateOnMove(this))
+            startNode = start.duplicate(this, wireManager);
+        if (end.duplicateOnMove(this))
+            endNode = end.duplicate(this, wireManager);
+
+        ((WireNode) startNode).x = x;
+        ((WireNode) endNode).x = x;
     }
 
-    public WireNode split(int x, int y)
+    public void setY(int y, WireManager wireManager)
     {
-        WireNode newNode = null;
-        if (isVertical())
-            newNode = new WireNode(start.x, y);
-        else
-            newNode = new WireNode(x, start.y);
+        if (y == start.getY())
+            return;
 
-        wire.insertAfter(newNode, start);
-        return newNode;
+        IWireNode startNode = start;
+        IWireNode endNode = end;
+
+        if (start.duplicateOnMove(this))
+            startNode = start.duplicate(this, wireManager);
+        if (end.duplicateOnMove(this))
+            endNode = end.duplicate(this, wireManager);
+
+        ((WireNode) startNode).y = y;
+        ((WireNode) endNode).y = y;
     }
 
     public boolean isVertical()
     {
-        return start.x == end.x;
+        return start.getX() == end.getX();
     }
 
     public boolean isPointOnSegment(int x, int y)
     {
         if (isVertical())
-            return x == start.x && start.y <= y && y <= end.y;
+            return x == start.getX() && start.getY() <= y && y <= end.getY();
         else
-            return y == start.y && start.x <= x && x <= end.x;
+            return y == start.getY() && start.getX() <= x && x <= end.getX();
     }
 
     public Rect getBounds()
     {
-        if ((isVertical() && start.y > end.y) || (!isVertical() && start.x > end.x))
-            return new Rect(end.x - BOUNDS_PADDING, end.y - BOUNDS_PADDING, start.x + BOUNDS_PADDING, start.y + BOUNDS_PADDING);
+        if ((isVertical() && start.getY() > end.getY()) || (!isVertical() && start.getX() > end.getX()))
+            return new Rect(end.getX() - BOUNDS_PADDING, end.getY() - BOUNDS_PADDING, start.getX() + BOUNDS_PADDING, start.getY() + BOUNDS_PADDING);
         else
-            return new Rect(start.x - BOUNDS_PADDING, start.y - BOUNDS_PADDING, end.x + BOUNDS_PADDING, end.y + BOUNDS_PADDING);
+            return new Rect(start.getX() - BOUNDS_PADDING, start.getY() - BOUNDS_PADDING, end.getX() + BOUNDS_PADDING, end.getY() + BOUNDS_PADDING);
+    }
+
+    @Override
+    public String toString()
+    {
+        return getStart().toString() + " - " + getEnd().toString();
     }
 }
