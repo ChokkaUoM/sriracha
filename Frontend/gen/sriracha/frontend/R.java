@@ -30,22 +30,31 @@ containing a value of this type.
         public static final int back_button=0x7f020000;
         public static final int circuitelement_background=0x7f020001;
         public static final int circuitmenu_border=0x7f020002;
-        public static final int circuitmenu_diodes_and_transistors=0x7f020003;
-        public static final int circuitmenu_focusedborder=0x7f020004;
-        public static final int circuitmenu_hand=0x7f020005;
-        public static final int circuitmenu_itembackground=0x7f020006;
-        public static final int circuitmenu_rlc=0x7f020007;
-        public static final int circuitmenu_select=0x7f020008;
-        public static final int circuitmenu_selectedborder=0x7f020009;
-        public static final int circuitmenu_sources_and_ground=0x7f02000a;
-        public static final int circuitmenu_sub_circuits=0x7f02000b;
-        public static final int circuitmenu_wire=0x7f02000c;
-        public static final int sources_current=0x7f02000d;
-        public static final int sources_dependent_current=0x7f02000e;
-        public static final int sources_dependent_voltage=0x7f02000f;
-        public static final int sources_ground=0x7f020010;
-        public static final int sources_vcc=0x7f020011;
-        public static final int sources_voltage=0x7f020012;
+        public static final int circuitmenu_current=0x7f020003;
+        public static final int circuitmenu_dependent_current=0x7f020004;
+        public static final int circuitmenu_dependent_voltage=0x7f020005;
+        public static final int circuitmenu_diodes_and_transistors=0x7f020006;
+        public static final int circuitmenu_focusedborder=0x7f020007;
+        public static final int circuitmenu_ground=0x7f020008;
+        public static final int circuitmenu_hand=0x7f020009;
+        public static final int circuitmenu_itembackground=0x7f02000a;
+        public static final int circuitmenu_rlc=0x7f02000b;
+        public static final int circuitmenu_select=0x7f02000c;
+        public static final int circuitmenu_selectedborder=0x7f02000d;
+        public static final int circuitmenu_sources_and_ground=0x7f02000e;
+        public static final int circuitmenu_sub_circuits=0x7f02000f;
+        public static final int circuitmenu_vcc=0x7f020010;
+        public static final int circuitmenu_voltage=0x7f020011;
+        public static final int circuitmenu_wire=0x7f020012;
+        public static final int rlc_capacitor=0x7f020013;
+        public static final int rlc_inductor=0x7f020014;
+        public static final int rlc_resistor=0x7f020015;
+        public static final int sources_current=0x7f020016;
+        public static final int sources_dependent_current=0x7f020017;
+        public static final int sources_dependent_voltage=0x7f020018;
+        public static final int sources_ground=0x7f020019;
+        public static final int sources_vcc=0x7f02001a;
+        public static final int sources_voltage=0x7f02001b;
     }
     public static final class id {
         public static final int circuit_design_canvas=0x7f07000c;
@@ -71,8 +80,7 @@ containing a value of this type.
         public static final int sources_and_ground=0x7f030003;
     }
     public static final class raw {
-        public static final int sources_current=0x7f040000;
-        public static final int sources_voltage=0x7f040001;
+        public static final int sources_voltage=0x7f040000;
     }
     public static final class string {
         public static final int app_name=0x7f050000;

@@ -13,14 +13,14 @@
     <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
         <ImageView style="@style/CircuitMenuItemImage.Element"
                    android:layout_alignParentLeft="true"
-                   android:src="@drawable/sources_voltage"
+                   android:src="@drawable/circuitmenu_voltage"
                    android:tag="@string/selectable"
                    android:id="@+id/sources_voltage"
                    android:onClick="circuitElementOnClick"
                 />
         <ImageView style="@style/CircuitMenuItemImage.Element"
                    android:layout_alignParentRight="true"
-                   android:src="@drawable/sources_current"
+                   android:src="@drawable/circuitmenu_current"
                    android:tag="@string/selectable"
                    android:id="@+id/sources_current"
                    android:onClick="circuitElementOnClick"
@@ -30,12 +30,12 @@
     <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
         <ImageView style="@style/CircuitMenuItemImage.Element"
                    android:layout_alignParentLeft="true"
-                   android:src="@drawable/sources_dependent_voltage"
+                   android:src="@drawable/circuitmenu_dependent_voltage"
                    android:tag="@string/selectable"
                 />
         <ImageView style="@style/CircuitMenuItemImage.Element"
                    android:layout_alignParentRight="true"
-                   android:src="@drawable/sources_dependent_current"
+                   android:src="@drawable/circuitmenu_dependent_current"
                    android:tag="@string/selectable"
                 />
     </RelativeLayout>
@@ -43,12 +43,12 @@
     <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
         <ImageView style="@style/CircuitMenuItemImage.Element"
                    android:layout_alignParentLeft="true"
-                   android:src="@drawable/sources_vcc"
+                   android:src="@drawable/circuitmenu_vcc"
                    android:tag="@string/selectable"
                 />
         <ImageView style="@style/CircuitMenuItemImage.Element"
                    android:layout_alignParentRight="true"
-                   android:src="@drawable/sources_ground"
+                   android:src="@drawable/circuitmenu_ground"
                    android:tag="@string/selectable"
                 />
     </RelativeLayout>

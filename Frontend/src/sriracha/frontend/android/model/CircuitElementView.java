@@ -2,8 +2,10 @@ package sriracha.frontend.android.model;
 
 import android.content.*;
 import android.graphics.*;
+import android.graphics.drawable.*;
 import android.view.*;
 import android.widget.*;
+import com.larvalabs.svgandroid.*;
 import sriracha.frontend.*;
 import sriracha.frontend.android.*;
 import sriracha.frontend.model.*;
@@ -47,14 +49,13 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
     {
         super(context);
 
+        setBackgroundResource(R.drawable.circuitelement_background);
+        setImageResource(getDrawableId());
+
         this.element = element;
         this.positionX = positionX;
         this.positionY = positionY;
         ports = getElementPorts();
-
-        setFocusableInTouchMode(true);
-        setImageResource(getDrawableId());
-        setBackgroundResource(R.drawable.circuitelement_background);
 
         setOnTouchListener(this);
         setOnLongClickListener(this);
@@ -216,14 +217,6 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
     protected void onDraw(Canvas canvas)
     {
         super.onDraw(canvas);
-        for (CircuitElementPortView port : ports)
-        {
-            Paint paint = new Paint();
-            paint.setColor(Color.BLUE);
-
-            float[] position = port.getTransformedPosition();
-            canvas.drawCircle(this.getWidth() * position[0], this.getHeight() * position[1], 5, paint);
-        }
 
         if (onDrawListener != null)
             onDrawListener.onDraw(canvas);

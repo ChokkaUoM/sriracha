@@ -3,5 +3,4 @@
         xmlns:app="http://schemas.android.com/apk/res/sriracha.frontend">
     <item app:state_draggable="true" android:drawable="@drawable/circuitmenu_focusedborder"/>
     <item app:state_selected="true" android:drawable="@drawable/circuitmenu_selectedborder"/>
-    <item android:drawable="@drawable/circuitmenu_border"/>
 </selector>

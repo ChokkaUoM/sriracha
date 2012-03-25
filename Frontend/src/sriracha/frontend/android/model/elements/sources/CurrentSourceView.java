@@ -19,6 +19,7 @@ public class CurrentSourceView extends CircuitElementView
     {
         return R.drawable.sources_current;
     }
+
     @Override
     public CircuitElementPortView[] getElementPorts()
     {

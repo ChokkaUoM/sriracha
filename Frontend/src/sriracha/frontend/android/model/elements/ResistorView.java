@@ -1,6 +1,7 @@
 package sriracha.frontend.android.model.elements;
 
 import android.content.*;
+import sriracha.frontend.*;
 import sriracha.frontend.android.model.*;
 import sriracha.frontend.model.*;
 
@@ -14,8 +15,7 @@ public class ResistorView extends CircuitElementView
     @Override
     public int getDrawableId()
     {
-        // TODO
-        return -1;
+        return R.drawable.rlc_resistor;
     }
 
     @Override

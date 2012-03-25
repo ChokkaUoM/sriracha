@@ -11,7 +11,8 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         implements View.OnTouchListener, CircuitElementView.OnElementClickListener, CircuitElementView.OnDrawListener
 {
     public static final int GRID_SIZE = 40;
-    
+    private static final int INVALID_POINTER_ID = -1;
+
     public enum CursorState
     {
         ELEMENT, HAND, SELECTION, WIRE
@@ -25,6 +26,12 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     private CursorState cursor;
     private CanvasState canvasState = CanvasState.IDLE;
 
+    private int activePointerId = INVALID_POINTER_ID;
+    private float touchDownX;
+    private float touchDownY;
+    private WireSegment selectedSegment;
+    private float selectedSegmentStart;
+
     private int selectedItemId;
     private CircuitElementView selectedElement;
 
@@ -35,8 +42,8 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     private ViewGroup canvasView;
 
     private ArrayList<CircuitElementView> elements;
-    private ArrayList<WireView> wires;
-    private CircuitElementPortView firstWirePort;
+    private WireManager wireManager = new WireManager();
+    private WireView wireBeingDrawn;
 
     public CircuitDesigner(View canvasView, CircuitDesignerMenu circuitDesignerMenu, CircuitElementActivator activator)
     {
@@ -48,7 +55,6 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         canvasView.setOnTouchListener(this);
 
         elements = new ArrayList<CircuitElementView>();
-        wires = new ArrayList<WireView>();
 
         setCursorToHand();
     }
@@ -107,18 +113,88 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     public boolean onTouch(View view, MotionEvent motionEvent)
     {
         gestureDetector.onTouchEvent(motionEvent);
+
+        switch (motionEvent.getAction() & MotionEvent.ACTION_MASK)
+        {
+            case MotionEvent.ACTION_DOWN:
+            {
+                selectedSegment = wireManager.getClosestSegment(motionEvent.getX(), motionEvent.getY());
+                if (selectedSegment == null)
+                    return true;
+
+                boolean canMoveVertically = !selectedSegment.isVertical();
+                if (canMoveVertically)
+                    selectedSegmentStart = selectedSegment.getStart().y;
+                else
+                    selectedSegmentStart = selectedSegment.getStart().x;
+
+                touchDownX = motionEvent.getX();
+                touchDownY = motionEvent.getY();
+
+                // Save the ID of this pointer
+                activePointerId = motionEvent.getPointerId(0);
+                break;
+            }
+
+            case MotionEvent.ACTION_MOVE:
+            {
+                if (activePointerId == INVALID_POINTER_ID)
+                    break;
+
+                // Find the index of the active pointer and fetch its position
+                int pointerIndex = motionEvent.findPointerIndex(activePointerId);
+
+                boolean canMoveVertically = !selectedSegment.isVertical();
+                if (canMoveVertically)
+                {
+                    int deltaY = snap(motionEvent.getY(pointerIndex) - touchDownY);
+                    selectedSegment.setY((int) selectedSegmentStart + deltaY);
+                }
+                else
+                {
+                    int deltaX = snap(motionEvent.getX(pointerIndex) - touchDownX);
+                    selectedSegment.setX((int) selectedSegmentStart + deltaX);
+                }
+                selectedSegment.getWire().invalidate();
+
+                break;
+            }
+
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_POINTER_UP:
+                activePointerId = INVALID_POINTER_ID;
+                break;
+        }
+
         return true;
     }
 
     @Override
     public boolean onSingleTapUp(MotionEvent motionEvent)
     {
+        int snappedX = snap(motionEvent.getX());
+        int snappedY = snap(motionEvent.getY());
+
+        if (getCursor() == CursorState.WIRE && wireBeingDrawn != null)
+        {
+            WireNode newNode = wireBeingDrawn.connectToPoint(new Point(snappedX, snappedY));
+            if (wireManager.connectToExistingSegment(newNode))
+            {
+                deselectElements(null);
+                wireBeingDrawn = null;
+                setCanvasState(CanvasState.IDLE);
+            }
+
+            return true;
+        }
+
         if (getCursor() != CursorState.ELEMENT)
             return false;
 
         deselectElements(null);
 
-        CircuitElementView elementView = instantiateElement(snap(motionEvent.getX()), snap(motionEvent.getY()));
+        CircuitElementView elementView = instantiateElement(snappedX, snappedY);
         if (elementView != null)
         {
             elements.add(elementView);
@@ -141,20 +217,29 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
             // The first endpoint of a wire
             if (getCanvasState() == CanvasState.IDLE)
             {
-                firstWirePort = ((CircuitElementView) view).getClosestPort(x, y);
+                wireBeingDrawn = new WireView(canvasView.getContext(), ((CircuitElementView) view).getClosestPort(x, y));
+                wireBeingDrawn.setOnAddVertexListener(wireManager);
+                canvasView.addView(wireBeingDrawn);
                 setCanvasState(CanvasState.DRAWING_WIRE);
-            } else if (getCanvasState() == CanvasState.DRAWING_WIRE)
+            }
+            else if (getCanvasState() == CanvasState.DRAWING_WIRE)
             {
-                if (firstWirePort.getElement() != view)
+                if (wireBeingDrawn.getStart().getElement() != view)
                 {
-                    WireView wire = new WireView(canvasView.getContext(), firstWirePort, ((CircuitElementView) view).getClosestPort(x, y));
-                    wires.add(wire);
-                    canvasView.addView(wire);
+                    wireBeingDrawn.setEnd(((CircuitElementView) view).getClosestPort(x, y));
+                    wireManager.add(wireBeingDrawn);
+
                     deselectElements(null);
                 }
+                else
+                {
+                    canvasView.removeView(wireBeingDrawn);
+                }
+                wireBeingDrawn = null;
                 setCanvasState(CanvasState.IDLE);
             }
-        } else if (getCursor() == CursorState.HAND)
+        }
+        else if (getCursor() == CursorState.HAND)
         {
             circuitDesignerMenu.showElementPropertiesMenu(selectedElement);
         }
@@ -168,7 +253,8 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
             {
                 element.setElementSelected(true);
                 selectedElement = element;
-            } else
+            }
+            else
                 element.setElementSelected(false);
         }
     }
@@ -189,7 +275,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         if (getCursor() != CursorState.HAND || selectedElement == null)
             return;
 
-        ArrayList<WireView> toRemove = new ArrayList<WireView>();
+        /*ArrayList<WireView> toRemove = new ArrayList<WireView>();
         for (WireView wire : wires)
         {
             if (wire.getStart().getElement() == selectedElement || wire.getEnd().getElement() == selectedElement)
@@ -199,8 +285,8 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         {
             wires.remove(wire);
             canvasView.removeView(wire);
-        }
-        
+        }*/
+
         elements.remove(selectedElement);
         canvasView.removeView(selectedElement);
         canvasView.invalidate();
@@ -212,12 +298,12 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     @Override
     public void onDraw(Canvas canvas)
     {
-        for (WireView wire : wires)
+        for (WireView wire : wireManager.getWires())
             wire.invalidate();
     }
-    
+
     public static int snap(float coord)
     {
-        return (int)(coord / GRID_SIZE) * GRID_SIZE;
+        return (int) (coord / GRID_SIZE + 0.5f) * GRID_SIZE;
     }
 }

@@ -1,4 +1,4 @@
-package sriracha.frontend.android.model;
+package sriracha.frontend.android;
 
 import android.content.*;
 import android.graphics.*;
@@ -30,7 +30,7 @@ public class CircuitDesignerCanvas extends RelativeLayout
     private void initPaint()
     {
         paint = new Paint();
-        paint.setColor(Color.GRAY);
+        paint.setColor(Color.LTGRAY);
         paint.setStrokeWidth(1);
     }
 
