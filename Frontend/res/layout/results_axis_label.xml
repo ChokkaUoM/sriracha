@@ -2,8 +2,8 @@
 
 <!-- Text view template for axis labels-->
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="0"
-        android:layout_height="0"
+        android:layout_width="0dip"
+        android:layout_height="0dip"
         android:layout_weight="1"
         android:textColor="#000"
         android:gravity="left|center_vertical">
