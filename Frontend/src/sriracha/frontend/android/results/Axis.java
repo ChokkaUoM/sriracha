@@ -1,15 +1,10 @@
 package sriracha.frontend.android.results;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.view.View;
-import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
-import sriracha.frontend.MainActivity;
-import sriracha.frontend.R;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -22,7 +17,10 @@ import java.util.List;
  * Time: 1:41 PM
  * To change this template use File | Settings | File Templates.
  */
-public abstract class Axis extends ViewGroup {
+public class Axis extends FrameLayout
+{
+
+
 
     protected boolean logscale;
     

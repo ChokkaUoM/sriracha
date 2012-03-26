@@ -44,7 +44,12 @@ public class VerticalAxis extends Axis{
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension(width, heightMeasureSpec);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int height = MeasureSpec.getSize(heightMeasureSpec);
+        setMeasuredDimension(width, height);
+        /*for(int i =0; i<getChildCount(); i++){
+            getChildAt(i).measure(widthMeasureSpec, heightMeasureSpec);
+        }*/
     }
 
 

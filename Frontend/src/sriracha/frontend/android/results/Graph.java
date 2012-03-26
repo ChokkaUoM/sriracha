@@ -1,21 +1,16 @@
 package sriracha.frontend.android.results;
 
 import android.content.Context;
-import android.view.View;
+import android.widget.FrameLayout;
 
-public class Graph extends View {
+public class Graph extends FrameLayout
+{
 
     private double ymin, ymax, xmin, xmax;
 
 
     public Graph(Context context) {
         super(context);
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();    
-        //get items from xml
     }
 
     public double getYmin() {
