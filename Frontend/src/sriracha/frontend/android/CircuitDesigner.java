@@ -297,23 +297,19 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     {
         return activator.instantiateElement(getSelectedItemId(), positionX, positionY);
     }
+    
+    public void rotateSelectedElement(boolean cw)
+    {
+        if (selectedElement != null)
+        {
+            selectedElement.rotate(cw ? 90 : -90);
+        }
+    }
 
     public void deleteSelectedElement()
     {
         if (getCursor() != CursorState.HAND || selectedElement == null)
             return;
-
-        /*ArrayList<WireSegment> toRemove = new ArrayList<WireSegment>();
-        for (WireSegment wire : wires)
-        {
-            if (wire.getStart().getElement() == selectedElement || wire.getEnd().getElement() == selectedElement)
-                toRemove.add(wire);
-        }
-        for (WireSegment wire : toRemove)
-        {
-            wires.remove(wire);
-            canvasView.removeView(wire);
-        }*/
 
         elements.remove(selectedElement);
         canvasView.removeView(selectedElement);

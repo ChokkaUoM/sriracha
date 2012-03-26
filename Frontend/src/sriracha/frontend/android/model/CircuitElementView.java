@@ -61,7 +61,17 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
 
     public float getPositionX() { return positionX; }
     public float getPositionY() { return positionY; }
+
     public float getOrientation() { return orientation; }
+    public void setOrientation(float orientation)
+    {
+        this.orientation = orientation;
+        invalidate();
+    }
+    public void rotate(int degrees)
+    {
+        setOrientation((orientation + degrees) % 360);
+    }
 
     public CircuitElementPortView getClosestPort(float x, float y)
     {
@@ -69,8 +79,9 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
         float closestDistance = 0;
         for (CircuitElementPortView port : ports)
         {
-            float[] position = port.getTransformedPosition();
-            float distance = new PointF(getWidth() * position[0] - x, getHeight() * position[1] - y).length();
+            float portX = port.getRelativeX();
+            float portY = port.getRelativeY();
+            float distance = new PointF(portX - x, portY - y).length();
             if (closestPort == null || distance < closestDistance)
             {
                 closestDistance = distance;
@@ -214,6 +225,7 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
     @Override
     protected void onDraw(Canvas canvas)
     {
+        canvas.rotate(orientation, getWidth() / 2, getHeight() / 2);
         super.onDraw(canvas);
 
         if (onDrawListener != null)

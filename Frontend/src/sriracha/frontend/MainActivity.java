@@ -79,4 +79,26 @@ public class MainActivity extends Activity
     {
         circuitDesigner.selectCircuitItem(view.getId());
     }
+
+    public void wrenchMenuOnClick(View view)
+    {
+    }
+    
+    public void flipHorizontalOnClick(View view)
+    {
+    }
+
+    public void flipVerticalOnClick(View view)
+    {
+    }
+    
+    public void rotateCCWOnClick(View view)
+    {
+        circuitDesigner.rotateSelectedElement(false);
+    }
+    
+    public void rotateCWOnClick(View view)
+    {
+        circuitDesigner.rotateSelectedElement(true);
+    }
 }

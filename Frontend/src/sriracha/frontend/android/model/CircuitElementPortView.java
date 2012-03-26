@@ -24,7 +24,7 @@ public class CircuitElementPortView implements IWireNode
     public float getUntransformedPositionX() { return positionX; }
     public float getUntransformedPositionY() { return positionY; }
 
-    public float[] getTransformedPosition()
+    private float[] getTransformedPosition()
     {
         Matrix matrix = new Matrix();
         matrix.setRotate(element.getOrientation());
@@ -32,17 +32,27 @@ public class CircuitElementPortView implements IWireNode
         matrix.mapPoints(transformed, new float[]{positionX, positionY});
         return transformed;
     }
+    
+    public float getRelativeX()
+    {
+        return element.getWidth() / 2 + element.getWidth() * getTransformedPosition()[0];
+    }
+
+    public float getRelativeY()
+    {
+        return element.getHeight() / 2 + element.getHeight() * getTransformedPosition()[1];
+    }
 
     @Override
     public int getX()
     {
-        return (int) (element.getX() + element.getWidth() * getTransformedPosition()[0]);
+        return (int) (element.getX() + element.getWidth() / 2 + element.getWidth() * getTransformedPosition()[0]);
     }
 
     @Override
     public int getY()
     {
-        return (int) (element.getY() + element.getHeight() * getTransformedPosition()[1]);
+        return (int) (element.getY() + element.getHeight() / 2 + element.getHeight() * getTransformedPosition()[1]);
     }
 
     @Override

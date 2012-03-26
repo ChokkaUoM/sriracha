@@ -27,8 +27,10 @@ public class VoltageSourceView extends CircuitElementView
         if (ports == null)
         {
             ports = new CircuitElementPortView[]{
-                    new CircuitElementPortView(this, 0.5f, 0),
-                    new CircuitElementPortView(this, 0.5f, 1),
+                    //new CircuitElementPortView(this, 0.5f, 0),
+                    //new CircuitElementPortView(this, 0.5f, 1),
+                    new CircuitElementPortView(this, 0, 0.5f),
+                    new CircuitElementPortView(this, 0, -0.5f),
             };
         }
         return ports;
