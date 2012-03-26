@@ -165,6 +165,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_POINTER_UP:
                 activePointerId = INVALID_POINTER_ID;
+                wireManager.consolidateNodes();
                 break;
         }
 

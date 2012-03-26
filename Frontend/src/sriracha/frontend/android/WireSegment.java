@@ -26,8 +26,6 @@ public class WireSegment extends View
 
     public IWireNode getStart() { return start; }
     public IWireNode getEnd() { return end; }
-    public void setStart(IWireNode node) { start = node; }
-    public void setEnd(IWireNode node) { end = node; }
 
     @Override
     protected void onDraw(Canvas canvas)
@@ -41,16 +39,39 @@ public class WireSegment extends View
         if (x == start.getX())
             return;
 
-        IWireNode startNode = start;
-        IWireNode endNode = end;
+        WireNode duplicateStart = null;
+        WireNode duplicateEnd = null;
 
         if (start.duplicateOnMove(this))
-            startNode = start.duplicate(this, wireManager);
+        {
+            duplicateStart = start.duplicate(this, wireManager);
+            WireSegment segment = (start instanceof WireNode) ? ((WireNode) start).getSegmentTowardX(x) : null;
+            if (segment != null)
+            {
+                segment.replaceNode(start, duplicateStart);
+                duplicateStart.addSegment(segment);
+            }
+        }
         if (end.duplicateOnMove(this))
-            endNode = end.duplicate(this, wireManager);
+        {
+            duplicateEnd = end.duplicate(this, wireManager);
+            WireSegment segment = (end instanceof WireNode) ? ((WireNode) end).getSegmentTowardX(x) : null;
+            if (segment != null)
+            {
+                segment.replaceNode(end, duplicateEnd);
+                duplicateEnd.addSegment(segment);
+            }
+        }
 
-        ((WireNode) startNode).x = x;
-        ((WireNode) endNode).x = x;
+        if (duplicateStart != null)
+            duplicateStart.x = x;
+        else
+            ((WireNode) start).x = x;
+
+        if (duplicateEnd != null)
+            duplicateEnd.x = x;
+        else
+            ((WireNode) end).x = x;
     }
 
     public void setY(int y, WireManager wireManager)
@@ -58,16 +79,49 @@ public class WireSegment extends View
         if (y == start.getY())
             return;
 
-        IWireNode startNode = start;
-        IWireNode endNode = end;
+        WireNode duplicateStart = null;
+        WireNode duplicateEnd = null;
 
         if (start.duplicateOnMove(this))
-            startNode = start.duplicate(this, wireManager);
+        {
+            duplicateStart = start.duplicate(this, wireManager);
+            WireSegment segment = (start instanceof WireNode) ? ((WireNode) start).getSegmentTowardY(y) : null;
+            if (segment != null)
+            {
+                segment.replaceNode(start, duplicateStart);
+                duplicateStart.addSegment(segment);
+            }
+        }
         if (end.duplicateOnMove(this))
-            endNode = end.duplicate(this, wireManager);
+        {
+            duplicateEnd = end.duplicate(this, wireManager);
+            WireSegment segment = (end instanceof WireNode) ? ((WireNode) end).getSegmentTowardY(y) : null;
+            if (segment != null)
+            {
+                segment.replaceNode(end, duplicateEnd);
+                duplicateEnd.addSegment(segment);
+            }
+        }
 
-        ((WireNode) startNode).y = y;
-        ((WireNode) endNode).y = y;
+        if (duplicateStart != null)
+            duplicateStart.y = y;
+        else
+            ((WireNode) start).y = y;
+
+        if (duplicateEnd != null)
+            duplicateEnd.y = y;
+        else
+            ((WireNode) end).y = y;
+    }
+
+    public void replaceNode(IWireNode oldNode, IWireNode newNode)
+    {
+        if (start == oldNode)
+            start = newNode;
+        else if (end == oldNode)
+            end = newNode;
+        else
+            throw new IllegalArgumentException("Node not found in segment");
     }
 
     public boolean isVertical()
@@ -91,9 +145,16 @@ public class WireSegment extends View
             return new Rect(start.getX() - BOUNDS_PADDING, start.getY() - BOUNDS_PADDING, end.getX() + BOUNDS_PADDING, end.getY() + BOUNDS_PADDING);
     }
 
+    public float getLength()
+    {
+        int dx = end.getX() - start.getX();
+        int dy = end.getY() - start.getY();
+        return (float) Math.sqrt(dx * dx + dy * dy);
+    }
+
     @Override
     public String toString()
     {
-        return getStart().toString() + " - " + getEnd().toString();
+        return start.toString() + " - " + end.toString();
     }
 }

@@ -1,5 +1,5 @@
 package sriracha.frontend.model.elements;
 
-public class Resistor extends TwoPortElement
+public class Capacitor extends TwoPortElement
 {
 }

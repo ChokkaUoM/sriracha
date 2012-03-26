@@ -14,7 +14,8 @@
                 />
     </RelativeLayout>
 
-    <RelativeLayout style="@style/CircuitMenuItem">
+    <RelativeLayout style="@style/CircuitMenuItem"
+                    android:onClick="rlcOnClick">
         <ImageView style="@style/CircuitMenuItemImage"
                    android:id="@+id/rlc_img"
                    android:src="@drawable/circuitmenu_rlc"

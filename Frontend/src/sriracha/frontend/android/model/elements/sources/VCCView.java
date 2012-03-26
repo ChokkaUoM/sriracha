@@ -3,14 +3,13 @@ package sriracha.frontend.android.model.elements.sources;
 import android.content.*;
 import sriracha.frontend.*;
 import sriracha.frontend.android.model.*;
-import sriracha.frontend.android.model.CircuitElementPortView;
 import sriracha.frontend.model.*;
 
-public class VoltageSourceView extends CircuitElementView
+public class VCCView extends CircuitElementView
 {
     CircuitElementPortView ports[];
 
-    public VoltageSourceView(Context context, CircuitElement element, float positionX, float positionY)
+    public VCCView(Context context, CircuitElement element, float positionX, float positionY)
     {
         super(context, element, positionX, positionY);
     }
@@ -18,7 +17,7 @@ public class VoltageSourceView extends CircuitElementView
     @Override
     public int getDrawableId()
     {
-        return R.drawable.sources_voltage;
+        return R.drawable.sources_vcc;
     }
 
     @Override
@@ -27,7 +26,6 @@ public class VoltageSourceView extends CircuitElementView
         if (ports == null)
         {
             ports = new CircuitElementPortView[]{
-                    new CircuitElementPortView(this, 0.5f, 0),
                     new CircuitElementPortView(this, 0.5f, 1),
             };
         }
@@ -37,12 +35,12 @@ public class VoltageSourceView extends CircuitElementView
     @Override
     public String getType()
     {
-        return "Voltage Source";
+        return "VCC";
     }
 
     @Override
     public String getNameTemplate()
     {
-        return "V%d";
+        return "VCC%d";
     }
 }

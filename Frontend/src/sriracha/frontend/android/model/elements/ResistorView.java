@@ -7,6 +7,8 @@ import sriracha.frontend.model.*;
 
 public class ResistorView extends CircuitElementView
 {
+    CircuitElementPortView ports[];
+
     public ResistorView(Context context, CircuitElement element, float positionX, float positionY)
     {
         super(context, element, positionX, positionY);
@@ -21,8 +23,14 @@ public class ResistorView extends CircuitElementView
     @Override
     public CircuitElementPortView[] getElementPorts()
     {
-        // TODO
-        return new CircuitElementPortView[0];
+        if (ports == null)
+        {
+            ports = new CircuitElementPortView[]{
+                    new CircuitElementPortView(this, 0.5f, 0),
+                    new CircuitElementPortView(this, 0.5f, 1),
+            };
+        }
+        return ports;
     }
 
     @Override

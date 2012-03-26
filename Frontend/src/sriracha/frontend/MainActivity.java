@@ -33,6 +33,11 @@ public class MainActivity extends Activity
     {
         showCircuitMenu(R.id.sources_and_ground);
     }
+    
+    public void rlcOnClick(View view)
+    {
+        showCircuitMenu(R.id.rlc);
+    }
 
     public void backButtonOnClick(View view)
     {

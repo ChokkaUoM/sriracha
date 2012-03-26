@@ -1,6 +1,7 @@
 package sriracha.frontend.android;
 
 import android.content.*;
+import android.graphics.*;
 import android.view.*;
 
 import java.util.*;
@@ -44,6 +45,8 @@ public class WireManager
         from.addSegment(segment);
         to.addSegment(segment);
         addSegment(segment);
+
+        consolidateNodes();
     }
 
     public WireNode splitSegment(WireSegment segment, int x, int y)
@@ -73,12 +76,72 @@ public class WireManager
         return node;
     }
 
+    public void consolidateNodes()
+    {
+        HashMap<Point, ArrayList<IWireNode>> toConsolidate = new HashMap<Point, ArrayList<IWireNode>>();
+
+        for (int i = 0; i < nodes.size(); i++)
+        {
+            IWireNode node1 = nodes.get(i);
+            for (int j = i + 1; j < nodes.size(); j++)
+            {
+                IWireNode node2 = nodes.get(j);
+
+                if (!(node1 instanceof WireNode) || !(node2 instanceof WireNode))
+                    continue;
+
+                // If two nodes have the same coordinates, we store them in a hashtable.
+                // The hashtable is indexed by point, and each entry contains a list of
+                // nodes that all have the same coordinates.
+                if (node1.getX() == node2.getX() && node1.getY() == node2.getY())
+                {
+                    Point point = new Point(node1.getX(), node1.getY());
+                    if (!toConsolidate.containsKey(point))
+                        toConsolidate.put(point, new ArrayList<IWireNode>());
+
+                    ArrayList<IWireNode> nodeList = toConsolidate.get(point);
+                    if (!nodeList.contains(node1))
+                        nodeList.add(node1);
+                    if (!nodeList.contains(node2))
+                        nodeList.add(node2);
+                }
+            }
+        }
+
+        for (ArrayList<IWireNode> nodeList : toConsolidate.values())
+        {
+            // When consolidating nodes, each affected segment must have the
+            // relevant node replaced.
+
+            // Create a new node to replace all the old ones.
+            WireNode newNode = new WireNode(nodeList.get(0).getX(), nodeList.get(0).getY());
+            nodes.add(newNode);
+
+            for (IWireNode node : nodeList)
+            {
+                for (WireSegment segment : node.getSegments())
+                {
+                    if (segment.getLength() == 0)
+                    {
+                        removeSegment(segment);
+                    }
+                    else
+                    {
+                        newNode.addSegment(segment);
+                        segment.replaceNode(node, newNode);
+                    }
+                }
+                nodes.remove(node);
+            }
+        }
+    }
+
     public void addSegment(WireSegment segment)
     {
         segments.add(segment);
         canvasView.addView(segment);
     }
-    
+
     private void removeSegment(WireSegment segment)
     {
         segments.remove(segment);

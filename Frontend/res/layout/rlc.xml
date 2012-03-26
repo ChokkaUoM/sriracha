@@ -13,14 +13,14 @@
     <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
         <ImageView style="@style/CircuitMenuItemImage.Element"
                    android:layout_alignParentLeft="true"
-                   android:src="@drawable/circuitmenu_voltage"
-                   android:id="@+id/sources_voltage"
+                   android:src="@drawable/rlc_resistor"
+                   android:id="@+id/rlc_resistor"
                    android:onClick="circuitElementOnClick"
                 />
         <ImageView style="@style/CircuitMenuItemImage.Element"
                    android:layout_alignParentRight="true"
-                   android:src="@drawable/circuitmenu_current"
-                   android:id="@+id/sources_current"
+                   android:src="@drawable/rlc_capacitor"
+                   android:id="@+id/rlc_capacitor"
                    android:onClick="circuitElementOnClick"
                 />
     </RelativeLayout>
@@ -28,29 +28,8 @@
     <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
         <ImageView style="@style/CircuitMenuItemImage.Element"
                    android:layout_alignParentLeft="true"
-                   android:src="@drawable/circuitmenu_dependent_voltage"
-                   android:id="@+id/sources_dependent_voltage"
-                   android:onClick="circuitElementOnClick"
-                />
-        <ImageView style="@style/CircuitMenuItemImage.Element"
-                   android:layout_alignParentRight="true"
-                   android:src="@drawable/circuitmenu_dependent_current"
-                   android:id="@+id/sources_dependent_current"
-                   android:onClick="circuitElementOnClick"
-                />
-    </RelativeLayout>
-
-    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
-        <ImageView style="@style/CircuitMenuItemImage.Element"
-                   android:layout_alignParentLeft="true"
-                   android:src="@drawable/circuitmenu_vcc"
-                   android:id="@+id/sources_vcc"
-                   android:onClick="circuitElementOnClick"
-                />
-        <ImageView style="@style/CircuitMenuItemImage.Element"
-                   android:layout_alignParentRight="true"
-                   android:src="@drawable/circuitmenu_ground"
-                   android:id="@+id/sources_ground"
+                   android:src="@drawable/rlc_inductor"
+                   android:id="@+id/rlc_inductor"
                    android:onClick="circuitElementOnClick"
                 />
     </RelativeLayout>

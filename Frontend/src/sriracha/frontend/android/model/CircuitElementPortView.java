@@ -3,6 +3,8 @@ package sriracha.frontend.android.model;
 import android.graphics.*;
 import sriracha.frontend.android.*;
 
+import java.util.*;
+
 public class CircuitElementPortView implements IWireNode
 {
     private CircuitElementView element;
@@ -52,6 +54,11 @@ public class CircuitElementPortView implements IWireNode
     public void replaceSegment(WireSegment oldSegment, WireSegment newSegment)
     {
     }
+    @Override
+    public ArrayList<WireSegment> getSegments()
+    {
+        return new ArrayList<WireSegment>();
+    }
 
     @Override
     public boolean duplicateOnMove(WireSegment segment)
@@ -65,10 +72,7 @@ public class CircuitElementPortView implements IWireNode
         wireManager.addNode(newNode);
 
         // Connect the segment that's being moved to the new node.
-        if (segment.getStart() == this)
-            segment.setStart(newNode);
-        else
-            segment.setEnd(newNode);
+        segment.replaceNode(this, newNode);
         newNode.addSegment(segment);
 
         // Connect the old node and the new node with a brand new segment
