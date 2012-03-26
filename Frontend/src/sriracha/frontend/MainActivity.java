@@ -69,6 +69,11 @@ public class MainActivity extends Activity
     {
         circuitDesigner.deleteSelectedElement();
     }
+    
+    public void deleteWireOnClick(View view)
+    {
+        circuitDesigner.deleteSelectedWire();
+    }
 
     public void circuitElementOnClick(View view)
     {

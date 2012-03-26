@@ -9,6 +9,7 @@
         <include android:id="@+id/sources_and_ground" layout="@layout/sources_and_ground"/>
         <include android:id="@+id/rlc" layout="@layout/rlc"/>
         <include android:id="@+id/element_properties" layout="@layout/element_properties"/>
+        <include android:id="@+id/wire_properties" layout="@layout/wire_properties"/>
     </RelativeLayout>
     <sriracha.frontend.android.CircuitDesignerCanvas android:layout_width="fill_parent" android:layout_height="fill_parent"
                     android:background="#DDD"

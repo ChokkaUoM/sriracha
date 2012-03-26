@@ -119,7 +119,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         {
             case MotionEvent.ACTION_DOWN:
             {
-                selectedSegment = wireManager.getClosestSegment(motionEvent.getX(), motionEvent.getY());
+                selectedSegment = wireManager.getSegmentByPosition(motionEvent.getX(), motionEvent.getY());
                 if (selectedSegment == null)
                     return true;
 
@@ -175,13 +175,15 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     @Override
     public boolean onSingleTapUp(MotionEvent motionEvent)
     {
+        wireManager.selectSegment(null);
+        
         int snappedX = snap(motionEvent.getX());
         int snappedY = snap(motionEvent.getY());
 
         if (getCursor() == CursorState.WIRE && lastInsertedNode != null)
         {
             // Possibilities: clicked on empty space, clicked on existing node, or clicked on existing wire segment.
-            WireSegment segment = wireManager.getClosestSegment(snappedX, snappedY);
+            WireSegment segment = wireManager.getSegmentByPosition(snappedX, snappedY);
             if (segment == null)
             {
                 // Case 1: empty space.
@@ -207,6 +209,18 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
 
             return true;
         }
+        
+        if (getCursor() == CursorState.HAND)
+        {
+            WireSegment segment = wireManager.getSegmentByPosition(snappedX, snappedY);
+            if (segment != null)
+            {
+                wireManager.selectSegment(segment);
+                deselectElements(null);
+                circuitDesignerMenu.showSubMenu(R.id.wire_properties);
+                return true;
+            }
+        }
 
         if (getCursor() != CursorState.ELEMENT)
             return false;
@@ -229,6 +243,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     @Override
     public void onElementClick(View view, float x, float y)
     {
+        wireManager.selectSegment(null);
         deselectElements(view);
 
         if (getCursor() == CursorState.WIRE)
@@ -275,6 +290,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     {
         setCursorToHand();
         deselectElements(null);
+        wireManager.selectSegment(null);
     }
 
     public CircuitElementView instantiateElement(float positionX, float positionY)
@@ -301,6 +317,18 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
 
         elements.remove(selectedElement);
         canvasView.removeView(selectedElement);
+        canvasView.invalidate();
+
+        deselectAllElements();
+        circuitDesignerMenu.showSubMenu(R.id.circuit_menu);
+    }
+
+    public void deleteSelectedWire()
+    {
+        if (getCursor() != CursorState.HAND)
+            return;
+
+        wireManager.deleteSelectedSegment();
         canvasView.invalidate();
 
         deselectAllElements();

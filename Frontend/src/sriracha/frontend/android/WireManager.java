@@ -148,7 +148,7 @@ public class WireManager
         canvasView.removeView(segment);
     }
 
-    public WireSegment getClosestSegment(float x, float y)
+    public WireSegment getSegmentByPosition(float x, float y)
     {
         for (WireSegment segment : segments)
         {
@@ -156,6 +156,28 @@ public class WireManager
                 return segment;
         }
         return null;
+    }
+    
+    public void selectSegment(WireSegment toSelect)
+    {
+        for (WireSegment segment : segments)
+        {
+            segment.setSelected(segment == toSelect);
+        }
+    }
+    
+    public void deleteSelectedSegment()
+    {
+        for (WireSegment segment : segments)
+        {
+            if (segment.isSelected())
+            {
+                segment.getStart().removeSegment(segment);
+                segment.getEnd().removeSegment(segment);
+                removeSegment(segment);
+                break;
+            }
+        }
     }
 
     public void invalidateAll()

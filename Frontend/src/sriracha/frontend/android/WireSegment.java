@@ -11,17 +11,12 @@ public class WireSegment extends View
     private IWireNode start;
     private IWireNode end;
 
-    private final Paint paint = new Paint();
-
     public WireSegment(Context context, IWireNode start, IWireNode end)
     {
         super(context);
 
         this.start = start;
         this.end = end;
-
-        paint.setColor(Color.GRAY);
-        paint.setStrokeWidth(4);
     }
 
     public IWireNode getStart() { return start; }
@@ -30,6 +25,10 @@ public class WireSegment extends View
     @Override
     protected void onDraw(Canvas canvas)
     {
+        Paint paint = new Paint();
+        paint.setColor(isSelected() ? Color.rgb(0xCC, 0xCC, 0) : Color.GRAY);
+        paint.setStrokeWidth(isSelected() ? 6 : 4);
+
         canvas.drawLine(start.getX(), start.getY(), end.getX(), end.getY(), paint);
         canvas.drawCircle(end.getX(), end.getY(), 4, paint);
     }

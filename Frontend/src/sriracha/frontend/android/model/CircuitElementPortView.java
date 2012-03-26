@@ -54,6 +54,11 @@ public class CircuitElementPortView implements IWireNode
     public void replaceSegment(WireSegment oldSegment, WireSegment newSegment)
     {
     }
+
+    @Override
+    public void removeSegment(WireSegment segment)
+    {
+    }
     @Override
     public ArrayList<WireSegment> getSegments()
     {

@@ -9,6 +9,7 @@ public interface IWireNode
 
     public void addSegment(WireSegment segment);
     public void replaceSegment(WireSegment oldSegment, WireSegment newSegment);
+    public void removeSegment(WireSegment segment);
     public ArrayList<WireSegment> getSegments();
 
     public boolean duplicateOnMove(WireSegment segment);
