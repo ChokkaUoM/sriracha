@@ -8,6 +8,7 @@ import java.util.*;
 public class CircuitElementPortView implements IWireNode
 {
     private CircuitElementView element;
+    private ArrayList<WireSegment> segments = new ArrayList<WireSegment>(4);
 
     private float positionX;
     private float positionY;
@@ -24,10 +25,15 @@ public class CircuitElementPortView implements IWireNode
     public float getUntransformedPositionX() { return positionX; }
     public float getUntransformedPositionY() { return positionY; }
 
-    private float[] getTransformedPosition()
+    public float[] getTransformedPosition()
+    {
+        return transformPosition(element.getOrientation());
+    }
+
+    public float[] transformPosition(float degrees)
     {
         Matrix matrix = new Matrix();
-        matrix.setRotate(element.getOrientation());
+        matrix.setRotate(degrees);
         float[] transformed = new float[2];
         matrix.mapPoints(transformed, new float[]{positionX, positionY});
         return transformed;
@@ -58,21 +64,27 @@ public class CircuitElementPortView implements IWireNode
     @Override
     public void addSegment(WireSegment segment)
     {
+        segments.add(segment);
     }
 
     @Override
     public void replaceSegment(WireSegment oldSegment, WireSegment newSegment)
     {
+        if (!segments.remove(oldSegment))
+            throw new IllegalArgumentException("Segment not found in collection");
+        segments.add(newSegment);
     }
 
     @Override
     public void removeSegment(WireSegment segment)
     {
+        segments.remove(segment);
     }
+
     @Override
     public ArrayList<WireSegment> getSegments()
     {
-        return new ArrayList<WireSegment>();
+        return segments;
     }
 
     @Override

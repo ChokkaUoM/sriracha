@@ -134,6 +134,34 @@ public class WireManager
                 nodes.remove(node);
             }
         }
+
+        // Lastly merge collinear segment
+        ArrayList<IWireNode> toRemove = new ArrayList<IWireNode>();
+        for (IWireNode node : nodes)
+        {
+            if (node instanceof WireNode && node.getSegments().size() == 2)
+            {
+                WireSegment seg1 = node.getSegments().get(0);
+                WireSegment seg2 = node.getSegments().get(1);
+                if (!(seg1.isVertical() ^ seg2.isVertical())) // Both vertical or both horizontal
+                {
+                    if (seg2.getStart() == node)
+                    {
+                        seg2.getEnd().replaceSegment(seg2, seg1);
+                        seg1.replaceNode(node, seg2.getEnd());
+                    }
+                    else
+                    {
+                        seg2.getStart().replaceSegment(seg2, seg1);
+                        seg1.replaceNode(node, seg2.getStart());
+                    }
+
+                    toRemove.add(node);
+                    removeSegment(seg2);
+                }
+            }
+        }
+        nodes.removeAll(toRemove);
     }
 
     public void addSegment(WireSegment segment)
@@ -157,7 +185,7 @@ public class WireManager
         }
         return null;
     }
-    
+
     public void selectSegment(WireSegment toSelect)
     {
         for (WireSegment segment : segments)
@@ -165,7 +193,7 @@ public class WireManager
             segment.setSelected(segment == toSelect);
         }
     }
-    
+
     public void deleteSelectedSegment()
     {
         for (WireSegment segment : segments)
@@ -175,6 +203,7 @@ public class WireManager
                 segment.getStart().removeSegment(segment);
                 segment.getEnd().removeSegment(segment);
                 removeSegment(segment);
+                consolidateNodes();
                 break;
             }
         }

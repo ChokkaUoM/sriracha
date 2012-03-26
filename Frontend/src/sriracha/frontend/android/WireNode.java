@@ -16,6 +16,12 @@ public class WireNode implements IWireNode
     }
 
     @Override
+    public void addSegment(WireSegment segment)
+    {
+        segments.add(segment);
+    }
+
+    @Override
     public void replaceSegment(WireSegment oldSegment, WireSegment newSegment)
     {
         if (!segments.remove(oldSegment))
@@ -27,12 +33,6 @@ public class WireNode implements IWireNode
     public void removeSegment(WireSegment segment)
     {
         segments.remove(segment);
-    }
-
-    @Override
-    public void addSegment(WireSegment segment)
-    {
-        segments.add(segment);
     }
 
     @Override

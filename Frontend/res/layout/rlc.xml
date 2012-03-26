@@ -13,13 +13,13 @@
     <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
         <ImageView style="@style/CircuitMenuItemImage.Element"
                    android:layout_alignParentLeft="true"
-                   android:src="@drawable/rlc_resistor"
+                   android:src="@drawable/circuitmenu_resistor"
                    android:id="@+id/rlc_resistor"
                    android:onClick="circuitElementOnClick"
                 />
         <ImageView style="@style/CircuitMenuItemImage.Element"
                    android:layout_alignParentRight="true"
-                   android:src="@drawable/rlc_capacitor"
+                   android:src="@drawable/circuitmenu_capacitor"
                    android:id="@+id/rlc_capacitor"
                    android:onClick="circuitElementOnClick"
                 />
@@ -28,7 +28,7 @@
     <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
         <ImageView style="@style/CircuitMenuItemImage.Element"
                    android:layout_alignParentLeft="true"
-                   android:src="@drawable/rlc_inductor"
+                   android:src="@drawable/circuitmenu_inductor"
                    android:id="@+id/rlc_inductor"
                    android:onClick="circuitElementOnClick"
                 />

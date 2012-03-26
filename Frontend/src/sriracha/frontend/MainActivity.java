@@ -1,3 +1,12 @@
+/**
+ * TODO:
+ * Proper duplication of nodes (issue when dragging the top right of a "T" intersection downward.
+ * Also, same issue when rotating elements (causes moving of adjacent nodes).
+ * Moving elements breaks 90 degree constraint.
+ * Wire from main menu doesn't work.
+ * Occasional "Point not on segment" exceptions when playing around
+ */
+
 package sriracha.frontend;
 
 import android.app.Activity;
@@ -33,7 +42,7 @@ public class MainActivity extends Activity
     {
         showCircuitMenu(R.id.sources_and_ground);
     }
-    
+
     public void rlcOnClick(View view)
     {
         showCircuitMenu(R.id.rlc);
@@ -64,12 +73,12 @@ public class MainActivity extends Activity
     {
         circuitDesigner.setCursorToHand();
     }
-    
+
     public void deleteOnClick(View view)
     {
         circuitDesigner.deleteSelectedElement();
     }
-    
+
     public void deleteWireOnClick(View view)
     {
         circuitDesigner.deleteSelectedWire();
@@ -83,7 +92,7 @@ public class MainActivity extends Activity
     public void wrenchMenuOnClick(View view)
     {
     }
-    
+
     public void flipHorizontalOnClick(View view)
     {
     }
@@ -91,12 +100,12 @@ public class MainActivity extends Activity
     public void flipVerticalOnClick(View view)
     {
     }
-    
+
     public void rotateCCWOnClick(View view)
     {
         circuitDesigner.rotateSelectedElement(false);
     }
-    
+
     public void rotateCWOnClick(View view)
     {
         circuitDesigner.rotateSelectedElement(true);

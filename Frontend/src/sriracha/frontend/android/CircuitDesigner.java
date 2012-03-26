@@ -176,7 +176,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     public boolean onSingleTapUp(MotionEvent motionEvent)
     {
         wireManager.selectSegment(null);
-        
+
         int snappedX = snap(motionEvent.getX());
         int snappedY = snap(motionEvent.getY());
 
@@ -209,7 +209,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
 
             return true;
         }
-        
+
         if (getCursor() == CursorState.HAND)
         {
             WireSegment segment = wireManager.getSegmentByPosition(snappedX, snappedY);
@@ -297,12 +297,58 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     {
         return activator.instantiateElement(getSelectedItemId(), positionX, positionY);
     }
-    
+
     public void rotateSelectedElement(boolean cw)
     {
         if (selectedElement != null)
         {
-            selectedElement.rotate(cw ? 90 : -90);
+            int rotation = cw ? 90 : -90;
+            float newOrientation = (selectedElement.getOrientation() + rotation) % 360;
+            for (CircuitElementPortView port : selectedElement.getElementPorts())
+            {
+                for (WireSegment segment : port.getSegments())
+                {
+                    IWireNode otherNode = segment.getStart() != port ? segment.getStart() : segment.getEnd();
+                    if (segment.isVertical())
+                    {
+                        int dx = (int) (selectedElement.getWidth() * (port.transformPosition(newOrientation)[0] - port.getTransformedPosition()[0]));
+                        int newX = segment.getStart().getX() + dx;
+                        if (dx != 0)
+                        {
+                            if (otherNode.duplicateOnMove(segment))
+                            {
+                                WireNode duplicate = otherNode.duplicate(segment, wireManager);
+                                duplicate.x = newX;
+                            }
+                            else
+                            {
+                                ((WireNode) otherNode).x = newX;
+                            }
+                            segment.invalidate();
+                        }
+                    }
+                    else
+                    {
+                        int dy = (int) (selectedElement.getHeight() * (port.transformPosition(newOrientation)[1] - port.getTransformedPosition()[1]));
+                        int newY = segment.getStart().getY() + dy;
+                        if (dy != 0)
+                        {
+                            if (otherNode.duplicateOnMove(segment))
+                            {
+                                WireNode duplicate = otherNode.duplicate(segment, wireManager);
+                                duplicate.y = newY;
+                            }
+                            else
+                            {
+                                ((WireNode) otherNode).y = newY;
+                            }
+                            segment.invalidate();
+                        }
+                    }
+                }
+            }
+            selectedElement.rotate(rotation);
+            wireManager.consolidateNodes();
         }
     }
 
