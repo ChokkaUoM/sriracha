@@ -1,16 +1,14 @@
 package sriracha.frontend.android;
 
-import android.*;
 import android.content.*;
 import android.util.*;
 import android.view.*;
 import android.widget.*;
-import sriracha.frontend.*;
 import sriracha.frontend.R;
 import sriracha.frontend.android.model.*;
 import sriracha.frontend.model.*;
 
-public class ElementPropertiesView extends RelativeLayout
+public class ElementPropertiesView extends LinearLayout
 {
     public ElementPropertiesView(Context context)
     {
@@ -28,39 +26,47 @@ public class ElementPropertiesView extends RelativeLayout
     public void showPropertiesFor(CircuitElementView circuitElementView)
     {
         removeAllViews();
+        EditText lastEditText = null;
         for (Property property : circuitElementView.getElement().getProperties())
         {
             if (property instanceof ScalarProperty)
             {
                 final ScalarProperty scalarProperty = (ScalarProperty) property;
-                final View view = LayoutInflater.from(getContext()).inflate(R.layout.element_scalar_property, this, true);
-                ((TextView) view.findViewById(R.id.property_name)).setText(scalarProperty.getName());
-                ((TextView) view.findViewById(R.id.property_unit)).setText(scalarProperty.getUnit());
+                final View scalarPropertyView = LayoutInflater.from(getContext())
+                        .inflate(R.layout.element_scalar_property, this, false);
+                final TextView propertyName = (TextView) scalarPropertyView.findViewById(R.id.property_name);
+                final TextView propertyUnit = (TextView) scalarPropertyView.findViewById(R.id.property_unit);
+                final ListView unitsListView = (ListView) scalarPropertyView.findViewById(R.id.property_unit_list);
+                final EditText propertyValue = (EditText) scalarPropertyView.findViewById(R.id.property_value);
 
-                final ListView unitContainer = (ListView) view.findViewById(R.id.property_unit_list);
-                unitContainer.setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, scalarProperty.getUnitsList()));
-                unitContainer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                addView(scalarPropertyView);
+
+                propertyName.setText(scalarProperty.getName());
+                propertyUnit.setText(scalarProperty.getUnit());
+
+                unitsListView.setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, scalarProperty.getUnitsList()));
+                unitsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+                {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View textView, int i, long l)
                     {
                         adapterView.setVisibility(GONE);
-                        scalarProperty.setUnit(((TextView)textView).getText().toString());
-                        ((TextView) view.findViewById(R.id.property_unit)).setText(scalarProperty.getUnit());
+                        scalarProperty.setUnit(((TextView) textView).getText().toString());
+                        propertyUnit.setText(scalarProperty.getUnit());
                     }
                 });
 
-                view.findViewById(R.id.property_unit).setOnClickListener(new OnClickListener()
+                propertyUnit.setOnClickListener(new OnClickListener()
                 {
                     @Override
                     public void onClick(View view)
                     {
-                        unitContainer.setVisibility(VISIBLE);
+                        unitsListView.setVisibility(VISIBLE);
                     }
                 });
 
-                EditText input = (EditText) view.findViewById(R.id.property_value);
-                input.setText(property.getValue());
-                input.setOnEditorActionListener(new TextView.OnEditorActionListener()
+                propertyValue.setText(property.getValue());
+                propertyValue.setOnEditorActionListener(new TextView.OnEditorActionListener()
                 {
                     @Override
                     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent)
@@ -76,8 +82,24 @@ public class ElementPropertiesView extends RelativeLayout
                         return true;
                     }
                 });
+
+                if (lastEditText != null)
+                {
+                    if (propertyValue.getId() == NO_ID)
+                    {
+                        int id = 0;
+                        while (findViewById(id) != null)
+                        {
+                            id++;
+                        }
+                        propertyValue.setId(id);
+                    }
+                    lastEditText.setNextFocusForwardId(propertyValue.getId());
+                    lastEditText.setNextFocusRightId(propertyValue.getId());
+                    lastEditText.setNextFocusDownId(propertyValue.getId());
+                }
+                lastEditText = propertyValue;
             }
         }
-
     }
 }

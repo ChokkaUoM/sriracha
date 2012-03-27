@@ -20,8 +20,10 @@
     </RelativeLayout>
 
     <sriracha.frontend.android.ElementPropertiesView
-            android:layout_width="fill_parent" android:layout_height="wrap_content"
-            android:id="@+id/properties_current_property"/>
+            android:layout_width="fill_parent" android:layout_height="400dip"
+            android:id="@+id/properties_current_property"
+            android:orientation="vertical"
+            />
 
     <RelativeLayout style="@style/CircuitMenuItem.SubMenu"
                     android:onClick="deleteOnClick"
