@@ -4,36 +4,42 @@ import sriracha.frontend.model.*;
 
 public class Capacitor extends TwoPortElement
 {
+    private Property[] properties;
+
     private float capacitance;
     private String unit;
 
     @Override
     public Property[] getProperties()
     {
-        return new Property[]{
-                new ScalarProperty("Capacitance", "F")
-                {
-                    @Override
-                    public String getValue()
+        if (properties == null)
+        {
+            properties = new Property[]{
+                    new ScalarProperty("Capacitance", "F")
                     {
-                        return capacitance == 0 ? "" : String.valueOf(capacitance);
+                        @Override
+                        public String getValue()
+                        {
+                            return capacitance == 0 ? "" : String.valueOf(capacitance);
+                        }
+                        @Override
+                        public void trySetValue(String value)
+                        {
+                            capacitance = Float.parseFloat(value);
+                        }
+                        @Override
+                        public String getUnit()
+                        {
+                            return unit == null || unit.isEmpty() ? this.getBaseUnit() : unit;
+                        }
+                        @Override
+                        public void setUnit(String newUnit)
+                        {
+                            unit = newUnit;
+                        }
                     }
-                    @Override
-                    public void trySetValue(String value)
-                    {
-                        capacitance = Float.parseFloat(value);
-                    }
-                    @Override
-                    public String getUnit()
-                    {
-                        return unit == null || unit.isEmpty() ? this.getBaseUnit() : unit;
-                    }
-                    @Override
-                    public void setUnit(String newUnit)
-                    {
-                        unit = newUnit;
-                    }
-                }
-        };
+            };
+        }
+        return properties;
     }
 }

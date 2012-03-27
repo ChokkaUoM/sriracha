@@ -2,6 +2,9 @@ package sriracha.frontend.model;
 
 abstract public class ScalarProperty extends Property
 {
+    abstract public String getUnit();
+    abstract public void setUnit(String unit);
+
     private String name;
     private String baseUnit;
 

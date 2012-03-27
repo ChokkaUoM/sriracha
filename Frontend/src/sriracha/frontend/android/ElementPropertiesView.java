@@ -7,6 +7,7 @@ import android.widget.*;
 import sriracha.frontend.R;
 import sriracha.frontend.android.model.*;
 import sriracha.frontend.model.*;
+import sriracha.frontend.model.elements.*;
 
 public class ElementPropertiesView extends LinearLayout
 {
@@ -26,7 +27,6 @@ public class ElementPropertiesView extends LinearLayout
     public void showPropertiesFor(CircuitElementView circuitElementView)
     {
         removeAllViews();
-        EditText lastEditText = null;
         for (Property property : circuitElementView.getElement().getProperties())
         {
             if (property instanceof ScalarProperty)
@@ -82,23 +82,18 @@ public class ElementPropertiesView extends LinearLayout
                         return true;
                     }
                 });
+            }
+            else if (property instanceof BooleanProperty)
+            {
+                final BooleanProperty booleanProperty = (BooleanProperty) property;
+                final View booleanPropertyView = LayoutInflater.from(getContext())
+                        .inflate(R.layout.element_boolean_property, this, false);
+                final CheckBox propertyValue = (CheckBox) booleanPropertyView.findViewById(R.id.property_value);
 
-                if (lastEditText != null)
-                {
-                    if (propertyValue.getId() == NO_ID)
-                    {
-                        int id = 0;
-                        while (findViewById(id) != null)
-                        {
-                            id++;
-                        }
-                        propertyValue.setId(id);
-                    }
-                    lastEditText.setNextFocusForwardId(propertyValue.getId());
-                    lastEditText.setNextFocusRightId(propertyValue.getId());
-                    lastEditText.setNextFocusDownId(propertyValue.getId());
-                }
-                lastEditText = propertyValue;
+                addView(booleanPropertyView);
+
+                propertyValue.setText(booleanProperty.getName());
+                propertyValue.setChecked(!booleanProperty.getValue().isEmpty());
             }
         }
     }
