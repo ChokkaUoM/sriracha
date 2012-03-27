@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import sriracha.frontend.android.EpicTouchListener;
 
 
 public class Graph extends FrameLayout
@@ -73,7 +74,8 @@ public class Graph extends FrameLayout
 
 
 
-    private class GraphGestureListener extends EpicTouchListener{
+    private class GraphGestureListener extends EpicTouchListener
+    {
 
         @Override
         public boolean onSingleFingerMove(float distanceX, float distanceY)
@@ -82,6 +84,17 @@ public class Graph extends FrameLayout
             double yPush = distanceY*yAxis.getPCR();
             yAxis.setRange(yAxis.getMinValue() + yPush, yAxis.getMaxValue() + yPush);
             xAxis.setRange(xAxis.getMinValue() - xPush, xAxis.getMaxValue() - xPush);
+            requestLayout();
+
+            return true;
+        }
+
+
+        @Override
+        protected boolean onScale(float xFactor, float yFactor)
+        {
+            yAxis.setRange(yAxis.getMinValue() * yFactor, yAxis.getMaxValue() * yFactor);
+            xAxis.setRange(xAxis.getMinValue() * xFactor, xAxis.getMaxValue() * xFactor);
             requestLayout();
 
             return true;

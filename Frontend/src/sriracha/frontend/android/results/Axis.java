@@ -71,20 +71,10 @@ public class Axis extends LinearLayout {
     }
 
     
-    private boolean shouldFlip(int oldAxisOffset, int newAxisOffset){
-        ViewGroup parent = (ViewGroup) getParent();
-        int mid = getOrientation() == VERTICAL ? parent.getWidth() / 2 :  parent.getHeight() / 2;       
-        return (oldAxisOffset < mid && newAxisOffset > mid) || (newAxisOffset < mid && oldAxisOffset > mid);
-    }
-
-    
     public void setAxisOffset(int axisOffset){
-        int oldOffset = this.axisOffset;
         this.axisOffset = axisOffset;
-        if(shouldFlip(oldOffset , axisOffset)){
-            flipLabelsSide();
-        }
 
+        updateLabelsSide();
         updateEdgeOffset();
     }
 
@@ -128,9 +118,15 @@ public class Axis extends LinearLayout {
     /**
      * Changes the labels from one side of the axis line to the other
      */
-    private void flipLabelsSide() {
-        labelSide = 1 - labelSide;
-        updateLabelAttributes();
+    private void updateLabelsSide() {
+        ViewGroup parent = (ViewGroup) getParent();
+        int mid = getOrientation() == VERTICAL ? parent.getWidth() / 2 :  parent.getHeight() / 2;
+        int side =  getOrientation() == VERTICAL ? axisOffset > mid ? 1 : 0 : axisOffset >= mid ? 1 : 0;
+        if(labelSide != side){
+            labelSide = side;
+            updateLabelAttributes();
+        }
+
     }
 
 
