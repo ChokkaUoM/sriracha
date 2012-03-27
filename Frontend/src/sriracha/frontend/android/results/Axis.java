@@ -1,4 +1,4 @@
-package com.example;
+package sriracha.frontend.android.results;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import sriracha.frontend.R;
 
 import java.text.DecimalFormat;
 
@@ -190,7 +191,6 @@ public class Axis extends LinearLayout {
                 TextView label = getLabel(i);
                 int top = i*space;
                 label.layout(left, top, left + width - lineSpace, top + label.getMeasuredHeight());
-              //  label.set
             }
         }else{
             int space =  width / getChildCount();

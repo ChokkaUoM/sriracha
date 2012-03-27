@@ -1,4 +1,4 @@
-package com.example;
+package sriracha.frontend.android.results;
 
 import android.content.Context;
 import android.util.AttributeSet;

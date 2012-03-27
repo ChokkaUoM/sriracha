@@ -1,4 +1,4 @@
-package com.example;
+package sriracha.frontend.android.results;
 
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,12 +23,6 @@ public abstract class EpicTouchListener implements View.OnTouchListener
                     sfx = motionEvent.getX();
                     sfy = motionEvent.getY();
 
-                    if(sfx == 0 && sfy == 0){
-                        int jj = 34;
-                        jj++;
-                    }
-
-
                     onSingleFingerDown(sfx, sfy);
                     return true;
                 }
@@ -40,11 +34,6 @@ public abstract class EpicTouchListener implements View.OnTouchListener
             {
 
                 if(motionEvent.getPointerCount() == 1){
-
-                    if(sfy == 0 && sfx == 0){
-                        int jj = 34;
-                        jj++;
-                    }
 
                     float oldx = sfx, oldy = sfy;
                     sfx = motionEvent.getX();
