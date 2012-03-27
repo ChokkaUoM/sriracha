@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+              android:id="@+id/property_name"
+            />
+    <EditText android:layout_width="80dip" android:layout_height="wrap_content"
+              android:id="@+id/property_value"
+              android:layout_below="@id/property_name"
+              android:inputType="numberDecimal"
+            />
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+              android:id="@+id/property_unit"
+              android:layout_below="@id/property_name"
+              android:layout_toRightOf="@id/property_value"
+              android:layout_marginLeft="10dip"
+              android:textSize="32dip"
+            />
+    <ListView android:layout_width="wrap_content" android:layout_height="wrap_content"
+              android:id="@+id/property_unit_list"
+              android:layout_marginLeft="20dip"
+              android:layout_marginRight="20dip"
+              android:visibility="gone"
+            />
+</merge>

@@ -59,6 +59,11 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
         setOnLongClickListener(this);
     }
 
+    public CircuitElement getElement()
+    {
+        return element;
+    }
+
     public float getPositionX() { return positionX; }
     public float getPositionY() { return positionY; }
 

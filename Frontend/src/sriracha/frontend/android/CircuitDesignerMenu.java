@@ -39,6 +39,8 @@ public class CircuitDesignerMenu
         
         type.setText(selectedElement.getType());
         name.setText(String.format(selectedElement.getNameTemplate(), 1));
+
+        ((ElementPropertiesView)(getSelectedSubMenu().findViewById(R.id.properties_current_property))).showPropertiesFor(selectedElement);
     }
 
     public ViewGroup getSelectedSubMenu()

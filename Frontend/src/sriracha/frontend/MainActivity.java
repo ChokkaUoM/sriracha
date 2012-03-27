@@ -1,8 +1,8 @@
 /**
  * TODO:
+ * ===Moving elements breaks 90 degree constraint.===
  * Proper duplication of nodes (issue when dragging the top right of a "T" intersection downward.
  * Also, same issue when rotating elements (causes moving of adjacent nodes).
- * Moving elements breaks 90 degree constraint.
  * Wire from main menu doesn't work.
  * Occasional "Point not on segment" exceptions when playing around
  */

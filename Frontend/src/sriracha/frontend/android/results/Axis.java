@@ -39,11 +39,11 @@ public class Axis extends LinearLayout {
      * Represents either the total label Count, for a linear axis or
      * the number of labels per
      */
-    private int labelCount;
+    protected int labelCount;
 
-    private Paint linePaint;
+    protected Paint linePaint;
 
-    private LayoutInflater inflater;
+    protected LayoutInflater inflater;
 
     protected List<TextView> labelViews;
 
