@@ -1,6 +1,7 @@
-package sriracha.frontend.android.results;
+package com.example;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -8,18 +9,17 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import sriracha.frontend.R;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class Axis extends LinearLayout {
 
-    private static int notchLength = 7;
+    private static int lineSpace = 20;
 
     private int axisOffset;
+    
+    private int edgeOffset;
 
     private boolean logscale;
 
@@ -45,16 +45,24 @@ public class Axis extends LinearLayout {
 
     protected LayoutInflater inflater;
 
-    protected List<TextView> labelViews;
+    public Axis(Context context) {
+        super(context);
+        init();
+    }
 
-    protected Axis(Context context, AttributeSet attrs) {
+    public Axis(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    protected Axis(Context context, AttributeSet attrs, int defStyle) {
+
+    public Axis(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
+    }
+
+    protected TextView getLabel(int i){
+        return (TextView)getChildAt(i);
     }
 
     private int clamp(int value, int min, int max) {
@@ -62,70 +70,74 @@ public class Axis extends LinearLayout {
     }
 
     
-    private boolean shouldFlip(int oldOffset, int newOffset){
+    private boolean shouldFlip(int oldAxisOffset, int newAxisOffset){
         ViewGroup parent = (ViewGroup) getParent();
         int mid = getOrientation() == VERTICAL ? parent.getWidth() / 2 :  parent.getHeight() / 2;       
-        return (oldOffset < mid && newOffset > mid) || (newOffset < mid && oldOffset > mid);
+        return (oldAxisOffset < mid && newAxisOffset > mid) || (newAxisOffset < mid && oldAxisOffset > mid);
     }
 
-    /**
-     * Tells the axis where the line should be drawn relative to the parent object
-     * This call will reposition the axis wrt the parent object
-     * @param offset offset from top or left of parent control for axis line positioning
-     */
-    public void setAxisLineOffset(int offset) {
-        if(shouldFlip(axisOffset, offset)){
+    
+    public void setAxisOffset(int axisOffset){
+        int oldOffset = this.axisOffset;
+        this.axisOffset = axisOffset;
+        if(shouldFlip(oldOffset , axisOffset)){
             flipLabelsSide();
         }
 
+        updateEdgeOffset();
+    }
+
+    public int getEdgeOffset()
+    {
+        return edgeOffset;
+    }
+
+    private void updateEdgeOffset(){
         ViewGroup parent = (ViewGroup) getParent();
 
         int max = getOrientation() == VERTICAL ? parent.getWidth() - getWidth() :  parent.getHeight() - getHeight();
 
-        int edgeDist = (notchLength - 1) / 2;
-
+        int edgeDist = lineSpace / 2;
 
         if (getOrientation() == VERTICAL) {
-            int left = labelSide == 0 ? offset - (getWidth() - edgeDist) : offset - edgeDist;
-            setLeft(clamp(left, 0, max));
+            int left = labelSide == 0 ? axisOffset - (getWidth() - edgeDist) : axisOffset - edgeDist;
+            edgeOffset = clamp(left, 0, max);
         } else {
-            int top = labelSide == 0 ? offset - (getHeight() - edgeDist) : offset - edgeDist;
-            setTop(clamp(top, 0, max));
+            int top = labelSide == 0 ? axisOffset - (getHeight() - edgeDist) : axisOffset - edgeDist;
+            edgeOffset = clamp(top, 0, max);
         }
-
-        invalidate();
     }
 
+
+    private void updateLabelAttributes(){
+        for (int i = 0; i < getChildCount(); i++) {
+            TextView view = (TextView) getChildAt(i);
+            if (getOrientation() == VERTICAL) {
+                view.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f));
+                view.setGravity(labelSide == 0 ? Gravity.RIGHT | Gravity.CENTER_VERTICAL :
+                        Gravity.LEFT | Gravity.CENTER_VERTICAL);
+            } else {
+                view.setLayoutParams(new LayoutParams(0, LayoutParams.MATCH_PARENT, 1f));
+                view.setGravity(labelSide == 0 ? Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL :
+                        Gravity.TOP | Gravity.CENTER_HORIZONTAL );
+            }
+        }
+    }
 
     /**
      * Changes the labels from one side of the axis line to the other
      */
     private void flipLabelsSide() {
         labelSide = 1 - labelSide;
-        for (int i = 0; i < getChildCount(); i++) {
-            TextView view = (TextView) getChildAt(i);
-            if (getOrientation() == VERTICAL) {
-                view.setGravity(labelSide == 1 ? Gravity.RIGHT | Gravity.CENTER_VERTICAL :
-                                                 Gravity.LEFT | Gravity.CENTER_VERTICAL );
-            } else {
-                view.setGravity(labelSide == 1 ? Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL :
-                                                 Gravity.TOP | Gravity.CENTER_HORIZONTAL );
-            }
-        }
+        updateLabelAttributes();
     }
 
-    public Axis(Context context) {
-        super(context);
-        init();
 
-    }
 
     private void init() {
         setWillNotDraw(false);
         inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        labelViews = new ArrayList<TextView>();
         labelCount = 8;//default value
-        setOrientation(VERTICAL);
         linePaint = new Paint();
         linePaint.setARGB(255, 255, 255, 255);
         linePaint.setStrokeWidth(2);
@@ -133,87 +145,140 @@ public class Axis extends LinearLayout {
         maxValue = 1000;
         logscale = false;
         logbase = 10;
-        initLabels();
+        for (int i = 0; i < labelCount; i++) {
+            inflateLabel();
+        }
+
+        updateLabelContents();
+
+        updateLabelAttributes();
 
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
-        int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
-        int children = getChildCount();
-        int desiredWidth, desiredHeight;
-        if (getOrientation() == VERTICAL) {
-            desiredHeight = parentHeight;
-            desiredWidth = notchLength + 90;//change this !!
-        } else {
-            desiredWidth = parentWidth;
-            desiredHeight = notchLength + 60;
-        }
-        setMeasuredDimension(desiredWidth, desiredHeight);
-        for (int i = 0; i < children; i++) {
-            int widthspec = MeasureSpec.makeMeasureSpec(desiredWidth, MeasureSpec.AT_MOST);
-            int heightspec = MeasureSpec.makeMeasureSpec(desiredWidth, MeasureSpec.AT_MOST);
-            getChildAt(i).measure(widthspec, heightspec);
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
+    {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        if(getOrientation() == VERTICAL)
+            setMeasuredDimension(getMeasuredWidth() + lineSpace, getMeasuredHeight());
+        else
+            setMeasuredDimension(getMeasuredWidth(), getMeasuredHeight() + lineSpace);
+    }
+
+
+    @Override
+    public void setOrientation(int orientation)
+    {
+        if(getOrientation() != orientation){
+            super.setOrientation(orientation);
+            updateLabelContents();
+            updateLabelAttributes();
+            requestLayout();
         }
     }
 
-  /*  @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-
-        float spacing  = (top - bottom) / (labelCount - 1);
-        for(int i = 0; i<labelCount; i++){
-            TextView view = labelViews.get(i);
-            LinearLayout l = new LinearLayout(getContext());
-
-            view.setTop(i * );
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b)
+    {
+        int width = r - l;
+        int height = b - t;
+        
+        if(getOrientation() == VERTICAL){
+            int space =  height / getChildCount();
+            int left = labelSide == 0 ? 0 : lineSpace;
+            for(int i =0; i<getChildCount(); i++){
+                TextView label = getLabel(i);
+                int top = i*space;
+                label.layout(left, top, left + width - lineSpace, top + label.getMeasuredHeight());
+              //  label.set
+            }
+        }else{
+            int space =  width / getChildCount();
+            int top = labelSide == 0 ? 0 : lineSpace;
+            for(int i =0; i<getChildCount(); i++){
+                TextView label = getLabel(i);
+                int left = i*space;
+                label.layout(left, top, left + label.getMeasuredWidth(), top + height - lineSpace);
+            }
         }
+
+        
     }
-    */
+
 
     public void setRange(double minValue, double maxValue) {
         if (minValue != this.minValue || maxValue != this.maxValue) {
             this.maxValue = maxValue;
             this.minValue = minValue;
             updateLabelContents();
-            invalidate();
+            requestLayout();
         }
     }
 
     private void updateLabelContents() {
-        double interval = (maxValue - minValue) / (labelCount - 1);
+        double interval = (maxValue - minValue) / (labelCount);
         for (int i = 0; i < labelCount; i++) {
-            labelViews.get(i).setText(axisNumFormat(minValue + interval * i));
+            int index = getOrientation() == VERTICAL ? labelCount - (i+1) : i;
+            getLabel(index).setText(axisNumFormat(minValue + interval * (i+0.5)));
         }
     }
 
-    private TextView inflateLabel() {
-        return (TextView) inflater.inflate(R.layout.results_axis_label, this, true);
+    private void inflateLabel() {
+        inflater.inflate(R.layout.results_axis_label, this, true);
     }
 
 
-    protected void initLabels() {
-        for (int i = 0; i < labelCount; i++) {
-            TextView v = inflateLabel();
-            labelViews.add(v);
-            //  addView(v); //being added by the inflater
+    @Override
+    protected void onDraw(Canvas canvas)
+    {
+        super.onDraw(canvas);   
+        
+        //draw line:
+        int sx=0, sy=0, ex=0, ey=0;
+        if(getOrientation() == VERTICAL){
+            sy = 0;
+            ey = getHeight();
+            sx = ex = labelSide == 0 ? getWidth() - lineSpace/2 : lineSpace/2;
+        }else{
+            sx = 0;
+            ex = getWidth();
+            sy = ey = labelSide == 0 ? getHeight() - lineSpace/2 : lineSpace/2;
         }
+        canvas.drawLine(sx, sy, ex, ey, linePaint);
+        
+        
+        int nlen = (lineSpace -4)/2;
+        //draw notches vis-a-vis the labels
+        for(int i = 0; i < getChildCount(); i++){
+            TextView label = getLabel(i);
+            if(getOrientation() == VERTICAL){
+                sx = labelSide == 0 ? getWidth() - lineSpace + (lineSpace - nlen)/2 : (lineSpace - nlen)/2;
+                ex = sx + nlen;
+                sy = ey = label.getTop() + label.getHeight()/2;
+            }else {
+                sy =  labelSide == 0 ? getHeight() - lineSpace + (lineSpace - nlen)/2 : (lineSpace - nlen)/2;
+                ey = sy + nlen;
+                sx = ex = label.getLeft() + label.getWidth()/2;
+            }
+            canvas.drawLine(sx, sy, ex, ey, linePaint);
+        }
+        
+
     }
+
+
+
 
     public void setLabelCount(int labelCount) {
         int diff = labelCount - this.labelCount;
 
         if (diff < 0) {
             while (diff++ < 0) {
-                TextView view = labelViews.remove(0);
-                removeView(view);
+                removeViewAt(-diff);
             }
         } else if (diff > 0) {
             while (diff-- > 0) {
-                TextView view = inflateLabel();
-                labelViews.add(view);
-                // addView(view);
+                inflateLabel();
             }
         }
 
@@ -221,38 +286,113 @@ public class Axis extends LinearLayout {
         this.labelCount = labelCount;
 
         updateLabelContents();
-        invalidate();
+        requestLayout();
     }
 
     protected static String axisNumFormat(double val) {
         if (val <= 1000 && val >= -1000) {
-            DecimalFormat format = new DecimalFormat("###.##");
+            DecimalFormat format = new DecimalFormat("#.##");
             return format.format(val);
-        } else return null;
+        }
+        DecimalFormat format = new DecimalFormat("0.00E00");
+        return format.format(val);
     }
 
     /**
      * returns pixel offset from the start of this control to the location
-     * corresponding to the axis value requested. If the axis value is outside of the
-     * range, returns -1
+     * corresponding to the axis value requested.
      *
      * @param axisValue value you want to find the pixel offset for
      * @return pixel offset from start (left or top)
      */
     public int pixelsFromCoordinate(double axisValue) {
-        return 0;//todo: implement this
+        double percnt = (axisValue-minValue)/(maxValue - minValue);
+        if(getOrientation() == VERTICAL) percnt = 1-percnt;
+        return (int) (percnt * getPixelRange());
     }
 
     /**
      * returns the coordinate corresponding to pixel offset from the start
-     * of this control to the location requested. If the axis value is outside of the
-     * range, returns -1
+     * of this control to the location requested.
      *
      * @param pixelValue offset value you want to find the coordinate for
      * @return corresponding axis value
      */
     public int coordinateFromPixel(double pixelValue) {
-        return 0;//todo: implement this
+        double range = maxValue - minValue;
+        double percnt = pixelValue / getPixelRange();
+        if(getOrientation() == VERTICAL) percnt = 1-percnt;
+
+        return (int) (percnt * range + minValue);
     }
 
+    private double getPixelRange(){
+        return getOrientation() == VERTICAL ? getHeight()  : getWidth();
+    }
+
+    /**
+     *
+     * @return Pixel to coordinate ratio
+     */
+    public double getPCR(){
+        return (maxValue - minValue) / getPixelRange();
+    }
+
+
+    public boolean isAlignedStart(){
+        return getOrientation() == VERTICAL ? getLeft() == 0 : getTop() == 0;
+    }
+
+    public boolean isAlignedEnd(){
+        ViewGroup parent = (ViewGroup)getParent();
+        return getOrientation() == VERTICAL ? getRight() == parent.getWidth() : getBottom() == parent.getHeight();
+    }
+
+    public double getMinValue()
+    {
+        return minValue;
+    }
+
+    public void setMinValue(double minValue)
+    {
+        setRange(minValue, maxValue);
+    }
+
+    public double getMaxValue()
+    {
+        return maxValue;
+    }
+
+    public void setMaxValue(double maxValue)
+    {
+        setRange(minValue, maxValue);
+    }
+
+    //todo: invalidate proper stuff
+    public boolean isLogscale()
+    {
+        return logscale;
+    }
+
+    //todo: invalidate proper stuff
+    public void setLogscale(boolean logscale)
+    {
+        this.logscale = logscale;
+    }
+
+    public int getLogbase()
+    {
+        return logbase;
+    }
+
+    public int getAxisOffset()
+    {
+        return axisOffset;
+    }
+
+    //todo: invalidate proper stuff
+    public void setLogbase(int logbase)
+    {
+        this.logbase = logbase;
+    }
 }
