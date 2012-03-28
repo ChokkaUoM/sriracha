@@ -32,16 +32,4 @@ public class DependentVoltageSourceView extends CircuitElementView
         }
         return ports;
     }
-
-    @Override
-    public String getType()
-    {
-        return "Dependent Voltage Source";
-    }
-
-    @Override
-    public String getNameTemplate()
-    {
-        return "Vd%d";
-    }
 }

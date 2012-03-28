@@ -32,16 +32,4 @@ public class DependentCurrentSourceView extends CircuitElementView
         }
         return ports;
     }
-
-    @Override
-    public String getType()
-    {
-        return "Dependent Current Source";
-    }
-
-    @Override
-    public String getNameTemplate()
-    {
-        return "Id%d";
-    }
 }

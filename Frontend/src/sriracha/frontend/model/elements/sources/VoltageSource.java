@@ -7,8 +7,6 @@ public class VoltageSource extends TwoPortElement
 {
     private Property[] properties;
 
-    private boolean isDC = true;
-
     private float dcVoltage;
     private String dcVoltageUnit;
 
@@ -20,6 +18,50 @@ public class VoltageSource extends TwoPortElement
 
     private float phase;
     private String phaseUnit;
+
+    public float getDcVoltage() { return dcVoltage; }
+    public void setDcVoltage(float dcVoltage)
+    {
+        this.dcVoltage = dcVoltage;
+    }
+    public String getDcVoltageUnit() { return dcVoltageUnit; }
+    public void setDcVoltageUnit(String dcVoltageUnit)
+    {
+        this.dcVoltageUnit = dcVoltageUnit;
+    }
+
+    public float getAmplitude() { return amplitude; }
+    public void setAmplitude(float amplitude)
+    {
+        this.amplitude = amplitude;
+    }
+    public String getAmplitudeUnit() { return amplitudeUnit; }
+    public void setAmplitudeUnit(String amplitudeUnit)
+    {
+        this.amplitudeUnit = amplitudeUnit;
+    }
+
+    public float getFrequency() { return frequency; }
+    public void setFrequency(float frequency)
+    {
+        this.frequency = frequency;
+    }
+    public String getFrequencyUnit() { return frequencyUnit; }
+    public void setFrequencyUnit(String frequencyUnit)
+    {
+        this.frequencyUnit = frequencyUnit;
+    }
+
+    public float getPhase() { return phase; }
+    public void setPhase(float phase)
+    {
+        this.phase = phase;
+    }
+    public String getPhaseUnit() { return phaseUnit; }
+    public void setPhaseUnit(String phaseUnit)
+    {
+        this.phaseUnit = phaseUnit;
+    }
 
     @Override
     public Property[] getProperties()
@@ -34,7 +76,7 @@ public class VoltageSource extends TwoPortElement
                     return dcVoltage == 0 ? "" : String.valueOf(dcVoltage);
                 }
                 @Override
-                public void trySetValue(String value)
+                public void _trySetValue(String value)
                 {
                     dcVoltage = Float.parseFloat(value);
                 }
@@ -58,9 +100,12 @@ public class VoltageSource extends TwoPortElement
                     return amplitude == 0 ? "" : String.valueOf(amplitude);
                 }
                 @Override
-                public void trySetValue(String value)
+                public void _trySetValue(String value)
                 {
-                    amplitude = Float.parseFloat(value);
+                    if (value.isEmpty())
+                        amplitude = 0;
+                    else
+                        amplitude = Float.parseFloat(value);
                 }
                 @Override
                 public String getUnit()
@@ -82,9 +127,12 @@ public class VoltageSource extends TwoPortElement
                     return frequency == 0 ? "" : String.valueOf(frequency);
                 }
                 @Override
-                public void trySetValue(String value)
+                public void _trySetValue(String value)
                 {
-                    frequency = Float.parseFloat(value);
+                    if (value.isEmpty())
+                        frequency = 0;
+                    else
+                        frequency = Float.parseFloat(value);
                 }
                 @Override
                 public String getUnit()
@@ -111,9 +159,12 @@ public class VoltageSource extends TwoPortElement
                     return phase == 0 ? "" : String.valueOf(phase);
                 }
                 @Override
-                public void trySetValue(String value)
+                public void _trySetValue(String value)
                 {
-                    phase = Float.parseFloat(value);
+                    if (value.isEmpty())
+                        phase = 0;
+                    else
+                        phase = Float.parseFloat(value);
                 }
                 @Override
                 public String getUnit()
@@ -132,22 +183,20 @@ public class VoltageSource extends TwoPortElement
                 }
             };
 
-            properties = new Property[]{
-                    dcProp,
-                    new BooleanProperty("Alternating Current")
-                    {
-                        @Override
-                        public void trySetValue(String newValue)
-                        {
-                            super.trySetValue(newValue);
-                            acProp.setEnabled(value);
-                            freqProp.setEnabled(value);
-                            phaseProp.setEnabled(value);
-                        }
-                    },
-                    acProp, freqProp, phaseProp
-            };
+            properties = new Property[]{dcProp, acProp, freqProp, phaseProp};
         }
         return properties;
+    }
+
+    @Override
+    public String getType()
+    {
+        return "Voltage Source";
+    }
+
+    @Override
+    public String getNameTemplate()
+    {
+        return "V%d";
     }
 }

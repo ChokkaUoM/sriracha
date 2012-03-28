@@ -1,5 +1,6 @@
 /**
  * TODO:
+ * Validating node names to ensure uniqueness.
  * ===Moving elements breaks 90 degree constraint.===
  * Proper duplication of nodes (issue when dragging the top right of a "T" intersection downward.
  * Also, same issue when rotating elements (causes moving of adjacent nodes).

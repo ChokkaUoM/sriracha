@@ -10,4 +10,18 @@ public class DependentCurrentSource extends TwoPortElement
     {
         return new Property[0];
     }
+
+    @Override
+    public String getType()
+    {
+        return "Dependent Current Source";
+    }
+
+    @Override
+    public String getNameTemplate()
+    {
+        // VCCS - Symbol "G"
+        // CCCS - Symbol "F"
+        return "Id%d";
+    }
 }

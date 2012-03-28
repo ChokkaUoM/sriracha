@@ -32,16 +32,4 @@ public class CapacitorView extends CircuitElementView
         }
         return ports;
     }
-
-    @Override
-    public String getType()
-    {
-        return "Capacitor";
-    }
-
-    @Override
-    public String getNameTemplate()
-    {
-        return "C%d";
-    }
 }

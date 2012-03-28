@@ -9,6 +9,19 @@ public class Ground extends CircuitElement
     {
         return new Property[0];
     }
+
     @Override
     public int getPortCount() { return 1; }
+
+    @Override
+    public String getType()
+    {
+        return "Ground";
+    }
+
+    @Override
+    public String getNameTemplate()
+    {
+        return "G%d";
+    }
 }

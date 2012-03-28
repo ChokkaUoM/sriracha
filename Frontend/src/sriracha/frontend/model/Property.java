@@ -4,13 +4,24 @@ abstract public class Property
 {
     abstract public String getValue();
 
-    abstract public void trySetValue(String value);
+    abstract public void _trySetValue(String value);
 
-    private boolean isEnabled = true;
+    protected OnPropertyValueChangedListener onPropertyValueChangedListener;
 
-    public boolean isEnabled() { return isEnabled; }
-    public void setEnabled(boolean enabled)
+    public void trySetValue(String value)
     {
-        isEnabled = enabled;
+        _trySetValue(value);
+        if (onPropertyValueChangedListener != null)
+            onPropertyValueChangedListener.onPropertyValueChanged(this);
+    }
+
+    public void setOnPropertyValueChangedListener(OnPropertyValueChangedListener onPropertyValueChangedListener)
+    {
+        this.onPropertyValueChangedListener = onPropertyValueChangedListener;
+    }
+
+    public interface OnPropertyValueChangedListener
+    {
+        public void onPropertyValueChanged(Property property);
     }
 }

@@ -6,8 +6,8 @@ public class Capacitor extends TwoPortElement
 {
     private Property[] properties;
 
-    private float capacitance;
-    private String unit;
+    private float capacitance = 1;
+    private String unit = "μF";
 
     @Override
     public Property[] getProperties()
@@ -20,12 +20,15 @@ public class Capacitor extends TwoPortElement
                         @Override
                         public String getValue()
                         {
-                            return capacitance == 0 ? "" : String.valueOf(capacitance);
+                            return String.valueOf(capacitance);
                         }
                         @Override
-                        public void trySetValue(String value)
+                        public void _trySetValue(String value)
                         {
-                            capacitance = Float.parseFloat(value);
+                            float floatValue = Float.parseFloat(value);
+                            if (floatValue <= 0)
+                                throw new NumberFormatException("Capacitance value must be greater than zero");
+                            capacitance = floatValue;
                         }
                         @Override
                         public String getUnit()
@@ -41,5 +44,17 @@ public class Capacitor extends TwoPortElement
             };
         }
         return properties;
+    }
+
+    @Override
+    public String getType()
+    {
+        return "Capacitor";
+    }
+
+    @Override
+    public String getNameTemplate()
+    {
+        return "C%d";
     }
 }

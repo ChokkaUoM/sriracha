@@ -26,7 +26,7 @@ public class CircuitDesignerMenu
                 child.setVisibility(View.GONE);
         }
     }
-    
+
     public void showElementPropertiesMenu(CircuitElementView selectedElement)
     {
         showSubMenu(R.id.element_properties);
@@ -34,13 +34,24 @@ public class CircuitDesignerMenu
         if (selectedElement == null)
             return;
 
-        TextView type = (TextView)getSelectedSubMenu().findViewById(R.id.properties_type);
-        TextView name = (TextView)getSelectedSubMenu().findViewById(R.id.properties_name);
-        
-        type.setText(selectedElement.getType());
-        name.setText(String.format(selectedElement.getNameTemplate(), 1));
+        TextView type = (TextView) getSelectedSubMenu().findViewById(R.id.properties_type);
+        EditText name = (EditText) getSelectedSubMenu().findViewById(R.id.properties_name);
 
-        ((ElementPropertiesView)(getSelectedSubMenu().findViewById(R.id.properties_current_property))).showPropertiesFor(selectedElement);
+        type.setText(selectedElement.getElement().getType());
+        name.setText(selectedElement.getElement().getName());
+
+        final CircuitElementView selectedElementCopy = selectedElement;
+        name.setOnEditorActionListener(new TextView.OnEditorActionListener()
+        {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent)
+            {
+                selectedElementCopy.getElement().setName(textView.getText().toString());
+                return true;
+            }
+        });
+
+        ((ElementPropertiesView) (getSelectedSubMenu().findViewById(R.id.properties_current_property))).showPropertiesFor(selectedElement);
     }
 
     public ViewGroup getSelectedSubMenu()

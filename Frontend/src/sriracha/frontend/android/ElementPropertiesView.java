@@ -7,7 +7,6 @@ import android.widget.*;
 import sriracha.frontend.R;
 import sriracha.frontend.android.model.*;
 import sriracha.frontend.model.*;
-import sriracha.frontend.model.elements.*;
 
 public class ElementPropertiesView extends LinearLayout
 {
@@ -34,6 +33,7 @@ public class ElementPropertiesView extends LinearLayout
                 final ScalarProperty scalarProperty = (ScalarProperty) property;
                 final View scalarPropertyView = LayoutInflater.from(getContext())
                         .inflate(R.layout.element_scalar_property, this, false);
+
                 final TextView propertyName = (TextView) scalarPropertyView.findViewById(R.id.property_name);
                 final TextView propertyUnit = (TextView) scalarPropertyView.findViewById(R.id.property_unit);
                 final ListView unitsListView = (ListView) scalarPropertyView.findViewById(R.id.property_unit_list);
@@ -77,23 +77,48 @@ public class ElementPropertiesView extends LinearLayout
                         }
                         catch (Exception e)
                         {
-                            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                            propertyValue.setText(scalarProperty.getValue());
+                            Toast toast = Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER, 0, 0);
+                            toast.show();
                         }
                         return true;
                     }
                 });
             }
-            else if (property instanceof BooleanProperty)
+            else if (property instanceof ReferenceProperty)
             {
-                final BooleanProperty booleanProperty = (BooleanProperty) property;
-                final View booleanPropertyView = LayoutInflater.from(getContext())
-                        .inflate(R.layout.element_boolean_property, this, false);
-                final CheckBox propertyValue = (CheckBox) booleanPropertyView.findViewById(R.id.property_value);
+                final ReferenceProperty referenceProperty = (ReferenceProperty) property;
+                final View referencePropertyView = LayoutInflater.from(getContext())
+                        .inflate(R.layout.element_reference_property, this, false);
 
-                addView(booleanPropertyView);
+                final TextView propertyValue = (TextView) referencePropertyView.findViewById(R.id.property_value);
+                final ListView valueListView = (ListView) referencePropertyView.findViewById(R.id.property_value_list);
 
-                propertyValue.setText(booleanProperty.getName());
-                propertyValue.setChecked(!booleanProperty.getValue().isEmpty());
+                addView(referencePropertyView);
+
+                propertyValue.setText(referenceProperty.getValue());
+
+                valueListView.setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, referenceProperty.getElementsList()));
+                valueListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+                {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View textView, int i, long l)
+                    {
+                        adapterView.setVisibility(GONE);
+                        referenceProperty._trySetValue(((TextView) textView).getText().toString());
+                        propertyValue.setText(referenceProperty.getValue());
+                    }
+                });
+
+                propertyValue.setOnClickListener(new OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        valueListView.setVisibility(VISIBLE);
+                    }
+                });
             }
         }
     }

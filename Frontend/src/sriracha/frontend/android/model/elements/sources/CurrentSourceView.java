@@ -4,20 +4,33 @@ import android.content.*;
 import sriracha.frontend.*;
 import sriracha.frontend.android.model.*;
 import sriracha.frontend.model.*;
+import sriracha.frontend.model.elements.sources.*;
 
-public class CurrentSourceView extends CircuitElementView
+public class CurrentSourceView extends CircuitElementView implements Property.OnPropertyValueChangedListener
 {
     CircuitElementPortView ports[];
 
     public CurrentSourceView(Context context, CircuitElement element, float positionX, float positionY)
     {
         super(context, element, positionX, positionY);
+        for (Property property : element.getProperties())
+        {
+            if (property instanceof ScalarProperty && ((ScalarProperty)property).getName().equalsIgnoreCase("AC Current"))
+            {
+                property.setOnPropertyValueChangedListener(this);
+            }
+        }
     }
 
     @Override
     public int getDrawableId()
     {
         return R.drawable.sources_current;
+    }
+
+    public int getAcDrawableId()
+    {
+        return R.drawable.sources_current_ac;
     }
 
     @Override
@@ -34,14 +47,11 @@ public class CurrentSourceView extends CircuitElementView
     }
 
     @Override
-    public String getType()
+    public void onPropertyValueChanged(Property property)
     {
-        return "Current Source";
-    }
-
-    @Override
-    public String getNameTemplate()
-    {
-        return "I%d";
+        CurrentSource currentSource = (CurrentSource)getElement();
+        int drawable = currentSource.getAmplitude() == 0 ? getDrawableId() : getAcDrawableId();
+        setImageResource(drawable);
+        invalidate();
     }
 }

@@ -6,8 +6,8 @@ public class Resistor extends TwoPortElement
 {
     private Property[] properties;
 
-    private float resistance;
-    private String unit;
+    private float resistance = 1;
+    private String unit = "kΩ";
 
     public Property[] getProperties()
     {
@@ -19,12 +19,15 @@ public class Resistor extends TwoPortElement
                         @Override
                         public String getValue()
                         {
-                            return resistance == 0 ? "" : String.valueOf(resistance);
+                            return String.valueOf(resistance);
                         }
                         @Override
-                        public void trySetValue(String value)
+                        public void _trySetValue(String value)
                         {
-                            resistance = Float.parseFloat(value);
+                            float floatValue = Float.parseFloat(value);
+                            if (floatValue <= 0)
+                                throw new NumberFormatException("Resistor value must be greater than zero");
+                            resistance = floatValue;
                         }
                         @Override
                         public String getUnit()
@@ -40,5 +43,17 @@ public class Resistor extends TwoPortElement
             };
         }
         return properties;
+    }
+
+    @Override
+    public String getType()
+    {
+        return "Resistor";
+    }
+
+    @Override
+    public String getNameTemplate()
+    {
+        return "R%d";
     }
 }

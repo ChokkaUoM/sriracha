@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="wrap_content" android:layout_height="fill_parent"
+              android:layout_centerHorizontal="true"
               android:orientation="vertical">
     <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
         <ImageView style="@style/CircuitMenuItemImage.Element"
@@ -14,9 +15,10 @@
         <TextView style="@style/CircuitMenuItemImage.Element"
                   android:id="@+id/properties_type"/>
     </RelativeLayout>
-    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
-        <TextView style="@style/CircuitMenuItemImage.Element"
-                  android:id="@+id/properties_name"/>
+    <RelativeLayout style="@style/CircuitMenuItem.SubMenu" android:layout_width="fill_parent">
+        <EditText style="@style/CircuitMenuItemImage.Element" android:layout_width="fill_parent"
+                  android:id="@+id/properties_name"
+                  android:inputType=""/>
     </RelativeLayout>
 
     <sriracha.frontend.android.ElementPropertiesView

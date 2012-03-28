@@ -5,20 +5,33 @@ import sriracha.frontend.*;
 import sriracha.frontend.android.model.*;
 import sriracha.frontend.android.model.CircuitElementPortView;
 import sriracha.frontend.model.*;
+import sriracha.frontend.model.elements.sources.*;
 
-public class VoltageSourceView extends CircuitElementView
+public class VoltageSourceView extends CircuitElementView implements Property.OnPropertyValueChangedListener
 {
     CircuitElementPortView ports[];
 
     public VoltageSourceView(Context context, CircuitElement element, float positionX, float positionY)
     {
         super(context, element, positionX, positionY);
+        for (Property property : element.getProperties())
+        {
+            if (property instanceof ScalarProperty && ((ScalarProperty)property).getName().equalsIgnoreCase("AC Voltage"))
+            {
+                property.setOnPropertyValueChangedListener(this);
+            }
+        }
     }
 
     @Override
     public int getDrawableId()
     {
         return R.drawable.sources_voltage;
+    }
+    
+    public int getAcDrawableId()
+    {
+        return R.drawable.sources_voltage_ac;
     }
 
     @Override
@@ -35,14 +48,11 @@ public class VoltageSourceView extends CircuitElementView
     }
 
     @Override
-    public String getType()
+    public void onPropertyValueChanged(Property property)
     {
-        return "Voltage Source";
-    }
-
-    @Override
-    public String getNameTemplate()
-    {
-        return "V%d";
+        VoltageSource voltageSource = (VoltageSource)getElement();
+        int drawable = voltageSource.getAmplitude() == 0 ? getDrawableId() : getAcDrawableId();
+        setImageResource(drawable);
+        invalidate();
     }
 }

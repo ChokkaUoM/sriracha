@@ -32,16 +32,4 @@ public class InductorView extends CircuitElementView
         }
         return ports;
     }
-
-    @Override
-    public String getType()
-    {
-        return "Inductor";
-    }
-
-    @Override
-    public String getNameTemplate()
-    {
-        return "L%d";
-    }
 }

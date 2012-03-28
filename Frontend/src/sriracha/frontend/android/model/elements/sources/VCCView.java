@@ -31,16 +31,4 @@ public class VCCView extends CircuitElementView
         }
         return ports;
     }
-
-    @Override
-    public String getType()
-    {
-        return "VCC";
-    }
-
-    @Override
-    public String getNameTemplate()
-    {
-        return "VCC%d";
-    }
 }

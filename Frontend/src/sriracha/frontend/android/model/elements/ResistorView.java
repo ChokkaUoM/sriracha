@@ -32,16 +32,4 @@ public class ResistorView extends CircuitElementView
         }
         return ports;
     }
-
-    @Override
-    public String getType()
-    {
-        return "Resistor";
-    }
-
-    @Override
-    public String getNameTemplate()
-    {
-        return "R%d";
-    }
 }

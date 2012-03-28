@@ -6,26 +6,29 @@ public class Inductor extends TwoPortElement
 {
     private Property[] properties;
 
-    private float inductance;
-    private String unit;
+    private float inductance = 1;
+    private String unit = "μH";
 
     @Override
     public Property[] getProperties()
     {
         if (properties == null)
         {
-            return new Property[]{
+            properties = new Property[]{
                     new ScalarProperty("Inductance", "H")
                     {
                         @Override
                         public String getValue()
                         {
-                            return inductance == 0 ? "" : String.valueOf(inductance);
+                            return String.valueOf(inductance);
                         }
                         @Override
-                        public void trySetValue(String value)
+                        public void _trySetValue(String value)
                         {
-                            inductance = Float.parseFloat(value);
+                            float floatValue = Float.parseFloat(value);
+                            if (floatValue <= 0)
+                                throw new NumberFormatException("Inductance value must be greater than zero");
+                            inductance = floatValue;
                         }
                         @Override
                         public String getUnit()
@@ -41,5 +44,17 @@ public class Inductor extends TwoPortElement
             };
         }
         return properties;
+    }
+
+    @Override
+    public String getType()
+    {
+        return "Inductor";
+    }
+
+    @Override
+    public String getNameTemplate()
+    {
+        return "L%d";
     }
 }

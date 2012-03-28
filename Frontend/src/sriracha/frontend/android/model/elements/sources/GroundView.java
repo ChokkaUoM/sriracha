@@ -31,16 +31,4 @@ public class GroundView extends CircuitElementView
         }
         return ports;
     }
-
-    @Override
-    public String getType()
-    {
-        return "Ground";
-    }
-
-    @Override
-    public String getNameTemplate()
-    {
-        return "G%d";
-    }
 }

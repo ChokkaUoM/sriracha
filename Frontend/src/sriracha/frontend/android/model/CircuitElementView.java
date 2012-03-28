@@ -8,7 +8,7 @@ import sriracha.frontend.*;
 import sriracha.frontend.android.*;
 import sriracha.frontend.model.*;
 
-public abstract class CircuitElementView extends ImageView implements View.OnTouchListener, View.OnLongClickListener
+abstract public class CircuitElementView extends ImageView implements View.OnTouchListener, View.OnLongClickListener
 {
     private static final int[] STATE_DRAGGABLE = {R.attr.state_draggable};
     private static final int[] STATE_SELECTED = {R.attr.state_selected};
@@ -36,13 +36,10 @@ public abstract class CircuitElementView extends ImageView implements View.OnTou
     private int activePointerId = INVALID_POINTER_ID;
     private int possibleClickPointerId = INVALID_POINTER_ID;
 
-    public abstract int getDrawableId();
+    abstract public int getDrawableId();
 
-    public abstract CircuitElementPortView[] getElementPorts();
+    abstract public CircuitElementPortView[] getElementPorts();
     
-    public abstract String getType();
-    public abstract String getNameTemplate();
-
     public CircuitElementView(Context context, CircuitElement element, float positionX, float positionY)
     {
         super(context);
