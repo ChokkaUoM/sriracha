@@ -4,6 +4,11 @@ import sriracha.frontend.model.*;
 
 public class Ground extends CircuitElement
 {
+    public Ground(CircuitElementManager elementManager)
+    {
+        super(elementManager);
+    }
+
     @Override
     public Property[] getProperties()
     {

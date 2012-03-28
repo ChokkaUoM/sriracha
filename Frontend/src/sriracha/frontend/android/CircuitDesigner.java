@@ -4,6 +4,7 @@ import android.graphics.*;
 import android.view.*;
 import sriracha.frontend.*;
 import sriracha.frontend.android.model.*;
+import sriracha.frontend.model.*;
 
 import java.util.*;
 
@@ -37,6 +38,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
 
     private CircuitDesignerMenu circuitDesignerMenu;
     private CircuitElementActivator activator;
+    private CircuitElementManager elementManager;
 
     private GestureDetector gestureDetector;
     private ViewGroup canvasView;
@@ -49,6 +51,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     {
         this.circuitDesignerMenu = circuitDesignerMenu;
         this.activator = activator;
+        elementManager = new CircuitElementManager();
 
         gestureDetector = new GestureDetector(this);
         this.canvasView = (ViewGroup) canvasView;
@@ -230,6 +233,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         CircuitElementView elementView = instantiateElement(snappedX, snappedY);
         if (elementView != null)
         {
+            elementManager.addElement(elementView.getElement());
             elements.add(elementView);
             canvasView.addView(elementView);
 
@@ -295,7 +299,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
 
     public CircuitElementView instantiateElement(float positionX, float positionY)
     {
-        return activator.instantiateElement(getSelectedItemId(), positionX, positionY);
+        return activator.instantiateElement(getSelectedItemId(), positionX, positionY, elementManager);
     }
 
     public void rotateSelectedElement(boolean cw)
@@ -357,6 +361,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         if (getCursor() != CursorState.HAND || selectedElement == null)
             return;
 
+        elementManager.removeElement(selectedElement.getElement());
         elements.remove(selectedElement);
         canvasView.removeView(selectedElement);
         canvasView.invalidate();

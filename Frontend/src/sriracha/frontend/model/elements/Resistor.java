@@ -9,6 +9,11 @@ public class Resistor extends TwoPortElement
     private float resistance = 1;
     private String unit = "kΩ";
 
+    public Resistor(CircuitElementManager elementManager)
+    {
+        super(elementManager);
+    }
+
     public Property[] getProperties()
     {
         if (properties == null)

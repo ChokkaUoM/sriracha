@@ -4,6 +4,11 @@ import sriracha.frontend.model.*;
 
 public class VCC extends CircuitElement
 {
+    public VCC(CircuitElementManager elementManager)
+    {
+        super(elementManager);
+    }
+
     @Override
     public Property[] getProperties()
     {

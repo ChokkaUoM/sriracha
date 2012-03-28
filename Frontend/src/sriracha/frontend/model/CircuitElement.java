@@ -12,28 +12,27 @@ abstract public class CircuitElement
 
     abstract public String getNameTemplate();
 
-    private String name;
+    protected CircuitElementManager elementManager;
+
+    protected String name;
+    protected int index;
     private static HashMap<Class<? extends CircuitElement>, Integer> elementCount = new HashMap<Class<? extends CircuitElement>, Integer>();
 
     protected CircuitElementPort[] ports;
 
-    public CircuitElement()
+    public CircuitElement(CircuitElementManager elementManager)
     {
+        this.elementManager = elementManager;
         ports = new CircuitElementPort[getPortCount()];
 
-        int thisElementCount = elementCount.containsKey(getClass()) ? elementCount.get(getClass()) + 1 : 1;
-        elementCount.put(getClass(), Integer.valueOf(thisElementCount));
-        setName(String.format(getNameTemplate(), thisElementCount));
+        index = elementCount.containsKey(getClass()) ? elementCount.get(getClass()) + 1 : 1;
+        elementCount.put(getClass(), Integer.valueOf(index));
+        setName(String.format(getNameTemplate(), index));
     }
 
     public String getName() { return name; }
     public void setName(String name)
     {
         this.name = name;
-    }
-
-    public CircuitElementPort[] getPorts()
-    {
-        return ports;
     }
 }

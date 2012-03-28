@@ -19,6 +19,11 @@ public class VoltageSource extends TwoPortElement
     private float phase;
     private String phaseUnit;
 
+    public VoltageSource(CircuitElementManager elementManager)
+    {
+        super(elementManager);
+    }
+
     public float getDcVoltage() { return dcVoltage; }
     public void setDcVoltage(float dcVoltage)
     {

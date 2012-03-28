@@ -9,6 +9,11 @@ public class Inductor extends TwoPortElement
     private float inductance = 1;
     private String unit = "μH";
 
+    public Inductor(CircuitElementManager elementManager)
+    {
+        super(elementManager);
+    }
+
     @Override
     public Property[] getProperties()
     {

@@ -18,7 +18,9 @@
     <RelativeLayout style="@style/CircuitMenuItem.SubMenu" android:layout_width="fill_parent">
         <EditText style="@style/CircuitMenuItemImage.Element" android:layout_width="fill_parent"
                   android:id="@+id/properties_name"
-                  android:inputType=""/>
+                  android:inputType="text"
+                  android:imeOptions="actionDone"
+                />
     </RelativeLayout>
 
     <sriracha.frontend.android.ElementPropertiesView

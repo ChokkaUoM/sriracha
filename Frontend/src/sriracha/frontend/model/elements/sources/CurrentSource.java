@@ -19,6 +19,11 @@ public class CurrentSource extends TwoPortElement
     private float phase;
     private String phaseUnit;
 
+    public CurrentSource(CircuitElementManager elementManager)
+    {
+        super(elementManager);
+    }
+
     public float getDcCurrent() { return dcCurrent; }
     public void setDcCurrent(float dcCurrent)
     {

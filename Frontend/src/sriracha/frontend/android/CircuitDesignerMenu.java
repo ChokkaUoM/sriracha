@@ -47,6 +47,7 @@ public class CircuitDesignerMenu
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent)
             {
                 selectedElementCopy.getElement().setName(textView.getText().toString());
+                selectedElementCopy.invalidate();
                 return true;
             }
         });

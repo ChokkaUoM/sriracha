@@ -9,6 +9,11 @@ public class Capacitor extends TwoPortElement
     private float capacitance = 1;
     private String unit = "μF";
 
+    public Capacitor(CircuitElementManager elementManager)
+    {
+        super(elementManager);
+    }
+
     @Override
     public Property[] getProperties()
     {

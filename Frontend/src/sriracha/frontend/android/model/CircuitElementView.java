@@ -230,6 +230,11 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         canvas.rotate(orientation, getWidth() / 2, getHeight() / 2);
         super.onDraw(canvas);
 
+        Paint paint = new Paint();
+        paint.setTextSize(12);
+        paint.setColor(Color.BLACK);
+        canvas.drawText(element.getName(), 5, 14, paint);
+
         if (onDrawListener != null)
             onDrawListener.onDraw(canvas);
     }
