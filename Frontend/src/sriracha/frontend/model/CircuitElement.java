@@ -25,14 +25,24 @@ abstract public class CircuitElement
         this.elementManager = elementManager;
         ports = new CircuitElementPort[getPortCount()];
 
-        index = elementCount.containsKey(getClass()) ? elementCount.get(getClass()) + 1 : 1;
-        elementCount.put(getClass(), Integer.valueOf(index));
-        setName(String.format(getNameTemplate(), index));
+        String generatedName = null;
+        do
+        {
+            index = elementCount.containsKey(getClass()) ? elementCount.get(getClass()) + 1 : 1;
+            elementCount.put(getClass(), Integer.valueOf(index));
+            generatedName = String.format(getNameTemplate(), index);
+            setName(generatedName);
+        } while (elementManager.getElementByName(generatedName) != null); // Ensure unique names
     }
 
     public String getName() { return name; }
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    public CircuitElementManager getElementManager()
+    {
+        return elementManager;
     }
 }

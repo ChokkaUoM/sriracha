@@ -25,4 +25,14 @@ public class CircuitElementManager
     {
         return elements;
     }
+    
+    public CircuitElement getElementByName(String name)
+    {
+        for (CircuitElement element : elements)
+        {
+            if (element.getName().equalsIgnoreCase(name))
+                return element;
+        }
+        return null;
+    }
 }

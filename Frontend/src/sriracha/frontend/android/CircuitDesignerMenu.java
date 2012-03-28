@@ -34,25 +34,7 @@ public class CircuitDesignerMenu
         if (selectedElement == null)
             return;
 
-        TextView type = (TextView) getSelectedSubMenu().findViewById(R.id.properties_type);
-        EditText name = (EditText) getSelectedSubMenu().findViewById(R.id.properties_name);
-
-        type.setText(selectedElement.getElement().getType());
-        name.setText(selectedElement.getElement().getName());
-
-        final CircuitElementView selectedElementCopy = selectedElement;
-        name.setOnEditorActionListener(new TextView.OnEditorActionListener()
-        {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent)
-            {
-                selectedElementCopy.getElement().setName(textView.getText().toString());
-                selectedElementCopy.invalidate();
-                return true;
-            }
-        });
-
-        ((ElementPropertiesView) (getSelectedSubMenu().findViewById(R.id.properties_current_property))).showPropertiesFor(selectedElement);
+        ((ElementPropertiesView) getSelectedSubMenu()).showPropertiesFor(selectedElement);
     }
 
     public ViewGroup getSelectedSubMenu()
