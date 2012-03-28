@@ -5,20 +5,28 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import sriracha.frontend.android.EpicTouchListener;
+import sriracha.frontend.android.results.functions.Function;
+import sriracha.frontend.resultdata.Plot;
+
+import java.util.List;
 
 
 public class Graph extends FrameLayout
 {
 
-    private Axis yAxis;
+    Axis yAxis;
     
-    private Axis xAxis;
+    Axis xAxis;
 
+    
+    private List<PlotView> plots;
 
     public Graph(Context context) {
         super(context);
         init();
+
     }
+
 
     public Graph(Context context, AttributeSet attrs)
     {
@@ -42,8 +50,8 @@ public class Graph extends FrameLayout
     protected void onLayout(boolean changed, int left, int top, int right, int bottom)
     {
 
-        int y0 = yAxis.pixelsFromCoordinate(0);
-        int x0 = xAxis.pixelsFromCoordinate(0);
+        int y0 = Math.round(yAxis.pixelsFromCoordinate(0));
+        int x0 =  Math.round(xAxis.pixelsFromCoordinate(0));
 
         xAxis.setAxisOffset(y0);
         yAxis.setAxisOffset(x0);
@@ -101,6 +109,32 @@ public class Graph extends FrameLayout
         }
     }
 
+
+    public void addPlot(Plot plot, int color){
+        addPlot(plot, color, null);
+        
+    }
+
+    public void addPlot(Plot plot, int color, Function f){
+        PlotView plotView = new PlotView(this, getContext());
+        plotView.setColor(color);
+        plotView.setFunc(f);
+        plots.add(plotView);
+        addView(plotView);
+
+    }
+    
+    public void clearPlots(){
+        for(PlotView pv : plots){
+            removeView(pv);
+        }
+        plots.clear();
+    }
+    
+    
+    public float[] pixelsFromCoords(double x, double y){
+        return new float[]{xAxis.pixelsFromCoordinate(x), yAxis.pixelsFromCoordinate(y)};
+    }
 
 
     public void setYRange(double min, double max){

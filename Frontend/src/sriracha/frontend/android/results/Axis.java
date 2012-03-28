@@ -301,10 +301,10 @@ public class Axis extends LinearLayout {
      * @param axisValue value you want to find the pixel offset for
      * @return pixel offset from start (left or top)
      */
-    public int pixelsFromCoordinate(double axisValue) {
+    public float pixelsFromCoordinate(double axisValue) {
         double percnt = (axisValue-minValue)/(maxValue - minValue);
         if(getOrientation() == VERTICAL) percnt = 1-percnt;
-        return (int) (percnt * getPixelRange());
+        return (float) (percnt * getPixelRange());
     }
 
     /**
@@ -314,12 +314,12 @@ public class Axis extends LinearLayout {
      * @param pixelValue offset value you want to find the coordinate for
      * @return corresponding axis value
      */
-    public int coordinateFromPixel(double pixelValue) {
+    public double coordinateFromPixel(float pixelValue) {
         double range = maxValue - minValue;
         double percnt = pixelValue / getPixelRange();
         if(getOrientation() == VERTICAL) percnt = 1-percnt;
 
-        return (int) (percnt * range + minValue);
+        return percnt * range + minValue;
     }
 
     private double getPixelRange(){
