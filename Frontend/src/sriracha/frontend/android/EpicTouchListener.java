@@ -29,11 +29,12 @@ public abstract class EpicTouchListener implements View.OnTouchListener
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent)
     {
+        int index = motionEvent.getActionIndex();
         switch (motionEvent.getActionMasked())
         {
             case MotionEvent.ACTION_DOWN:
             {
-                int index = motionEvent.getActionIndex();
+
 
 
                 if(motionEvent.getPointerCount() == 1){
@@ -42,13 +43,6 @@ public abstract class EpicTouchListener implements View.OnTouchListener
                     id1 = motionEvent.getPointerId(index);
 
                     onSingleFingerDown(x1, y1);
-                }else if (motionEvent.getPointerCount() == 2){
-                    x2 = motionEvent.getX(index);
-                    y2 = motionEvent.getY(index);
-                    id2 = motionEvent.getPointerId(index);
-
-                    onTwoFingerDown(x1, y1, x2, y2);
-
                 }
                 
                 
@@ -56,17 +50,38 @@ public abstract class EpicTouchListener implements View.OnTouchListener
                 return true;
                 
             }
+            case MotionEvent.ACTION_POINTER_DOWN:
+            {
+                if (motionEvent.getPointerCount() == 2){
+                    x2 = motionEvent.getX(index);
+                    y2 = motionEvent.getY(index);
+                    id2 = motionEvent.getPointerId(index);
 
+                    onTwoFingerDown(x1, y1, x2, y2);
+
+                }
+                return true;
+            }
+            case MotionEvent.ACTION_POINTER_UP:
+            {
+                int id = motionEvent.getPointerId(index);
+
+                if(id == id1){
+                    id1 = id2;
+                    x1 = x2;
+                    y1 = y2;
+                }
+            }
             case MotionEvent.ACTION_MOVE:
             {
 
                 if(motionEvent.getPointerCount() == 1){
-                    int index = motionEvent.findPointerIndex(id1);
                     float oldx = x1, oldy = y1;
                     x1 = motionEvent.getX(index);
                     y1 = motionEvent.getY(index);
                     return onSingleFingerMove(x1 - oldx, y1 - oldy);
                 } else if(motionEvent.getPointerCount() == 2){
+
                     float oldx1 = x1, oldx2 = x2, oldy1 = y1, oldy2 = y2;
                    
                     int i1 = motionEvent.findPointerIndex(id1), i2 = motionEvent.findPointerIndex(id2);
