@@ -5,7 +5,7 @@ import sriracha.frontend.android.*;
 
 import java.util.*;
 
-public class CircuitElementPortView implements IWireNode
+public class CircuitElementPortView implements IWireIntersection
 {
     private CircuitElementView element;
     private ArrayList<WireSegment> segments = new ArrayList<WireSegment>(4);
@@ -93,22 +93,22 @@ public class CircuitElementPortView implements IWireNode
         return true;
     }
     @Override
-    public WireNode duplicate(WireSegment segment, WireManager wireManager)
+    public WireIntersection duplicate(WireSegment segment, WireManager wireManager)
     {
-        WireNode newNode = new WireNode(getX(), getY());
-        wireManager.addNode(newNode);
+        WireIntersection newIntersection = new WireIntersection(getX(), getY());
+        wireManager.addIntersection(newIntersection);
 
         // Connect the segment that's being moved to the new node.
-        segment.replaceNode(this, newNode);
-        newNode.addSegment(segment);
+        segment.replaceIntersection(this, newIntersection);
+        newIntersection.addSegment(segment);
 
         // Connect the old node and the new node with a brand new segment
-        WireSegment newSegment = new WireSegment(segment.getContext(), this, newNode);
+        WireSegment newSegment = new WireSegment(segment.getContext(), this, newIntersection);
         wireManager.addSegment(newSegment);
 
-        newNode.addSegment(newSegment);
+        newIntersection.addSegment(newSegment);
         this.replaceSegment(segment, newSegment);
 
-        return newNode;
+        return newIntersection;
     }
 }

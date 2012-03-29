@@ -8,10 +8,10 @@ public class WireSegment extends View
 {
     private static final int BOUNDS_PADDING = 20;
 
-    private IWireNode start;
-    private IWireNode end;
+    private IWireIntersection start;
+    private IWireIntersection end;
 
-    public WireSegment(Context context, IWireNode start, IWireNode end)
+    public WireSegment(Context context, IWireIntersection start, IWireIntersection end)
     {
         super(context);
 
@@ -19,8 +19,8 @@ public class WireSegment extends View
         this.end = end;
     }
 
-    public IWireNode getStart() { return start; }
-    public IWireNode getEnd() { return end; }
+    public IWireIntersection getStart() { return start; }
+    public IWireIntersection getEnd() { return end; }
 
     @Override
     protected void onDraw(Canvas canvas)
@@ -38,39 +38,33 @@ public class WireSegment extends View
         if (x == start.getX())
             return;
 
-        WireNode duplicateStart = null;
-        WireNode duplicateEnd = null;
-
         if (start.duplicateOnMove(this))
         {
-            duplicateStart = start.duplicate(this, wireManager);
-            WireSegment segment = (start instanceof WireNode) ? ((WireNode) start).getSegmentTowardX(x) : null;
+            IWireIntersection oldStart = start;
+            start.duplicate(this, wireManager);
+            WireSegment segment = (oldStart instanceof WireIntersection) ? ((WireIntersection) oldStart).getSegmentTowardX(x) : null;
             if (segment != null)
             {
-                segment.replaceNode(start, duplicateStart);
-                duplicateStart.addSegment(segment);
+                oldStart.removeSegment(segment);
+                start.addSegment(segment);
+                segment.replaceIntersection(oldStart, start);
             }
         }
         if (end.duplicateOnMove(this))
         {
-            duplicateEnd = end.duplicate(this, wireManager);
-            WireSegment segment = (end instanceof WireNode) ? ((WireNode) end).getSegmentTowardX(x) : null;
+            IWireIntersection oldEnd = end;
+            end.duplicate(this, wireManager);
+            WireSegment segment = (oldEnd instanceof WireIntersection) ? ((WireIntersection) oldEnd).getSegmentTowardX(x) : null;
             if (segment != null)
             {
-                segment.replaceNode(end, duplicateEnd);
-                duplicateEnd.addSegment(segment);
+                oldEnd.removeSegment(segment);
+                end.addSegment(segment);
+                segment.replaceIntersection(oldEnd, end);
             }
         }
 
-        if (duplicateStart != null)
-            duplicateStart.x = x;
-        else
-            ((WireNode) start).x = x;
-
-        if (duplicateEnd != null)
-            duplicateEnd.x = x;
-        else
-            ((WireNode) end).x = x;
+        ((WireIntersection) start).x = x;
+        ((WireIntersection) end).x = x;
     }
 
     public void setY(int y, WireManager wireManager)
@@ -78,49 +72,43 @@ public class WireSegment extends View
         if (y == start.getY())
             return;
 
-        WireNode duplicateStart = null;
-        WireNode duplicateEnd = null;
-
         if (start.duplicateOnMove(this))
         {
-            duplicateStart = start.duplicate(this, wireManager);
-            WireSegment segment = (start instanceof WireNode) ? ((WireNode) start).getSegmentTowardY(y) : null;
+            IWireIntersection oldStart = start;
+            start.duplicate(this, wireManager);
+            WireSegment segment = (oldStart instanceof WireIntersection) ? ((WireIntersection) oldStart).getSegmentTowardY(y) : null;
             if (segment != null)
             {
-                segment.replaceNode(start, duplicateStart);
-                duplicateStart.addSegment(segment);
+                oldStart.removeSegment(segment);
+                start.addSegment(segment);
+                segment.replaceIntersection(oldStart, start);
             }
         }
         if (end.duplicateOnMove(this))
         {
-            duplicateEnd = end.duplicate(this, wireManager);
-            WireSegment segment = (end instanceof WireNode) ? ((WireNode) end).getSegmentTowardY(y) : null;
+            IWireIntersection oldEnd = end;
+            end.duplicate(this, wireManager);
+            WireSegment segment = (oldEnd instanceof WireIntersection) ? ((WireIntersection) oldEnd).getSegmentTowardY(y) : null;
             if (segment != null)
             {
-                segment.replaceNode(end, duplicateEnd);
-                duplicateEnd.addSegment(segment);
+                oldEnd.removeSegment(segment);
+                end.addSegment(segment);
+                segment.replaceIntersection(oldEnd, end);
             }
         }
 
-        if (duplicateStart != null)
-            duplicateStart.y = y;
-        else
-            ((WireNode) start).y = y;
-
-        if (duplicateEnd != null)
-            duplicateEnd.y = y;
-        else
-            ((WireNode) end).y = y;
+        ((WireIntersection) start).y = y;
+        ((WireIntersection) end).y = y;
     }
 
-    public void replaceNode(IWireNode oldNode, IWireNode newNode)
+    public void replaceIntersection(IWireIntersection oldIntersection, IWireIntersection newIntersection)
     {
-        if (start == oldNode)
-            start = newNode;
-        else if (end == oldNode)
-            end = newNode;
+        if (start == oldIntersection)
+            start = newIntersection;
+        else if (end == oldIntersection)
+            end = newIntersection;
         else
-            throw new IllegalArgumentException("Node not found in segment");
+            throw new IllegalArgumentException("Intersection not found in segment");
     }
 
     public boolean isVertical()

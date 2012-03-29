@@ -2,7 +2,7 @@ package sriracha.frontend.android;
 
 import java.util.*;
 
-public interface IWireNode
+public interface IWireIntersection
 {
     public int getX();
     public int getY();
@@ -13,5 +13,5 @@ public interface IWireNode
     public ArrayList<WireSegment> getSegments();
 
     public boolean duplicateOnMove(WireSegment segment);
-    public WireNode duplicate(WireSegment segment, WireManager wireManager);
+    public WireIntersection duplicate(WireSegment segment, WireManager wireManager);
 }

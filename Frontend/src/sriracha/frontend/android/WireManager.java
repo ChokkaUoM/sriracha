@@ -9,7 +9,7 @@ import java.util.*;
 public class WireManager
 {
     private ArrayList<WireSegment> segments = new ArrayList<WireSegment>();
-    private ArrayList<IWireNode> nodes = new ArrayList<IWireNode>();
+    private ArrayList<IWireIntersection> intersections = new ArrayList<IWireIntersection>();
 
     private ViewGroup canvasView;
     private Context context;
@@ -20,106 +20,106 @@ public class WireManager
         context = canvasView.getContext();
     }
 
-    public void addNode(IWireNode node)
+    public void addIntersection(IWireIntersection intersection)
     {
-        if (!nodes.contains(node))
-            nodes.add(node);
+        if (!intersections.contains(intersection))
+            intersections.add(intersection);
     }
 
-    public void connectNewNode(IWireNode from, IWireNode to)
+    public void connectNewIntersection(IWireIntersection from, IWireIntersection to)
     {
-        if (!nodes.contains(from))
+        if (!intersections.contains(from))
             throw new IllegalArgumentException("from");
 
-        // Add intermediate node to keep everything orthogonal
+        // Add intermediate intersection to keep everything orthogonal
         if (from.getX() != to.getX() && from.getY() != to.getY())
         {
-            WireNode intermediate = new WireNode(from.getX(), to.getY());
-            connectNewNode(from, intermediate);
+            WireIntersection intermediate = new WireIntersection(from.getX(), to.getY());
+            connectNewIntersection(from, intermediate);
             from = intermediate;
         }
 
-        nodes.add(to);
+        intersections.add(to);
 
         WireSegment segment = new WireSegment(context, from, to);
         from.addSegment(segment);
         to.addSegment(segment);
         addSegment(segment);
 
-        consolidateNodes();
+        consolidateIntersections();
     }
 
-    public WireNode splitSegment(WireSegment segment, int x, int y)
+    public WireIntersection splitSegment(WireSegment segment, int x, int y)
     {
         if (!segment.isPointOnSegment(x, y))
             throw new IllegalArgumentException("Point not on segment");
 
         // Create two new segments by splitting the original one up.
-        WireNode node = new WireNode(x, y);
-        WireSegment firstHalf = new WireSegment(context, segment.getStart(), node);
-        WireSegment secondHalf = new WireSegment(context, node, segment.getEnd());
+        WireIntersection intersection = new WireIntersection(x, y);
+        WireSegment firstHalf = new WireSegment(context, segment.getStart(), intersection);
+        WireSegment secondHalf = new WireSegment(context, intersection, segment.getEnd());
 
         addSegment(firstHalf);
         addSegment(secondHalf);
 
-        // Nodes know what segments they're attached to, so we update that information.
+        // Intersections know what segments they're attached to, so we update that information.
         segment.getStart().replaceSegment(segment, firstHalf);
         segment.getEnd().replaceSegment(segment, secondHalf);
 
-        // The new node needs to know about the two new segments.
-        node.addSegment(firstHalf);
-        node.addSegment(secondHalf);
+        // The new intersection needs to know about the two new segments.
+        intersection.addSegment(firstHalf);
+        intersection.addSegment(secondHalf);
 
         // Get rid of the stale, old segment. We hates it.
         removeSegment(segment);
 
-        return node;
+        return intersection;
     }
 
-    public void consolidateNodes()
+    public void consolidateIntersections()
     {
-        HashMap<Point, ArrayList<IWireNode>> toConsolidate = new HashMap<Point, ArrayList<IWireNode>>();
+        HashMap<Point, ArrayList<IWireIntersection>> toConsolidate = new HashMap<Point, ArrayList<IWireIntersection>>();
 
-        for (int i = 0; i < nodes.size(); i++)
+        for (int i = 0; i < intersections.size(); i++)
         {
-            IWireNode node1 = nodes.get(i);
-            for (int j = i + 1; j < nodes.size(); j++)
+            IWireIntersection intersection1 = intersections.get(i);
+            for (int j = i + 1; j < intersections.size(); j++)
             {
-                IWireNode node2 = nodes.get(j);
+                IWireIntersection intersection2 = intersections.get(j);
 
-                if (!(node1 instanceof WireNode) || !(node2 instanceof WireNode))
+                if (!(intersection1 instanceof WireIntersection) || !(intersection2 instanceof WireIntersection))
                     continue;
 
-                // If two nodes have the same coordinates, we store them in a hashtable.
+                // If two intersections have the same coordinates, we store them in a hashtable.
                 // The hashtable is indexed by point, and each entry contains a list of
-                // nodes that all have the same coordinates.
-                if (node1.getX() == node2.getX() && node1.getY() == node2.getY())
+                // intersections that all have the same coordinates.
+                if (intersection1.getX() == intersection2.getX() && intersection1.getY() == intersection2.getY())
                 {
-                    Point point = new Point(node1.getX(), node1.getY());
+                    Point point = new Point(intersection1.getX(), intersection1.getY());
                     if (!toConsolidate.containsKey(point))
-                        toConsolidate.put(point, new ArrayList<IWireNode>());
+                        toConsolidate.put(point, new ArrayList<IWireIntersection>());
 
-                    ArrayList<IWireNode> nodeList = toConsolidate.get(point);
-                    if (!nodeList.contains(node1))
-                        nodeList.add(node1);
-                    if (!nodeList.contains(node2))
-                        nodeList.add(node2);
+                    ArrayList<IWireIntersection> intersectionList = toConsolidate.get(point);
+                    if (!intersectionList.contains(intersection1))
+                        intersectionList.add(intersection1);
+                    if (!intersectionList.contains(intersection2))
+                        intersectionList.add(intersection2);
                 }
             }
         }
 
-        for (ArrayList<IWireNode> nodeList : toConsolidate.values())
+        for (ArrayList<IWireIntersection> intersectionList : toConsolidate.values())
         {
-            // When consolidating nodes, each affected segment must have the
-            // relevant node replaced.
+            // When consolidating intersections, each affected segment must have the
+            // relevant intersection replaced.
 
-            // Create a new node to replace all the old ones.
-            WireNode newNode = new WireNode(nodeList.get(0).getX(), nodeList.get(0).getY());
-            nodes.add(newNode);
+            // Create a new intersection to replace all the old ones.
+            WireIntersection newIntersection = new WireIntersection(intersectionList.get(0).getX(), intersectionList.get(0).getY());
+            intersections.add(newIntersection);
 
-            for (IWireNode node : nodeList)
+            for (IWireIntersection intersection : intersectionList)
             {
-                for (WireSegment segment : node.getSegments())
+                for (WireSegment segment : intersection.getSegments())
                 {
                     if (segment.getLength() == 0)
                     {
@@ -127,41 +127,41 @@ public class WireManager
                     }
                     else
                     {
-                        newNode.addSegment(segment);
-                        segment.replaceNode(node, newNode);
+                        newIntersection.addSegment(segment);
+                        segment.replaceIntersection(intersection, newIntersection);
                     }
                 }
-                nodes.remove(node);
+                intersections.remove(intersection);
             }
         }
 
         // Lastly merge collinear segment
-        ArrayList<IWireNode> toRemove = new ArrayList<IWireNode>();
-        for (IWireNode node : nodes)
+        ArrayList<IWireIntersection> toRemove = new ArrayList<IWireIntersection>();
+        for (IWireIntersection intersection : intersections)
         {
-            if (node instanceof WireNode && node.getSegments().size() == 2)
+            if (intersection instanceof WireIntersection && intersection.getSegments().size() == 2)
             {
-                WireSegment seg1 = node.getSegments().get(0);
-                WireSegment seg2 = node.getSegments().get(1);
+                WireSegment seg1 = intersection.getSegments().get(0);
+                WireSegment seg2 = intersection.getSegments().get(1);
                 if (!(seg1.isVertical() ^ seg2.isVertical())) // Both vertical or both horizontal
                 {
-                    if (seg2.getStart() == node)
+                    if (seg2.getStart() == intersection)
                     {
                         seg2.getEnd().replaceSegment(seg2, seg1);
-                        seg1.replaceNode(node, seg2.getEnd());
+                        seg1.replaceIntersection(intersection, seg2.getEnd());
                     }
                     else
                     {
                         seg2.getStart().replaceSegment(seg2, seg1);
-                        seg1.replaceNode(node, seg2.getStart());
+                        seg1.replaceIntersection(intersection, seg2.getStart());
                     }
 
-                    toRemove.add(node);
+                    toRemove.add(intersection);
                     removeSegment(seg2);
                 }
             }
         }
-        nodes.removeAll(toRemove);
+        intersections.removeAll(toRemove);
     }
 
     public void addSegment(WireSegment segment)
@@ -203,7 +203,7 @@ public class WireManager
                 segment.getStart().removeSegment(segment);
                 segment.getEnd().removeSegment(segment);
                 removeSegment(segment);
-                consolidateNodes();
+                consolidateIntersections();
                 break;
             }
         }

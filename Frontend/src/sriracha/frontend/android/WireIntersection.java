@@ -2,14 +2,14 @@ package sriracha.frontend.android;
 
 import java.util.*;
 
-public class WireNode implements IWireNode
+public class WireIntersection implements IWireIntersection
 {
     private ArrayList<WireSegment> segments = new ArrayList<WireSegment>(4); // Sticking to a 90deg grid.
 
     public int x;
     public int y;
 
-    public WireNode(int x, int y)
+    public WireIntersection(int x, int y)
     {
         this.x = x;
         this.y = y;
@@ -41,46 +41,46 @@ public class WireNode implements IWireNode
         return segments;
     }
 
-    public ArrayList<IWireNode> getNeighbours()
+    public ArrayList<IWireIntersection> getNeighbours()
     {
-        ArrayList<IWireNode> neighbours = new ArrayList<IWireNode>();
+        ArrayList<IWireIntersection> neighbours = new ArrayList<IWireIntersection>();
         for (WireSegment segment : segments)
         {
-            IWireNode neighbour = segment.getStart() != this ? segment.getStart() : segment.getEnd();
+            IWireIntersection neighbour = segment.getStart() != this ? segment.getStart() : segment.getEnd();
             neighbours.add(neighbour);
         }
         return neighbours;
     }
 
-    public WireNode duplicate(WireSegment segment, WireManager wireManager)
+    public WireIntersection duplicate(WireSegment segment, WireManager wireManager)
     {
-        WireNode newNode = new WireNode(x, y);
-        wireManager.addNode(newNode);
+        WireIntersection newIntersection = new WireIntersection(x, y);
+        wireManager.addIntersection(newIntersection);
 
         // Connect the segment that's being moved to the new node.
-        segment.replaceNode(this, newNode);
-        newNode.addSegment(segment);
+        segment.replaceIntersection(this, newIntersection);
+        newIntersection.addSegment(segment);
 
         // Connect the old node and the new node with a brand new segment
-        WireSegment newSegment = new WireSegment(segment.getContext(), this, newNode);
+        WireSegment newSegment = new WireSegment(segment.getContext(), this, newIntersection);
         wireManager.addSegment(newSegment);
 
-        newNode.addSegment(newSegment);
+        newIntersection.addSegment(newSegment);
         this.replaceSegment(segment, newSegment);
 
-        return newNode;
+        return newIntersection;
     }
 
     @Override
     public boolean duplicateOnMove(WireSegment segment)
     {
-        IWireNode neighbour = segment.getStart() != this ? segment.getStart() : segment.getEnd();
+        IWireIntersection neighbour = segment.getStart() != this ? segment.getStart() : segment.getEnd();
         return hasNeighbourOpposite(neighbour);
     }
 
-    private boolean hasNeighbourOpposite(IWireNode neighbour)
+    private boolean hasNeighbourOpposite(IWireIntersection neighbour)
     {
-        for (IWireNode possibleOpposite : getNeighbours())
+        for (IWireIntersection possibleOpposite : getNeighbours())
         {
             if (possibleOpposite != neighbour
                     && (possibleOpposite.getX() == neighbour.getX() || possibleOpposite.getY() == neighbour.getY()))
@@ -93,7 +93,7 @@ public class WireNode implements IWireNode
     {
         for (WireSegment segment : segments)
         {
-            IWireNode other = segment.getStart() != this ? segment.getStart() : segment.getEnd();
+            IWireIntersection other = segment.getStart() != this ? segment.getStart() : segment.getEnd();
             if (x > this.x && other.getX() > this.x)
                 return segment;
             else if (x < this.x && other.getX() < this.x)
@@ -106,7 +106,7 @@ public class WireNode implements IWireNode
     {
         for (WireSegment segment : segments)
         {
-            IWireNode other = segment.getStart() != this ? segment.getStart() : segment.getEnd();
+            IWireIntersection other = segment.getStart() != this ? segment.getStart() : segment.getEnd();
             if (y > this.y && other.getY() > this.y)
                 return segment;
             else if (y < this.y && other.getY() < this.y)

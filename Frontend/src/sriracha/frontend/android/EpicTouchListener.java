@@ -100,7 +100,7 @@ public abstract class EpicTouchListener implements View.OnTouchListener
                     boolean isSwipe = Math.abs(centerRad(angle1 - angle2)) <= swipeTolerance * Math.PI;
                     
                     boolean consumed = false;
-                    
+
                     if(isScale){
                         float xFactor =  Math.abs((x2 - x1) / (oldx2 - oldx1)), yFactor = Math.abs((y2 - y1) / (oldy2 - oldy1));
                         consumed |= onScale(xFactor, yFactor);
