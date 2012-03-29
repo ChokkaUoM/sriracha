@@ -21,4 +21,8 @@ public class Plot
     public Point getPoint(int i){
         return points.get(i);
     }
+
+    public int size() {
+        return points.size();
+    }
 }

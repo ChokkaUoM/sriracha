@@ -11,10 +11,14 @@
 package sriracha.frontend;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.*;
 import sriracha.frontend.android.*;
 import sriracha.frontend.android.model.*;
+import sriracha.frontend.android.results.Graph;
+import sriracha.frontend.resultdata.Plot;
+import sriracha.frontend.resultdata.Point;
 
 public class MainActivity extends Activity
 {
@@ -31,12 +35,35 @@ public class MainActivity extends Activity
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.main);
+
+ 
+       /* setContentView(R.layout.main);
 
         circuitDesignerMenu = new CircuitDesignerMenu((MainActivity) this);
         circuitDesigner = new CircuitDesigner(findViewById(R.id.circuit_design_canvas), circuitDesignerMenu, new CircuitElementActivator(this));
 
-        showCircuitMenu(R.id.circuit_menu);
+        showCircuitMenu(R.id.circuit_menu);*/
+
+        testGraph();
+
+    }
+    
+    private void testGraph(){
+        setContentView(R.layout.results_testing);
+        
+        
+        //create sin plot
+        Plot p = new Plot();
+        for(double x = -10; x < 10; x+=0.1){
+            p.addPoint(new Point(x, Math.sin(x)));
+        }
+        
+        Graph g = (Graph)findViewById(R.id.graph);
+        
+        g.addPlot(p, Color.rgb(200, 10, 40));
+        
+        g.setXRange(-10, 10);
+        g.setYRange(-5, 5);
     }
 
     public void sourcesAndGroundOnClick(View view)

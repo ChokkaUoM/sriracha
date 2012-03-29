@@ -8,6 +8,7 @@ import sriracha.frontend.android.EpicTouchListener;
 import sriracha.frontend.android.results.functions.Function;
 import sriracha.frontend.resultdata.Plot;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -33,6 +34,14 @@ public class Graph extends FrameLayout
         super(context, attrs);
         init();
     }
+
+   /* @Override
+    public void invalidate() {
+        super.invalidate();   
+        for(PlotView pv : plots){
+            pv.invalidate();
+        }
+    }*/
 
     public Graph(Context context, AttributeSet attrs, int defStyle)
     {
@@ -63,6 +72,10 @@ public class Graph extends FrameLayout
         int xtop = xAxis.getEdgeOffset();
 
         xAxis.layout(0, xtop, xAxis.getMeasuredWidth(), xtop + xAxis.getMeasuredHeight());
+        
+        for(PlotView pv : plots){
+            pv.layout(0, 0, pv.getMeasuredWidth(),  pv.getMeasuredHeight());
+        }
 
     }
 
@@ -74,7 +87,7 @@ public class Graph extends FrameLayout
         xAxis = new Axis(getContext());
         addView(xAxis, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         xAxis.setOrientation(LinearLayout.HORIZONTAL);
-
+        plots =  new ArrayList<PlotView>();
         setOnTouchListener(new GraphGestureListener());
 
 
@@ -118,6 +131,7 @@ public class Graph extends FrameLayout
     public void addPlot(Plot plot, int color, Function f){
         PlotView plotView = new PlotView(this, getContext());
         plotView.setColor(color);
+        plotView.setPlot(plot);
         plotView.setFunc(f);
         plots.add(plotView);
         addView(plotView);
@@ -140,11 +154,13 @@ public class Graph extends FrameLayout
     public void setYRange(double min, double max){
         yAxis.setRange(min, max);
         requestLayout();
+        invalidate();
     }
 
     public void setXRange(double min, double max){
         xAxis.setRange(min, max);
         requestLayout();
+        invalidate();
     }
 
     public double getYmin() {
@@ -154,6 +170,7 @@ public class Graph extends FrameLayout
     public void setYmin(double ymin) {
         yAxis.setMinValue(ymin);
         requestLayout();
+        invalidate();
     }
 
     public double getYmax() {
@@ -163,6 +180,7 @@ public class Graph extends FrameLayout
     public void setYmax(double ymax) {
         yAxis.setMaxValue(ymax);
         requestLayout();
+        invalidate();
     }
 
     public double getXmin() {
@@ -181,5 +199,6 @@ public class Graph extends FrameLayout
     public void setXmax(double xmax) {
         xAxis.setMaxValue(xmax);
         requestLayout();
+        invalidate();
     }
 }

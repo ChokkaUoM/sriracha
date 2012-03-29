@@ -286,7 +286,7 @@ public class Axis extends LinearLayout {
     }
 
     protected static String axisNumFormat(double val) {
-        if (val <= 1000 && val >= -1000) {
+        if (val <= 1000 && val >= -1000 && Math.abs(val) > 1./1000.) {
             DecimalFormat format = new DecimalFormat("#.##");
             return format.format(val);
         }

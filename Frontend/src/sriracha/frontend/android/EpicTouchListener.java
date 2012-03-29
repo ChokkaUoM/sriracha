@@ -71,6 +71,7 @@ public abstract class EpicTouchListener implements View.OnTouchListener
                     x1 = x2;
                     y1 = y2;
                 }
+                break;
             }
             case MotionEvent.ACTION_MOVE:
             {

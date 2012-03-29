@@ -5,13 +5,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import sriracha.frontend.android.results.functions.Function;
 import sriracha.frontend.resultdata.Plot;
 import sriracha.frontend.resultdata.Point;
 
-public class PlotView extends FrameLayout
+public class PlotView extends View
 {
     private Plot plot;
     
@@ -33,6 +34,15 @@ public class PlotView extends FrameLayout
         init();
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+      //  super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int height = MeasureSpec.getSize(heightMeasureSpec);
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+        //plot is always child of graph and will always fill entire graph space
+        setMeasuredDimension(width,  height);
+    }
+
     public PlotView(Context context, AttributeSet attrs)
     {
         super(context, attrs);
@@ -47,7 +57,7 @@ public class PlotView extends FrameLayout
     
     private void init(){
         //always stretch PlotView to size of graph
-        setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         if(graph == null) graph = (Graph) getParent();
         color = Color.rgb(0,250,35);
     }
@@ -56,32 +66,39 @@ public class PlotView extends FrameLayout
     {
         this.color = color;
     }
-    
+
+    public void setPlot(Plot plot) {
+        this.plot = plot;
+    }
 
     @Override
     protected void onDraw(Canvas canvas)
     {
 
-
         Paint paint = new Paint();
         paint.setColor(color);
-        paint.setStrokeWidth(0.5f);
+        paint.setStrokeWidth(1f);
         
         int index = 0;
-        while(plot.getPoint(index).getX() < graph.getXmin()) index ++;
+        while(index < plot.size() && plot.getPoint(index).getX() < graph.getXmin()) index ++;
         
         Point previous = null, p = null;
         
-        while(plot.getPoint(index).getX() <= graph.getXmax()){
+        while(index < plot.size() && plot.getPoint(index).getX() <= graph.getXmax()){
             
             p = plot.getPoint(index);
             
             double pX = p.getX(), pY = func == null ? p.getY() : func.evaluate(p.getY());
             
-           
+           if(previous == null){
+               previous = p;
+               index++;
+               continue;
+           }
             
-            if(pY < graph.getYmin() || pY > graph.getYmax() || previous == null) {
+            if(pY < graph.getYmin() || pY > graph.getYmax()) {
                 previous = null;
+                index ++;
                 continue;
             }
 
@@ -91,7 +108,7 @@ public class PlotView extends FrameLayout
             float []end = graph.pixelsFromCoords(pX, pY);
             
             
-
+            //don't draw points that are really close together
             if( Math.pow(end[0] - start[0], 2) + Math.pow(end[1] - start[1], 2) < 2) continue;
             
             
