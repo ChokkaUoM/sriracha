@@ -106,7 +106,7 @@ public class Graph extends FrameLayout
             yAxis.setRange(yAxis.getMinValue() + yPush, yAxis.getMaxValue() + yPush);
             xAxis.setRange(xAxis.getMinValue() - xPush, xAxis.getMaxValue() - xPush);
             requestLayout();
-
+            invalidate();
             return true;
         }
 
@@ -117,7 +117,7 @@ public class Graph extends FrameLayout
             yAxis.setRange(yAxis.getMinValue() * yFactor, yAxis.getMaxValue() * yFactor);
             xAxis.setRange(xAxis.getMinValue() * xFactor, xAxis.getMaxValue() * xFactor);
             requestLayout();
-
+            invalidate();
             return true;
         }
     }

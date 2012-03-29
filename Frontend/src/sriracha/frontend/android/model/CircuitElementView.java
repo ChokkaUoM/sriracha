@@ -39,7 +39,7 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
     abstract public int getDrawableId();
 
     abstract public CircuitElementPortView[] getElementPorts();
-    
+
     public CircuitElementView(Context context, CircuitElement element, float positionX, float positionY)
     {
         super(context);
@@ -92,7 +92,7 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         }
         return closestPort;
     }
-    
+
     public boolean isDraggable() { return isDraggable; }
     public void setDraggable(boolean draggable)
     {
@@ -156,9 +156,31 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
 
                 // Find the index of the active pointer and fetch its position
                 int pointerIndex = motionEvent.findPointerIndex(activePointerId);
-                positionX += motionEvent.getX(pointerIndex) - touchDownDeltaX;
-                positionY += motionEvent.getY(pointerIndex) - touchDownDeltaY;
-                snapToGrid();
+
+                float newPositionX = snapToGrid(positionX + motionEvent.getX(pointerIndex) - touchDownDeltaX);
+                float newPositionY = snapToGrid(positionY + motionEvent.getY(pointerIndex) - touchDownDeltaY);
+
+                for (CircuitElementPortView port : ports)
+                {
+                    float[] transformedPortPosition = port.getTransformedPosition();
+
+                    for (WireSegment segment : port.getSegments())
+                    {
+                        if (segment.isVertical())
+                        {
+                            float portX = newPositionX + getWidth() / 2 + getWidth() * transformedPortPosition[0];
+                            segment.moveX((int) portX);
+                        }
+                        else
+                        {
+                            float portY = newPositionY + getHeight() / 2 + getHeight() * transformedPortPosition[1];
+                            segment.moveY((int) portY);
+                        }
+                    }
+                }
+
+                positionX = newPositionX;
+                positionY = newPositionY;
 
                 updatePosition();
                 break;
@@ -181,11 +203,10 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
 
         return true;
     }
-    
-    private void snapToGrid()
+
+    private float snapToGrid(float position)
     {
-        positionX = CircuitDesigner.snap(positionX);
-        positionY = CircuitDesigner.snap(positionY);
+        return CircuitDesigner.snap(position);
     }
 
     public void onClick(float x, float y)

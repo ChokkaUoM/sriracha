@@ -10,10 +10,14 @@ public class WireSegment extends View
 
     private IWireIntersection start;
     private IWireIntersection end;
+    
+    private WireManager wireManager;
 
-    public WireSegment(Context context, IWireIntersection start, IWireIntersection end)
+    public WireSegment(Context context, WireManager wireManager, IWireIntersection start, IWireIntersection end)
     {
         super(context);
+
+        this.wireManager = wireManager;
 
         this.start = start;
         this.end = end;
@@ -30,10 +34,11 @@ public class WireSegment extends View
         paint.setStrokeWidth(isSelected() ? 6 : 4);
 
         canvas.drawLine(start.getX(), start.getY(), end.getX(), end.getY(), paint);
+        canvas.drawCircle(start.getX(), start.getY(), 4, paint);
         canvas.drawCircle(end.getX(), end.getY(), 4, paint);
     }
 
-    public void setX(int x, WireManager wireManager)
+    public void moveX(int x)
     {
         if (x == start.getX())
             return;
@@ -67,7 +72,7 @@ public class WireSegment extends View
         ((WireIntersection) end).x = x;
     }
 
-    public void setY(int y, WireManager wireManager)
+    public void moveY(int y)
     {
         if (y == start.getY())
             return;

@@ -152,12 +152,12 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                 if (canMoveHorizontally)
                 {
                     int deltaX = snap(motionEvent.getX(pointerIndex) - touchDownX);
-                    selectedSegment.setX((int) selectedSegmentStart + deltaX, wireManager);
+                    selectedSegment.moveX((int) selectedSegmentStart + deltaX);
                 }
                 else
                 {
                     int deltaY = snap(motionEvent.getY(pointerIndex) - touchDownY);
-                    selectedSegment.setY((int) selectedSegmentStart + deltaY, wireManager);
+                    selectedSegment.moveY((int) selectedSegmentStart + deltaY);
                 }
                 selectedSegment.invalidate();
 

@@ -3,6 +3,7 @@ package sriracha.frontend.android;
 import android.content.*;
 import android.graphics.*;
 import android.view.*;
+import sriracha.frontend.android.model.*;
 
 import java.util.*;
 
@@ -41,7 +42,7 @@ public class WireManager
 
         intersections.add(to);
 
-        WireSegment segment = new WireSegment(context, from, to);
+        WireSegment segment = new WireSegment(context, this, from, to);
         from.addSegment(segment);
         to.addSegment(segment);
         addSegment(segment);
@@ -56,8 +57,8 @@ public class WireManager
 
         // Create two new segments by splitting the original one up.
         WireIntersection intersection = new WireIntersection(x, y);
-        WireSegment firstHalf = new WireSegment(context, segment.getStart(), intersection);
-        WireSegment secondHalf = new WireSegment(context, intersection, segment.getEnd());
+        WireSegment firstHalf = new WireSegment(context, this, segment.getStart(), intersection);
+        WireSegment secondHalf = new WireSegment(context, this, intersection, segment.getEnd());
 
         addSegment(firstHalf);
         addSegment(secondHalf);
@@ -76,6 +77,14 @@ public class WireManager
         return intersection;
     }
 
+    /**
+     * Takes WireIntersections at the same location, and merges them.
+     * However, if the intersections have two segments pointing in the same
+     * direction which are not the same segment, then they cannot be consolidated.
+     * Segments that have one endpoint as a Port merge in such a way so that only
+     * the port remains.
+     * Segments that have both endpoints as Ports do not merge.
+     */
     public void consolidateIntersections()
     {
         HashMap<Point, ArrayList<IWireIntersection>> toConsolidate = new HashMap<Point, ArrayList<IWireIntersection>>();
@@ -87,9 +96,6 @@ public class WireManager
             {
                 IWireIntersection intersection2 = intersections.get(j);
 
-                if (!(intersection1 instanceof WireIntersection) || !(intersection2 instanceof WireIntersection))
-                    continue;
-
                 // If two intersections have the same coordinates, we store them in a hashtable.
                 // The hashtable is indexed by point, and each entry contains a list of
                 // intersections that all have the same coordinates.
@@ -100,6 +106,7 @@ public class WireManager
                         toConsolidate.put(point, new ArrayList<IWireIntersection>());
 
                     ArrayList<IWireIntersection> intersectionList = toConsolidate.get(point);
+
                     if (!intersectionList.contains(intersection1))
                         intersectionList.add(intersection1);
                     if (!intersectionList.contains(intersection2))
@@ -110,6 +117,21 @@ public class WireManager
 
         for (ArrayList<IWireIntersection> intersectionList : toConsolidate.values())
         {
+            int portCount = 0;
+            for (IWireIntersection intersection : intersectionList)
+            {
+                if (intersection instanceof CircuitElementPortView)
+                    portCount++;
+            }
+            
+            if (portCount >= 2)
+                continue;
+
+            if (portCount == 1)
+            {
+
+            }
+
             // When consolidating intersections, each affected segment must have the
             // relevant intersection replaced.
 

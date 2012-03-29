@@ -103,7 +103,7 @@ public class CircuitElementPortView implements IWireIntersection
         newIntersection.addSegment(segment);
 
         // Connect the old node and the new node with a brand new segment
-        WireSegment newSegment = new WireSegment(segment.getContext(), this, newIntersection);
+        WireSegment newSegment = new WireSegment(segment.getContext(), wireManager, this, newIntersection);
         wireManager.addSegment(newSegment);
 
         newIntersection.addSegment(newSegment);

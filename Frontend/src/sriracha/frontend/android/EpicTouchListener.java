@@ -21,6 +21,11 @@ public abstract class EpicTouchListener implements View.OnTouchListener
      * 1 -> any 2 finger motion is a swipe gesture
      */
     protected double swipeTolerance = 0.2;
+    
+    private int fingerIds[]= new int[10];
+    private int xVals[] = new int[10];
+    private int yVals[] = new int[10];
+    
 
     private float x1, y1, x2, y2;
 
@@ -58,19 +63,51 @@ public abstract class EpicTouchListener implements View.OnTouchListener
                     id2 = motionEvent.getPointerId(index);
 
                     onTwoFingerDown(x1, y1, x2, y2);
-
                 }
                 return true;
             }
             case MotionEvent.ACTION_POINTER_UP:
             {
                 int id = motionEvent.getPointerId(index);
+//                System.out.println("id : " + id + " index: " + index + " pcount: " + motionEvent.getPointerCount());
 
-                if(id == id1){
-                    id1 = id2;
-                    x1 = x2;
-                    y1 = y2;
+                for(int i =0; i<motionEvent.getPointerCount() && i< 2; i++){
+                    
                 }
+                
+                if(motionEvent.getPointerCount() == 2){
+                    if(id == id1){
+                        id1 = id2;
+                        x1 = x2;
+                        y1 = y2;
+                    }
+                }else{
+                    if(id == id1)
+                    {
+                        id1 = motionEvent.getPointerId(2);
+                        x1 = motionEvent.getX(2);
+                        y1 = motionEvent.getY(2);
+                    }
+                    else if (id == id2)
+                    {
+                        id2 = motionEvent.getPointerId(2);
+                        x2 = motionEvent.getX(2);
+                        y2 = motionEvent.getY(2);
+                    }
+                }
+                
+
+              /*  
+                else if (id == id2)
+                {
+
+                }
+                else
+                {
+
+                }
+*/
+
                 break;
             }
             case MotionEvent.ACTION_MOVE:
@@ -86,13 +123,21 @@ public abstract class EpicTouchListener implements View.OnTouchListener
                     float oldx1 = x1, oldx2 = x2, oldy1 = y1, oldy2 = y2;
                    
                     int i1 = motionEvent.findPointerIndex(id1), i2 = motionEvent.findPointerIndex(id2);
-                   
-                    x1 = motionEvent.getX(i1);
-                    y1 = motionEvent.getY(i1);
-                    y2 = motionEvent.getY(i2);
-                    x2 = motionEvent.getX(i2);
-                    
-                    
+
+                    try
+                    {
+                        x1 = motionEvent.getX(i1);
+                        y1 = motionEvent.getY(i1);
+                        y2 = motionEvent.getY(i2);
+                        x2 = motionEvent.getX(i2);
+                    }
+                    catch (Exception e)
+                    {
+                        //we did something wrong
+                        return false;
+                    }
+
+
                     float dX1 = x1 - oldx1, dX2 = x2 - oldx2, dY1 = y1 - oldy1, dY2 = y2 - oldy2;
                     
                     double angle1 = centerRad(Math.atan2(dY1, dX1)), angle2 = centerRad(Math.atan2(dY2, dX2));
@@ -100,9 +145,11 @@ public abstract class EpicTouchListener implements View.OnTouchListener
                     boolean isSwipe = Math.abs(centerRad(angle1 - angle2)) <= swipeTolerance * Math.PI;
                     
                     boolean consumed = false;
-
+                    float oldDX = clamp(Math.abs(oldx2 - oldx1), 10, 1000), oldDY = clamp(Math.abs(oldy2 - oldy1), 10, 1000),
+                            dx =clamp(Math.abs(x2-x1), 10, 1000), dy = clamp(Math.abs(y2 - y1), 10, 1000);
+                    
                     if(isScale){
-                        float xFactor =  Math.abs((x2 - x1) / (oldx2 - oldx1)), yFactor = Math.abs((y2 - y1) / (oldy2 - oldy1));
+                        float xFactor = oldDX / dx, yFactor = oldDY / dy;
                         consumed |= onScale(xFactor, yFactor);
                     }
                     
@@ -122,6 +169,11 @@ public abstract class EpicTouchListener implements View.OnTouchListener
         }
 
         return false;
+    }
+    
+    private float clamp(float value, float min, float max)
+    {
+        return value < min ? min : value > max ? max : value;
     }
     
     

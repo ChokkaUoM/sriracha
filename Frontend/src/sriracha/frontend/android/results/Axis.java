@@ -302,9 +302,9 @@ public class Axis extends LinearLayout {
      * @return pixel offset from start (left or top)
      */
     public float pixelsFromCoordinate(double axisValue) {
-        double percnt = (axisValue-minValue)/(maxValue - minValue);
-        if(getOrientation() == VERTICAL) percnt = 1-percnt;
-        return (float) (percnt * getPixelRange());
+        double percent = (axisValue-minValue)/(maxValue - minValue);
+        if(getOrientation() == VERTICAL) percent = 1-percent;
+        return (float) (percent * getPixelRange());
     }
 
     /**
