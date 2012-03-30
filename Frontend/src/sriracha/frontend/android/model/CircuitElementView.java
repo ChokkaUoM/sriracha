@@ -19,12 +19,13 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
 
     private CircuitElement element;
     private CircuitElementPortView ports[];
+    private WireManager wireManager;
 
     private boolean isDraggable;
     private boolean isElementSelected;
 
     private OnElementClickListener onElementClickListener;
-    private OnDrawListener onDrawListener;
+    private OnInvalidateListener onInvalidateListener;
 
     private float positionX;
     private float positionY;
@@ -42,7 +43,7 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
 
     abstract public CircuitElementPortView[] getElementPorts();
 
-    public CircuitElementView(Context context, CircuitElement element, float positionX, float positionY)
+    public CircuitElementView(Context context, CircuitElement element, float positionX, float positionY, WireManager wireManager)
     {
         super(context);
 
@@ -53,6 +54,8 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         this.positionX = positionX;
         this.positionY = positionY;
         ports = getElementPorts();
+
+        this.wireManager = wireManager;
 
         setOnTouchListener(this);
         setOnLongClickListener(this);
@@ -71,6 +74,8 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
     {
         this.orientation = orientation;
         invalidate();
+        if (onInvalidateListener != null)
+            onInvalidateListener.onInvalidate();
     }
     public void rotate(int degrees)
     {
@@ -116,9 +121,9 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         this.onElementClickListener = onElementClickListener;
     }
 
-    public void setOnDrawListener(OnDrawListener onDrawListener)
+    public void setOnInvalidateListener(OnInvalidateListener onInvalidateListener)
     {
-        this.onDrawListener = onDrawListener;
+        this.onInvalidateListener = onInvalidateListener;
     }
 
     @Override
@@ -158,32 +163,28 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
 
                 // Find the index of the active pointer and fetch its position
                 int pointerIndex = motionEvent.findPointerIndex(activePointerId);
+                float newPositionX = CircuitDesigner.snap(positionX + motionEvent.getX(pointerIndex) - touchDownDeltaX);
+                float newPositionY = CircuitDesigner.snap(positionY + motionEvent.getY(pointerIndex) - touchDownDeltaY);
 
-                // We record the segment verticalities before moving the element, otherwise the crookedness of the
-                // segment prevents proper verticality measurement.
-                ArrayList<Boolean> segmentVerticalities = new ArrayList<Boolean>();
-                for (CircuitElementPortView port : ports)
-                {
-                    for (WireSegment segment : port.getSegments())
-                        segmentVerticalities.add(segment.isVertical());
-                }
-
-                positionX = CircuitDesigner.snap(positionX + motionEvent.getX(pointerIndex) - touchDownDeltaX);
-                positionY = CircuitDesigner.snap(positionY + motionEvent.getY(pointerIndex) - touchDownDeltaY);
-
-                int i = 0;
+                boolean hasMoved = false;
                 for (CircuitElementPortView port : ports)
                 {
                     for (WireSegment segment : port.getSegments())
                     {
-                        if (segmentVerticalities.get(i++))
-                            segment.moveX(port.getX(), segment.otherEnd(port));
+                        if (segment.isVertical())
+                            hasMoved |= segment.moveX((int) (newPositionX + getWidth() / 2 + getWidth() * port.getTransformedPosition()[0]), segment.otherEnd(port));
                         else
-                            segment.moveY(port.getY(), segment.otherEnd(port));
+                            hasMoved |= segment.moveY((int) (newPositionY + getHeight() / 2 + getHeight() * port.getTransformedPosition()[1]), segment.otherEnd(port));
                     }
                 }
 
+                positionX = newPositionX;
+                positionY = newPositionY;
                 updatePosition();
+                
+                if (hasMoved)
+                    wireManager.consolidateIntersections();
+
                 break;
             }
 
@@ -228,6 +229,8 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         params.leftMargin = (int) positionX;
         params.topMargin = (int) positionY;
         setLayoutParams(params);
+        if (onInvalidateListener != null)
+            onInvalidateListener.onInvalidate();
     }
 
     @Override
@@ -251,9 +254,6 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         paint.setTextSize(12);
         paint.setColor(Color.BLACK);
         canvas.drawText(element.getName(), 5, 14, paint);
-
-        if (onDrawListener != null)
-            onDrawListener.onDraw(canvas);
     }
 
 
@@ -262,8 +262,8 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         public void onElementClick(View view, float x, float y);
     }
 
-    public interface OnDrawListener
+    public interface OnInvalidateListener
     {
-        public void onDraw(Canvas canvas);
+        public void onInvalidate();
     }
 }

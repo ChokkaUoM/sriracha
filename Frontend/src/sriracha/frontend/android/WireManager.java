@@ -33,6 +33,21 @@ public class WireManager
             intersections.add(intersection);
     }
 
+    public void removeElement(CircuitElementView element)
+    {
+        for (CircuitElementPortView port : element.getElementPorts())
+        {
+            WireIntersection newIntersection = new WireIntersection(port.getX(), port.getY());
+            intersections.add(newIntersection);
+            for (WireSegment segment : port.getSegments())
+            {
+                segment.replaceIntersection(port, newIntersection);
+                newIntersection.addSegment(segment);
+            }
+            intersections.remove(port);
+        }
+    }
+
     public void connectNewIntersection(IWireIntersection from, IWireIntersection to)
     {
         if (!intersections.contains(from))
@@ -227,7 +242,8 @@ public class WireManager
                         segment.replaceIntersection(intersection, newIntersection);
                     }
                 }
-                intersections.remove(intersection);
+                if (!(intersection instanceof CircuitElementPortView))
+                    intersections.remove(intersection);
             }
         }
 

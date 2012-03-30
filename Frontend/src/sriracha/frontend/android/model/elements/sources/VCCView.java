@@ -2,6 +2,7 @@ package sriracha.frontend.android.model.elements.sources;
 
 import android.content.*;
 import sriracha.frontend.*;
+import sriracha.frontend.android.*;
 import sriracha.frontend.android.model.*;
 import sriracha.frontend.model.*;
 
@@ -9,9 +10,9 @@ public class VCCView extends CircuitElementView
 {
     CircuitElementPortView ports[];
 
-    public VCCView(Context context, CircuitElement element, float positionX, float positionY)
+    public VCCView(Context context, CircuitElement element, float positionX, float positionY, WireManager wireManager)
     {
-        super(context, element, positionX, positionY);
+        super(context, element, positionX, positionY, wireManager);
     }
 
     @Override

@@ -2,6 +2,7 @@ package sriracha.frontend.android.model.elements.sources;
 
 import android.content.*;
 import sriracha.frontend.*;
+import sriracha.frontend.android.*;
 import sriracha.frontend.android.model.*;
 import sriracha.frontend.model.*;
 import sriracha.frontend.model.elements.sources.*;
@@ -10,9 +11,9 @@ public class CurrentSourceView extends CircuitElementView implements Property.On
 {
     CircuitElementPortView ports[];
 
-    public CurrentSourceView(Context context, CircuitElement element, float positionX, float positionY)
+    public CurrentSourceView(Context context, CircuitElement element, float positionX, float positionY, WireManager wireManager)
     {
-        super(context, element, positionX, positionY);
+        super(context, element, positionX, positionY, wireManager);
         for (Property property : element.getProperties())
         {
             if (property instanceof ScalarProperty && ((ScalarProperty)property).getName().equalsIgnoreCase("AC Current"))

@@ -9,7 +9,7 @@ import sriracha.frontend.model.*;
 import java.util.*;
 
 public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
-        implements View.OnTouchListener, CircuitElementView.OnElementClickListener, CircuitElementView.OnDrawListener
+        implements View.OnTouchListener, CircuitElementView.OnElementClickListener, CircuitElementView.OnInvalidateListener
 {
     public static final int GRID_SIZE = 40;
     private static final int INVALID_POINTER_ID = -1;
@@ -238,7 +238,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
             canvasView.addView(elementView);
 
             elementView.setOnElementClickListener(this);
-            elementView.setOnDrawListener(this);
+            elementView.setOnInvalidateListener(this);
             elementView.updatePosition();
         }
         return true;
@@ -299,7 +299,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
 
     public CircuitElementView instantiateElement(float positionX, float positionY)
     {
-        return activator.instantiateElement(getSelectedItemId(), positionX, positionY, elementManager);
+        return activator.instantiateElement(getSelectedItemId(), positionX, positionY, elementManager, wireManager);
     }
 
     public void rotateSelectedElement(boolean cw)
@@ -361,6 +361,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         if (getCursor() != CursorState.HAND || selectedElement == null)
             return;
 
+        wireManager.removeElement(selectedElement);
         elementManager.removeElement(selectedElement.getElement());
         elements.remove(selectedElement);
         canvasView.removeView(selectedElement);
@@ -383,7 +384,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     }
 
     @Override
-    public void onDraw(Canvas canvas)
+    public void onInvalidate()
     {
         wireManager.invalidateAll();
     }

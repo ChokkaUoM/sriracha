@@ -36,14 +36,14 @@ public class MainActivity extends Activity
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-//        setContentView(R.layout.main);
-//
-//        circuitDesignerMenu = new CircuitDesignerMenu((MainActivity) this);
-//        circuitDesigner = new CircuitDesigner(findViewById(R.id.circuit_design_canvas), circuitDesignerMenu, new CircuitElementActivator(this));
-//
-//        showCircuitMenu(R.id.circuit_menu);
+        setContentView(R.layout.main);
 
-        testGraph();
+        circuitDesignerMenu = new CircuitDesignerMenu((MainActivity) this);
+        circuitDesigner = new CircuitDesigner(findViewById(R.id.circuit_design_canvas), circuitDesignerMenu, new CircuitElementActivator(this));
+
+        showCircuitMenu(R.id.circuit_menu);
+
+//        testGraph();
     }
     
     private void testGraph(){

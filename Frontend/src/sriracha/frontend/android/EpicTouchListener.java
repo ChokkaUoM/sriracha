@@ -93,6 +93,7 @@ public abstract class EpicTouchListener implements View.OnTouchListener
                 //always return true for ACTION_POINTER_DOWN so that we get subsequent ACTION_MOVE events
                 return true;
             }
+            case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
             {
                 activeFingers.remove(findById(actionId));

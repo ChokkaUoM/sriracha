@@ -18,6 +18,8 @@ public class WireSegment extends View
 
     private WireManager wireManager;
 
+    int r, g, b;
+    static int rs, gs, bs;
     public WireSegment(Context context, WireManager wireManager, IWireIntersection start, IWireIntersection end)
     {
         super(context);
@@ -26,6 +28,12 @@ public class WireSegment extends View
 
         this.start = start;
         this.end = end;
+
+        r = rs++;
+        if (r > 1)        {            rs = 0;            gs++;        }
+        g = gs;
+        if (gs > 1)        {            gs = 0;            bs++;        }
+        b = bs;
     }
 
     public IWireIntersection getStart() { return start; }
@@ -35,22 +43,26 @@ public class WireSegment extends View
     protected void onDraw(Canvas canvas)
     {
         Paint paint = new Paint();
-        paint.setColor(isSelected() ? Color.rgb(0xCC, 0xCC, 0) : Color.GRAY);
+        //paint.setColor(isSelected() ? Color.rgb(0xCC, 0xCC, 0) : Color.GRAY);
+        paint.setColor(Color.argb(0x7F, 0x7F * r, 0x7F * g, 0x7F * b));
         paint.setStrokeWidth(isSelected() ? 6 : 4);
 
-        canvas.drawLine(start.getX(), start.getY(), end.getX(), end.getY(), paint);
-        canvas.drawCircle(start.getX(), start.getY(), 4, paint);
-        canvas.drawCircle(end.getX(), end.getY(), 4, paint);
+        //canvas.drawLine(start.getX(), start.getY(), end.getX(), end.getY(), paint);
+        float randSX = (float)Math.random() * 20 - 10, randSY = (float)Math.random() * 20 - 10;
+        float randEX = (float)Math.random() * 20 - 10, randEY = (float)Math.random() * 20 - 10;
+        canvas.drawLine(start.getX() + randSX, start.getY() + randSY, end.getX() + randEX, end.getY() + randEY, paint);
+        canvas.drawCircle(start.getX() + randSX, start.getY() + randSY, 4, paint);
+        canvas.drawCircle(end.getX() + randEX, end.getY() + randEY, 4, paint);
     }
 
-    public void moveX(int x) { moveX(x, null); }
-    public void moveY(int y) { moveY(y, null); }
+    public boolean moveX(int x) { return moveX(x, null); }
+    public boolean moveY(int y) { return moveY(y, null); }
 
-    public void moveX(int x, IWireIntersection onlyThisNode)
+    public boolean moveX(int x, IWireIntersection onlyThisNode)
     {
         int currentX = onlyThisNode == null ? start.getX() : onlyThisNode.getX();
         if (x == currentX)
-            return;
+            return false;
 
         boolean doStart = onlyThisNode == null || onlyThisNode == start;
         boolean doEnd = onlyThisNode == null || onlyThisNode == end;
@@ -84,14 +96,15 @@ public class WireSegment extends View
             ((WireIntersection) start).x = x;
         if (doEnd)
             ((WireIntersection) end).x = x;
-        wireManager.consolidateIntersections();
+
+        return true;
     }
 
-    public void moveY(int y, IWireIntersection onlyThisNode)
+    public boolean moveY(int y, IWireIntersection onlyThisNode)
     {
         int currentY = onlyThisNode == null ? start.getY() : onlyThisNode.getY();
-        if (y == start.getY())
-            return;
+        if (y == currentY)
+            return false;
 
         boolean doStart = onlyThisNode == null || onlyThisNode == start;
         boolean doEnd = onlyThisNode == null || onlyThisNode == end;
@@ -125,7 +138,8 @@ public class WireSegment extends View
             ((WireIntersection) start).y = y;
         if (doEnd)
             ((WireIntersection) end).y = y;
-        wireManager.consolidateIntersections();
+
+        return true;
     }
 
     public void replaceIntersection(IWireIntersection oldIntersection, IWireIntersection newIntersection)

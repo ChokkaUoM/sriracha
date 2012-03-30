@@ -29,4 +29,9 @@ public class Ground extends CircuitElement
     {
         return "G%d";
     }
+    @Override
+    public String toNetlistString(String[] nodes)
+    {
+        return "";
+    }
 }

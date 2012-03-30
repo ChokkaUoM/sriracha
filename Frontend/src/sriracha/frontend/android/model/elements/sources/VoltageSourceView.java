@@ -2,6 +2,7 @@ package sriracha.frontend.android.model.elements.sources;
 
 import android.content.*;
 import sriracha.frontend.*;
+import sriracha.frontend.android.*;
 import sriracha.frontend.android.model.*;
 import sriracha.frontend.android.model.CircuitElementPortView;
 import sriracha.frontend.model.*;
@@ -11,9 +12,9 @@ public class VoltageSourceView extends CircuitElementView implements Property.On
 {
     CircuitElementPortView ports[];
 
-    public VoltageSourceView(Context context, CircuitElement element, float positionX, float positionY)
+    public VoltageSourceView(Context context, CircuitElement element, float positionX, float positionY, WireManager wireManager)
     {
-        super(context, element, positionX, positionY);
+        super(context, element, positionX, positionY, wireManager);
         for (Property property : element.getProperties())
         {
             if (property instanceof ScalarProperty && ((ScalarProperty)property).getName().equalsIgnoreCase("AC Voltage"))

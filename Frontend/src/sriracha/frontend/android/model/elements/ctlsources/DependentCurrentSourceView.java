@@ -2,6 +2,7 @@ package sriracha.frontend.android.model.elements.ctlsources;
 
 import android.content.*;
 import sriracha.frontend.*;
+import sriracha.frontend.android.*;
 import sriracha.frontend.android.model.*;
 import sriracha.frontend.model.*;
 
@@ -9,9 +10,9 @@ public class DependentCurrentSourceView extends CircuitElementView
 {
     CircuitElementPortView ports[];
 
-    public DependentCurrentSourceView(Context context, CircuitElement element, float positionX, float positionY)
+    public DependentCurrentSourceView(Context context, CircuitElement element, float positionX, float positionY, WireManager wireManager)
     {
-        super(context, element, positionX, positionY);
+        super(context, element, positionX, positionY, wireManager);
     }
 
     @Override

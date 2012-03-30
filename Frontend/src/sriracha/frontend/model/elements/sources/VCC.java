@@ -29,4 +29,9 @@ public class VCC extends CircuitElement
     {
         return "VCC%d";
     }
+    @Override
+    public String toNetlistString(String[] nodes)
+    {
+        return "";
+    }
 }
