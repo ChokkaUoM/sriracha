@@ -62,4 +62,10 @@ public class Inductor extends TwoPortElement
     {
         return "L%d";
     }
+
+    @Override
+    public String toNetlistString(String[] nodes)
+    {
+        return super.toNetlistString(nodes) + inductance + "u";
+    }
 }

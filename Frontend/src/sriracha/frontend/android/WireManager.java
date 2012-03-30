@@ -22,6 +22,11 @@ public class WireManager
         context = canvasView.getContext();
     }
 
+    public ArrayList<WireSegment> getSegments()
+    {
+        return segments;
+    }
+
     public void addIntersection(IWireIntersection intersection)
     {
         if (!intersections.contains(intersection))

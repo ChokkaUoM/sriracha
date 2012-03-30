@@ -204,4 +204,10 @@ public class CurrentSource extends TwoPortElement
     {
         return "I%d";
     }
+
+    @Override
+    public String toNetlistString(String[] nodes)
+    {
+        return super.toNetlistString(nodes) + String.format("DC %f AC %f %f", dcCurrent, amplitude, phase);
+    }
 }

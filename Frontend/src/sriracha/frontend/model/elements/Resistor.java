@@ -61,4 +61,10 @@ public class Resistor extends TwoPortElement
     {
         return "R%d";
     }
+
+    @Override
+    public String toNetlistString(String[] nodes)
+    {
+        return super.toNetlistString(nodes) + resistance + "k";
+    }
 }

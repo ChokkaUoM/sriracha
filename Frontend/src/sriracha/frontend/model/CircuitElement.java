@@ -11,6 +11,8 @@ abstract public class CircuitElement
     abstract public String getType();
 
     abstract public String getNameTemplate();
+    
+    abstract public String toNetlistString(String[] nodes);
 
     protected CircuitElementManager elementManager;
 
@@ -44,5 +46,10 @@ abstract public class CircuitElement
     public CircuitElementManager getElementManager()
     {
         return elementManager;
+    }
+
+    public CircuitElementPort[] getPorts()
+    {
+        return ports;
     }
 }

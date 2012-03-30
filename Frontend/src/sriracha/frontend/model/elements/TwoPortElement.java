@@ -13,4 +13,10 @@ abstract public class TwoPortElement extends CircuitElement
     }
 
     public int getPortCount() { return 2; }
+
+    @Override
+    public String toNetlistString(String[] nodes)
+    {
+        return String.format("%s %s %s", String.format(getNameTemplate(), index), nodes[0], nodes[1]);
+    }
 }
