@@ -35,14 +35,6 @@ public class Graph extends FrameLayout
         init();
     }
 
-   /* @Override
-    public void invalidate() {
-        super.invalidate();   
-        for(PlotView pv : plots){
-            pv.invalidate();
-        }
-    }*/
-
     public Graph(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
@@ -61,6 +53,7 @@ public class Graph extends FrameLayout
 
         int y0 = Math.round(yAxis.pixelsFromCoordinate(0));
         int x0 =  Math.round(xAxis.pixelsFromCoordinate(0));
+
 
         xAxis.setAxisOffset(y0);
         yAxis.setAxisOffset(x0);
@@ -101,10 +94,10 @@ public class Graph extends FrameLayout
         @Override
         public boolean onSingleFingerMove(float distanceX, float distanceY)
         {
-            double xPush = distanceX*xAxis.getPCR();
-            double yPush = distanceY*yAxis.getPCR();
-            yAxis.setRange(yAxis.getMinValue() + yPush, yAxis.getMaxValue() + yPush);
-            xAxis.setRange(xAxis.getMinValue() - xPush, xAxis.getMaxValue() - xPush);
+
+            yAxis.pan(distanceY);
+            xAxis.pan(distanceX);
+
             requestLayout();
             invalidate();
             return true;
@@ -114,8 +107,9 @@ public class Graph extends FrameLayout
         @Override
         protected boolean onScale(float xFactor, float yFactor)
         {
-            yAxis.setRange(yAxis.getMinValue() * yFactor, yAxis.getMaxValue() * yFactor);
-            xAxis.setRange(xAxis.getMinValue() * xFactor, xAxis.getMaxValue() * xFactor);
+            yAxis.scale(yFactor);
+            xAxis.scale(xFactor);
+
             requestLayout();
             invalidate();
             return true;
@@ -167,38 +161,15 @@ public class Graph extends FrameLayout
         return yAxis.getMinValue();
     }
 
-    public void setYmin(double ymin) {
-        yAxis.setMinValue(ymin);
-        requestLayout();
-        invalidate();
-    }
-
     public double getYmax() {
         return yAxis.getMaxValue();
-    }
-
-    public void setYmax(double ymax) {
-        yAxis.setMaxValue(ymax);
-        requestLayout();
-        invalidate();
     }
 
     public double getXmin() {
         return xAxis.getMinValue();
     }
 
-    public void setXmin(double xmin) {
-        xAxis.setMinValue(xmin);
-        requestLayout();
-    }
-
     public double getXmax() {
         return xAxis.getMaxValue();
-    }
-
-    public void setXmax(double xmax) {
-        xAxis.setMaxValue(xmax);
-        requestLayout();
-        invalidate();
     }
 }
