@@ -9,7 +9,8 @@ import sriracha.frontend.model.*;
 import java.util.*;
 
 public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
-        implements View.OnTouchListener, CircuitElementView.OnElementClickListener, CircuitElementView.OnInvalidateListener
+        implements View.OnTouchListener, CircuitElementView.OnElementClickListener, CircuitElementView.OnInvalidateListener,
+        CircuitElementView.OnMoveListener
 {
     public static final int GRID_SIZE = 40;
     private static final int INVALID_POINTER_ID = -1;
@@ -239,6 +240,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
 
             elementView.setOnElementClickListener(this);
             elementView.setOnInvalidateListener(this);
+            elementView.setOnMoveListener(this);
             elementView.updatePosition();
         }
         return true;
@@ -387,6 +389,31 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     public void onInvalidate()
     {
         wireManager.invalidateAll();
+    }
+
+    @Override
+    public void onMove(CircuitElementView elementView)
+    {
+        for (CircuitElementPortView port : elementView.getElementPorts())
+        {
+            if (port.getSegments().isEmpty())
+            {
+                for (CircuitElementView element : elements)
+                {
+                    if (element == elementView)
+                        continue;
+
+                    for (CircuitElementPortView portIntersection : element.getElementPorts())
+                    {
+                        if (port.getSegments().isEmpty() && port.getX() == portIntersection.getX() && port.getY() == portIntersection.getY())
+                        {
+                            wireManager.addIntersection(port);
+                            wireManager.connectNewIntersection(port, portIntersection);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public static int snap(float coord)

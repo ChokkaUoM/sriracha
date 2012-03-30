@@ -26,6 +26,7 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
 
     private OnElementClickListener onElementClickListener;
     private OnInvalidateListener onInvalidateListener;
+    private OnMoveListener onMoveListener;
 
     private float positionX;
     private float positionY;
@@ -126,6 +127,11 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         this.onInvalidateListener = onInvalidateListener;
     }
 
+    public void setOnMoveListener(OnMoveListener onMoveListener)
+    {
+        this.onMoveListener = onMoveListener;
+    }
+
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent)
     {
@@ -169,21 +175,27 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
                 boolean hasMoved = false;
                 for (CircuitElementPortView port : ports)
                 {
+                    int portX = (int) (newPositionX + getWidth() / 2 + getWidth() * port.getTransformedPosition()[0]);
+                    int portY = (int) (newPositionY + getHeight() / 2 + getHeight() * port.getTransformedPosition()[1]);
+
                     for (WireSegment segment : port.getSegments())
                     {
                         if (segment.isVertical())
-                            hasMoved |= segment.moveX((int) (newPositionX + getWidth() / 2 + getWidth() * port.getTransformedPosition()[0]), segment.otherEnd(port));
+                            hasMoved |= segment.moveX(portX, segment.otherEnd(port));
                         else
-                            hasMoved |= segment.moveY((int) (newPositionY + getHeight() / 2 + getHeight() * port.getTransformedPosition()[1]), segment.otherEnd(port));
+                            hasMoved |= segment.moveY(portY, segment.otherEnd(port));
                     }
                 }
 
                 positionX = newPositionX;
                 positionY = newPositionY;
                 updatePosition();
-                
+
                 if (hasMoved)
                     wireManager.consolidateIntersections();
+                
+                if (onMoveListener != null)
+                    onMoveListener.onMove(this);
 
                 break;
             }
@@ -265,5 +277,10 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
     public interface OnInvalidateListener
     {
         public void onInvalidate();
+    }
+    
+    public interface OnMoveListener
+    {
+        public void onMove(CircuitElementView elementView);
     }
 }

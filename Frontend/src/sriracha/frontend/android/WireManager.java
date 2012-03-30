@@ -27,6 +27,11 @@ public class WireManager
         return segments;
     }
 
+    public ArrayList<IWireIntersection> getIntersections()
+    {
+        return intersections;
+    }
+
     public void addIntersection(IWireIntersection intersection)
     {
         if (!intersections.contains(intersection))
@@ -61,7 +66,7 @@ public class WireManager
             from = intermediate;
         }
 
-        intersections.add(to);
+        addIntersection(to);
 
         WireSegment segment = new WireSegment(context, this, from, to);
         from.addSegment(segment);
