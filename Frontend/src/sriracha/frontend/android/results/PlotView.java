@@ -101,6 +101,8 @@ public class PlotView extends View
             }
 
 
+
+
             double prevX = previous.getX(), prevY = func == null ? previous.getY() : func.evaluate(previous.getY());
 
             float[] start = graph.pixelsFromCoords(prevX, prevY);

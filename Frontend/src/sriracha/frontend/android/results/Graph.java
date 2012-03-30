@@ -44,20 +44,21 @@ public class Graph extends FrameLayout
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
     {
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+        int height = MeasureSpec.getSize(heightMeasureSpec);
+
+        xAxis.setPixelRange(width);
+        yAxis.setPixelRange(height);
+
+        xAxis.preMeasure(Math.round(yAxis.pixelsFromCoordinate(0)), height);
+        yAxis.preMeasure(Math.round(xAxis.pixelsFromCoordinate(0)), width);
+
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom)
     {
-
-        int y0 = Math.round(yAxis.pixelsFromCoordinate(0));
-        int x0 =  Math.round(xAxis.pixelsFromCoordinate(0));
-
-
-        xAxis.setAxisOffset(y0);
-        yAxis.setAxisOffset(x0);
-
         int yleft = yAxis.getEdgeOffset();
 
         yAxis.layout(yleft, 0, yleft + yAxis.getMeasuredWidth(), yAxis.getMeasuredHeight());
