@@ -29,9 +29,15 @@ public abstract class EpicTouchListener implements View.OnTouchListener
     private static class Finger{       
         int id;
         
-        float x;
+        float x, y; 
         
-        float y;             
+        float oldX, oldY;
+        
+        float distX(){ return x - oldX;}
+        
+        float distY(){ return y - oldY;}
+        
+        double angle() { return Math.atan2(y - oldY, x - oldX);}
     }
 
     protected EpicTouchListener()
@@ -43,11 +49,9 @@ public abstract class EpicTouchListener implements View.OnTouchListener
     public boolean onTouch(View view, MotionEvent motionEvent)
     {
         int actionIndex = motionEvent.getActionIndex();
-        
         int actionId = motionEvent.getPointerId(actionIndex);
-        
-        
-        
+        int pointerCount = motionEvent.getPointerCount();
+
         switch (motionEvent.getActionMasked())
         {
             case MotionEvent.ACTION_DOWN:
@@ -67,7 +71,7 @@ public abstract class EpicTouchListener implements View.OnTouchListener
                 addFinger(actionId, motionEvent.getX(actionIndex), motionEvent.getY(actionIndex));
                 
                 
-                switch (motionEvent.getPointerCount()){
+                switch (pointerCount){
                     case 2:
                     {
                         Finger f1 = activeFingers.get(0);
@@ -91,75 +95,51 @@ public abstract class EpicTouchListener implements View.OnTouchListener
             }
             case MotionEvent.ACTION_POINTER_UP:
             {
-                int deadIndex = -1;
-                for(int i =0; i< activeFingers.size(); i++)
-                {
-                    if(activeFingers.get(i).id == actionId) 
-                    {
-                        deadIndex = i;
-                        break;
-                    }
-                }
-                
-                activeFingers.remove(deadIndex);                        
+                activeFingers.remove(findById(actionId));
                 break;
             }
             case MotionEvent.ACTION_MOVE:
             {
 
-                switch (motionEvent.getPointerCount()){
+                for(int i =0; i<pointerCount; i++){
+                    updateFinger(activeFingers.get(i), motionEvent);
+                }
+
+                switch (pointerCount){
                     case 1:
                     {
                         Finger f = activeFingers.get(0);
-                        float oldX = f.x, oldY = f.y;
-                        f.x = motionEvent.getX(actionIndex);
-                        f.y = motionEvent.getY(actionIndex);
-                        return onSingleFingerMove(f.x - oldX, f.y - oldY);
+                        return onSingleFingerMove(f.distX(), f.distY());
                     }
                     case 2:
                     {
                         Finger f1 = activeFingers.get(0);
                         Finger f2 = activeFingers.get(1);
-                        
-                        
-                        float oldx1 = f1.x, oldx2 = f2.x, oldy1 = f1.y, oldy2 = f2.y;
 
-                        int i1 = motionEvent.findPointerIndex(f1.id), i2 = motionEvent.findPointerIndex(f2.id);
-
-                        f1.x = motionEvent.getX(i1);
-                        f1.y = motionEvent.getY(i1);
-                        f2.x = motionEvent.getX(i2);
-                        f2.y = motionEvent.getY(i2);
-
-
-                        float dX1 = f1.x - oldx1, dX2 = f2.x - oldx2, dY1 = f1.y - oldy1, dY2 = f2.y - oldy2;
-                        
-                        double angleDiff = centerRad(Math.atan2(dY1, dX1) - Math.atan2(dY2, dX2));
+                        double angleDiff = centerRad(f2.angle() - f1.angle());
 
                         boolean isScale = Math.abs(angleDiff) >= (1-scaleTolerance) * Math.PI;
                         boolean isSwipe = Math.abs(angleDiff) <= swipeTolerance * Math.PI;
 
-                        
-                        float oldDX = oldx2 - oldx1, oldDY = oldy2 - oldy1, dx =f2.x-f1.x, dy = f2.y - f1.y;
-                        
-                        
                         boolean consumed = false;
                         if(isScale){
+                            float oldDX = f2.oldX - f1.oldX,
+                                  oldDY = f2.oldY - f1.oldY,
+                                  dx = f2.x - f1.x,
+                                  dy = f2.y - f1.y;
+
                             float xFactor = clamp(Math.abs(oldDX / dx), 0.1f, 10),
                                   yFactor = clamp(Math.abs(oldDY / dy), 0.1f, 10);
                             
-                           // xFactor = (float) Math.sqrt(xFactor);
-                           // yFactor = (float) Math.sqrt(yFactor);
-                            
-                            consumed |= onScale(xFactor, yFactor);
+                            consumed = onScale(xFactor, yFactor);
                         }
 
                         if(isSwipe){
-                            consumed |= onTwoFingerSwipe((dX1 + dX2)/2, (dY1 + dY1)/2);
+                            consumed |= onTwoFingerSwipe((f1.distX() + f2.distX())/2, (f1.distY() + f2.distY())/2);
                         }
 
                         if(!consumed) {
-                            return onTwoFingerMove(dX1, dY1, dX2, dY2);
+                            return onTwoFingerMove(f1.distX(), f1.distY(), f2.distX(), f2.distY());
                         }
 
                         return consumed;
@@ -175,6 +155,23 @@ public abstract class EpicTouchListener implements View.OnTouchListener
         }
 
         return false;
+    }
+    
+    private Finger findById(int id){
+        for(int i =0; i<activeFingers.size(); i++){
+            Finger f = activeFingers.get(i);
+            if(f.id == id) return f;
+        }
+        return null;
+    }
+    
+    private void updateFinger(Finger f, MotionEvent e){
+        int index = e.findPointerIndex(f.id);
+        f.oldX = f.x;
+        f.oldY = f.y;
+        f.x = e.getX(index);
+        f.y = e.getY(index);
+
     }
     
     private Finger addFinger(int id, float x, float y)
