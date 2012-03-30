@@ -3,6 +3,7 @@ package sriracha.frontend.android;
 import android.content.*;
 import android.graphics.*;
 import android.view.*;
+import android.webkit.*;
 import sriracha.frontend.android.model.*;
 
 import java.util.*;
@@ -87,6 +88,12 @@ public class WireManager
      */
     public void consolidateIntersections()
     {
+        /**
+         * Step 1:
+         * Go through every pairing of intersections that we currently have. If they have the same location, then we add
+         * them to a hashmap. This hashmap is index by location and each entry is a list of intersections at this
+         * location.
+         */
         HashMap<Point, ArrayList<IWireIntersection>> toConsolidate = new HashMap<Point, ArrayList<IWireIntersection>>();
 
         for (int i = 0; i < intersections.size(); i++)
@@ -96,9 +103,6 @@ public class WireManager
             {
                 IWireIntersection intersection2 = intersections.get(j);
 
-                // If two intersections have the same coordinates, we store them in a hashtable.
-                // The hashtable is indexed by point, and each entry contains a list of
-                // intersections that all have the same coordinates.
                 if (intersection1.getX() == intersection2.getX() && intersection1.getY() == intersection2.getY())
                 {
                     Point point = new Point(intersection1.getX(), intersection1.getY());
@@ -115,29 +119,92 @@ public class WireManager
             }
         }
 
+        /**
+         * Step 2:
+         * Iterate through the hashmap.
+         * For each list of intersections, there are four cases:
+         *
+         * - Case 1: There are overlapping segments coming out of different intersections.
+         *           This means that consolidating the intersections will likely change the structure of the circuit.
+         *           Once again, we do nothing.
+         *
+         * - Case 2: Two or more of the intersections are ports.
+         *           In this case, we do nothing, since we obviously can't
+         *           eliminate any of the elements. Furthermore, we must not delete any zero-length segments that exist,
+         *           since that would break the connection between the elements.
+         *
+         * - Case 3: One of the intersections is a port.
+         *           In this case, we consolidate the other intersections, adding their segments to the port intersection.
+         *
+         * - Case 4: None of the above.
+         *           The simplest case, we create a new intersection and add all the segments from the rest of the
+         *           intersections to the new one.
+         */
+        LOCATIONS:
         for (ArrayList<IWireIntersection> intersectionList : toConsolidate.values())
         {
             int portCount = 0;
+            CircuitElementPortView port = null;
+
+            /**
+             * What is this variable? Good question.
+             *
+             * This variable is helps us test for case 1. In case 1, we have multiple segments coming out of different
+             * intersections in the same direction. We don't want to merge these intersections, because there's always
+             * the possibility that they are not part of the same node.
+             * So here we iterate through each intersection. For each intersection, we iterate through each segment, and
+             * we find the direction in which that segment is pointing. If we've already found a segment for this direction,
+             * we check to see whether it's a different intersection holding that segment. If it is, then we have a Case 1.
+             * So this variable is used to map the segment directions to the intersections holding them. They indices in
+             * the array correspond to the four directions, and the value are the intersections.
+             *
+             * Why did I write this? Good question.
+             */
+            IWireIntersection[] segmentDirections = new IWireIntersection[4];
+
             for (IWireIntersection intersection : intersectionList)
             {
+                // Counting ports for cases 2 and 3.
                 if (intersection instanceof CircuitElementPortView)
+                {
                     portCount++;
+                    port = (CircuitElementPortView) intersection;
+                }
+
+                // Test for case 1.
+                for (WireSegment segment : intersection.getSegments())
+                {
+                    IWireIntersection otherEnd = segment.otherEnd(intersection);
+                    int direction;
+                    if (segment.isVertical())
+                        direction = otherEnd.getY() > intersection.getY() ? WireSegment.DOWN : WireSegment.UP;
+                    else
+                        direction = otherEnd.getX() > intersection.getX() ? WireSegment.RIGHT : WireSegment.LEFT;
+
+                    // It's a case 1. Abort!
+                    if (segmentDirections[direction] != null && segmentDirections[direction] != intersection)
+                        continue LOCATIONS;
+
+                    segmentDirections[direction] = intersection;
+                }
             }
-            
+
+            // Case 2. Do nothing.
             if (portCount >= 2)
                 continue;
 
+            IWireIntersection newIntersection = null;
             if (portCount == 1)
             {
-
+                // Case 3.
+                newIntersection = port;
             }
-
-            // When consolidating intersections, each affected segment must have the
-            // relevant intersection replaced.
-
-            // Create a new intersection to replace all the old ones.
-            WireIntersection newIntersection = new WireIntersection(intersectionList.get(0).getX(), intersectionList.get(0).getY());
-            intersections.add(newIntersection);
+            else
+            {
+                // Case 4. Create a new intersection to replace all the old ones.
+                newIntersection = new WireIntersection(intersectionList.get(0).getX(), intersectionList.get(0).getY());
+                intersections.add(newIntersection);
+            }
 
             for (IWireIntersection intersection : intersectionList)
             {
@@ -149,6 +216,8 @@ public class WireManager
                     }
                     else
                     {
+                        // When consolidating intersections, each affected segment must have the
+                        // relevant intersection replaced.
                         newIntersection.addSegment(segment);
                         segment.replaceIntersection(intersection, newIntersection);
                     }
@@ -157,7 +226,18 @@ public class WireManager
             }
         }
 
-        // Lastly merge collinear segment
+        /**
+         * Step 3:
+         * Merge collinear segments.
+         * Here, we remove any intersections that are entirely useless. Note that we don't destroy all collinear segments.
+         * Rather, we eliminate intersections that have exactly two segments, where the segments are opposite each other
+         * across the intersection.
+         * Removed: ---O---
+         * Not removed: ---O
+         *                 |
+         * Also not removed: ---O---
+         *                      |
+         */
         ArrayList<IWireIntersection> toRemove = new ArrayList<IWireIntersection>();
         for (IWireIntersection intersection : intersections)
         {

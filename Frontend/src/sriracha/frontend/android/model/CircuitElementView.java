@@ -8,6 +8,8 @@ import sriracha.frontend.*;
 import sriracha.frontend.android.*;
 import sriracha.frontend.model.*;
 
+import java.util.*;
+
 abstract public class CircuitElementView extends ImageView implements View.OnTouchListener, View.OnLongClickListener
 {
     private static final int[] STATE_DRAGGABLE = {R.attr.state_draggable};
@@ -157,30 +159,29 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
                 // Find the index of the active pointer and fetch its position
                 int pointerIndex = motionEvent.findPointerIndex(activePointerId);
 
-                float newPositionX = snapToGrid(positionX + motionEvent.getX(pointerIndex) - touchDownDeltaX);
-                float newPositionY = snapToGrid(positionY + motionEvent.getY(pointerIndex) - touchDownDeltaY);
-
+                // We record the segment verticalities before moving the element, otherwise the crookedness of the
+                // segment prevents proper verticality measurement.
+                ArrayList<Boolean> segmentVerticalities = new ArrayList<Boolean>();
                 for (CircuitElementPortView port : ports)
                 {
-                    float[] transformedPortPosition = port.getTransformedPosition();
-
                     for (WireSegment segment : port.getSegments())
-                    {
-                        if (segment.isVertical())
-                        {
-                            float portX = newPositionX + getWidth() / 2 + getWidth() * transformedPortPosition[0];
-                            segment.moveX((int) portX);
-                        }
-                        else
-                        {
-                            float portY = newPositionY + getHeight() / 2 + getHeight() * transformedPortPosition[1];
-                            segment.moveY((int) portY);
-                        }
-                    }
+                        segmentVerticalities.add(segment.isVertical());
                 }
 
-                positionX = newPositionX;
-                positionY = newPositionY;
+                positionX = CircuitDesigner.snap(positionX + motionEvent.getX(pointerIndex) - touchDownDeltaX);
+                positionY = CircuitDesigner.snap(positionY + motionEvent.getY(pointerIndex) - touchDownDeltaY);
+
+                int i = 0;
+                for (CircuitElementPortView port : ports)
+                {
+                    for (WireSegment segment : port.getSegments())
+                    {
+                        if (segmentVerticalities.get(i++))
+                            segment.moveX(port.getX(), segment.otherEnd(port));
+                        else
+                            segment.moveY(port.getY(), segment.otherEnd(port));
+                    }
+                }
 
                 updatePosition();
                 break;
@@ -202,11 +203,6 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         }
 
         return true;
-    }
-
-    private float snapToGrid(float position)
-    {
-        return CircuitDesigner.snap(position);
     }
 
     public void onClick(float x, float y)

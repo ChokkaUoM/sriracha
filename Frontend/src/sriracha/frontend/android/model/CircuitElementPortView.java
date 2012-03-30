@@ -52,13 +52,13 @@ public class CircuitElementPortView implements IWireIntersection
     @Override
     public int getX()
     {
-        return (int) (element.getX() + element.getWidth() / 2 + element.getWidth() * getTransformedPosition()[0]);
+        return (int) (element.getPositionX() + element.getWidth() / 2 + element.getWidth() * getTransformedPosition()[0]);
     }
 
     @Override
     public int getY()
     {
-        return (int) (element.getY() + element.getHeight() / 2 + element.getHeight() * getTransformedPosition()[1]);
+        return (int) (element.getPositionY() + element.getHeight() / 2 + element.getHeight() * getTransformedPosition()[1]);
     }
 
     @Override

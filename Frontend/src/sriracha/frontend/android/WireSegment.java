@@ -8,9 +8,14 @@ public class WireSegment extends View
 {
     private static final int BOUNDS_PADDING = 20;
 
+    public static final int UP = 0;
+    public static final int DOWN = 1;
+    public static final int LEFT = 2;
+    public static final int RIGHT = 3;
+
     private IWireIntersection start;
     private IWireIntersection end;
-    
+
     private WireManager wireManager;
 
     public WireSegment(Context context, WireManager wireManager, IWireIntersection start, IWireIntersection end)
@@ -38,12 +43,19 @@ public class WireSegment extends View
         canvas.drawCircle(end.getX(), end.getY(), 4, paint);
     }
 
-    public void moveX(int x)
+    public void moveX(int x) { moveX(x, null); }
+    public void moveY(int y) { moveY(y, null); }
+
+    public void moveX(int x, IWireIntersection onlyThisNode)
     {
-        if (x == start.getX())
+        int currentX = onlyThisNode == null ? start.getX() : onlyThisNode.getX();
+        if (x == currentX)
             return;
 
-        if (start.duplicateOnMove(this))
+        boolean doStart = onlyThisNode == null || onlyThisNode == start;
+        boolean doEnd = onlyThisNode == null || onlyThisNode == end;
+
+        if (doStart && start.duplicateOnMove(this))
         {
             IWireIntersection oldStart = start;
             start.duplicate(this, wireManager);
@@ -55,7 +67,7 @@ public class WireSegment extends View
                 segment.replaceIntersection(oldStart, start);
             }
         }
-        if (end.duplicateOnMove(this))
+        if (doEnd && end.duplicateOnMove(this))
         {
             IWireIntersection oldEnd = end;
             end.duplicate(this, wireManager);
@@ -68,16 +80,23 @@ public class WireSegment extends View
             }
         }
 
-        ((WireIntersection) start).x = x;
-        ((WireIntersection) end).x = x;
+        if (doStart)
+            ((WireIntersection) start).x = x;
+        if (doEnd)
+            ((WireIntersection) end).x = x;
+        wireManager.consolidateIntersections();
     }
 
-    public void moveY(int y)
+    public void moveY(int y, IWireIntersection onlyThisNode)
     {
+        int currentY = onlyThisNode == null ? start.getY() : onlyThisNode.getY();
         if (y == start.getY())
             return;
 
-        if (start.duplicateOnMove(this))
+        boolean doStart = onlyThisNode == null || onlyThisNode == start;
+        boolean doEnd = onlyThisNode == null || onlyThisNode == end;
+
+        if (doStart && start.duplicateOnMove(this))
         {
             IWireIntersection oldStart = start;
             start.duplicate(this, wireManager);
@@ -89,7 +108,7 @@ public class WireSegment extends View
                 segment.replaceIntersection(oldStart, start);
             }
         }
-        if (end.duplicateOnMove(this))
+        if (doEnd && end.duplicateOnMove(this))
         {
             IWireIntersection oldEnd = end;
             end.duplicate(this, wireManager);
@@ -102,8 +121,11 @@ public class WireSegment extends View
             }
         }
 
-        ((WireIntersection) start).y = y;
-        ((WireIntersection) end).y = y;
+        if (doStart)
+            ((WireIntersection) start).y = y;
+        if (doEnd)
+            ((WireIntersection) end).y = y;
+        wireManager.consolidateIntersections();
     }
 
     public void replaceIntersection(IWireIntersection oldIntersection, IWireIntersection newIntersection)
@@ -127,6 +149,11 @@ public class WireSegment extends View
             return x == start.getX() && start.getY() <= y && y <= end.getY();
         else
             return y == start.getY() && start.getX() <= x && x <= end.getX();
+    }
+
+    public IWireIntersection otherEnd(IWireIntersection thisEnd)
+    {
+        return start != thisEnd ? start : end;
     }
 
     public Rect getBounds()
