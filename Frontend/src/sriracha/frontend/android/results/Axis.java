@@ -45,6 +45,8 @@ public class Axis extends LinearLayout
      */
     protected int logHDS = 270;
 
+    private int preAxisLabelCount, postAxisLabelCount;
+
 
     private static int lineSpace = 20;
 
@@ -66,7 +68,7 @@ public class Axis extends LinearLayout
     private double minValue;
 
     private double maxValue;
-    
+
     protected Paint linePaint;
 
     protected LayoutInflater inflater;
@@ -76,7 +78,7 @@ public class Axis extends LinearLayout
         super(context);
         init();
     }
-    
+
     public Axis(Context context, AttributeSet attrs)
     {
         super(context, attrs);
@@ -193,13 +195,15 @@ public class Axis extends LinearLayout
 
     private void updateLabels()
     {
-        if(getMeasuredHeight() == 0 && getMeasuredWidth() == 0) 
+        if (getMeasuredHeight() == 0 && getMeasuredWidth() == 0)
         {
             //this has been called to early by some setup procedure
             return;
         }
-        
+
         int labelCount = 0;
+        preAxisLabelCount = 0;
+        postAxisLabelCount = 0;
         if (logScale)
         {
             //todo:
@@ -213,31 +217,34 @@ public class Axis extends LinearLayout
             {
                 if (i >= 0.5 * step && i <= axisOffset - step)
                 {
+                    preAxisLabelCount++;
                     labelCount++;
                 }
                 else if (i >= axisOffset + step && i <= max)
                 {
+                    postAxisLabelCount++;
                     labelCount++;
                 }
             }
 
         }
-        
+
         adjustLabelCount(labelCount);
 
         updateLabelContents();
         updateLabelAttributes();
     }
-    
-    private void adjustLabelCount(int count){
+
+    private void adjustLabelCount(int count)
+    {
         int cc = getChildCount();
-        if(cc < count)
+        if (cc < count)
         {
-            while(cc++ < count) inflateLabel();    
+            while (cc++ < count) inflateLabel();
         }
-        else if(cc > count)
+        else if (cc > count)
         {
-            while(cc-- > count) removeViewAt(cc);
+            while (cc-- > count) removeViewAt(cc);
         }
     }
 
@@ -273,7 +280,7 @@ public class Axis extends LinearLayout
         else
             setMeasuredDimension(getMeasuredWidth(), getMeasuredHeight() + lineSpace);
 
-            
+
     }
 
 
@@ -307,6 +314,7 @@ public class Axis extends LinearLayout
         int width = right - left;
         int height = bottom - top;
 
+
         if (getOrientation() == VERTICAL)
         {
             int labelIndex = 0;
@@ -315,7 +323,7 @@ public class Axis extends LinearLayout
             for (float mid = axisOffset - linVNS; mid >= 0.5 * linVNS; mid -= linVNS)
             {
                 int labelTop = (int) (mid - linVNS / 2);
-                getLabel(labelIndex++).layout(labelLeft, labelTop, labelLeft + width - lineSpace, labelTop + linVNS);
+                getLabel(preAxisLabelCount - (++labelIndex)).layout(labelLeft, labelTop, labelLeft + width - lineSpace, labelTop + linVNS);
             }
 
             for (float mid = axisOffset + linVNS; mid <= height - 0.5 * linVNS; mid += linVNS)
@@ -335,14 +343,32 @@ public class Axis extends LinearLayout
         }
         else
         {
-            int space = width / getChildCount();
+
+
+            int labelIndex = 0;
+
+            int labelTop = labelSide == 0 ? 0 : lineSpace;
+            for (float mid = axisOffset - linHNS; mid >= 0.5 * linHNS; mid -= linHNS)
+            {
+                int labelLeft = (int) (mid - linHNS / 2);
+                getLabel(preAxisLabelCount - (++labelIndex)).layout(labelLeft, labelTop, labelLeft + linHNS, labelTop + height - lineSpace);
+            }
+
+            for (float mid = axisOffset + linHNS; mid <= height - 0.5 * linHNS; mid += linHNS)
+            {
+                int labelLeft = (int) (mid - linHNS / 2);
+                getLabel(labelIndex++).layout(labelLeft, labelTop, labelLeft + linHNS, labelTop + height - lineSpace);
+            }
+
+
+           /* int space = width / getChildCount();
             int labelTop = labelSide == 0 ? 0 : lineSpace;
             for (int i = 0; i < getChildCount(); i++)
             {
                 TextView label = getLabel(i);
                 int labelLeft = i * space;
                 label.layout(labelLeft, labelTop, labelLeft + label.getMeasuredWidth(), labelTop + height - lineSpace);
-            }
+            }*/
         }
     }
 
@@ -359,21 +385,13 @@ public class Axis extends LinearLayout
 
     private void updateLabelContents()
     {
-        if (logScale)
+        for (int i = 0; i < getChildCount(); i++)
         {
-            //todo:
-
+            TextView label = getLabel(i);
+            int mid = getOrientation() == VERTICAL ? label.getTop() + label.getMeasuredHeight() / 2 :
+                    label.getLeft() + label.getMeasuredWidth() / 2;
+            label.setText(axisNumFormat(coordinateFromPixel(mid)));
         }
-        else
-        {
-            double interval = (maxValue - minValue) / getChildCount();
-            for (int i = 0; i < getChildCount(); i++)
-            {
-                int index = getOrientation() == VERTICAL ? getChildCount() - (i + 1) : i;
-                getLabel(index).setText(axisNumFormat(minValue + interval * (i + 0.5)));
-            }
-        }
-
     }
 
     private void inflateLabel()
