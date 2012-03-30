@@ -3,6 +3,8 @@ package sriracha.frontend.android;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.ArrayList;
+
 /**
  * Extend this class for simplified Touch event handling.
  */
@@ -22,34 +24,38 @@ public abstract class EpicTouchListener implements View.OnTouchListener
      */
     protected double swipeTolerance = 0.2;
     
-    private int fingerIds[]= new int[10];
-    private int xVals[] = new int[10];
-    private int yVals[] = new int[10];
+    private ArrayList<Finger> activeFingers;
     
+    private static class Finger{       
+        int id;
+        
+        float x;
+        
+        float y;             
+    }
 
-    private float x1, y1, x2, y2;
-
-    private int id1, id2;
+    protected EpicTouchListener()
+    {
+        activeFingers = new ArrayList<Finger>();
+    }
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent)
     {
-        int index = motionEvent.getActionIndex();
+        int actionIndex = motionEvent.getActionIndex();
+        
+        int actionId = motionEvent.getPointerId(actionIndex);
+        
+        
+        
         switch (motionEvent.getActionMasked())
         {
             case MotionEvent.ACTION_DOWN:
             {
 
-
-
-                if(motionEvent.getPointerCount() == 1){
-                    x1 = motionEvent.getX(index);
-                    y1 = motionEvent.getY(index);
-                    id1 = motionEvent.getPointerId(index);
-
-                    onSingleFingerDown(x1, y1);
-                }
+                Finger f1 = addFinger(actionId, motionEvent.getX(), motionEvent.getY());
                 
+                onSingleFingerDown(f1.x, f1.y);            
                 
                 //always return true for ACTION_DOWN so that we get subsequent ACTION_MOVE events
                 return true;
@@ -57,118 +63,128 @@ public abstract class EpicTouchListener implements View.OnTouchListener
             }
             case MotionEvent.ACTION_POINTER_DOWN:
             {
-                if (motionEvent.getPointerCount() == 2){
-                    x2 = motionEvent.getX(index);
-                    y2 = motionEvent.getY(index);
-                    id2 = motionEvent.getPointerId(index);
-
-                    onTwoFingerDown(x1, y1, x2, y2);
+                
+                addFinger(actionId, motionEvent.getX(actionIndex), motionEvent.getY(actionIndex));
+                
+                
+                switch (motionEvent.getPointerCount()){
+                    case 2:
+                    {
+                        Finger f1 = activeFingers.get(0);
+                        Finger f2 = activeFingers.get(1);
+                        onTwoFingerDown(f1.x, f1.y, f2.x, f2.y);
+                        break;
+                    }
+                    case 3:
+                    {
+                        Finger f1 = activeFingers.get(0);
+                        Finger f2 = activeFingers.get(1);
+                        Finger f3 = activeFingers.get(2);
+                        onThreeFingerDown(f1.x, f1.y, f2.x, f2.y, f3.x, f3.y);
+                        break;
+                    } 
+                    //todo: extend to more fingers
                 }
+
+                //always return true for ACTION_POINTER_DOWN so that we get subsequent ACTION_MOVE events
                 return true;
             }
             case MotionEvent.ACTION_POINTER_UP:
             {
-                int id = motionEvent.getPointerId(index);
-//                System.out.println("id : " + id + " index: " + index + " pcount: " + motionEvent.getPointerCount());
-
-                for(int i =0; i<motionEvent.getPointerCount() && i< 2; i++){
-                    
-                }
-                
-                if(motionEvent.getPointerCount() == 2){
-                    if(id == id1){
-                        id1 = id2;
-                        x1 = x2;
-                        y1 = y2;
-                    }
-                }else{
-                    if(id == id1)
+                int deadIndex = -1;
+                for(int i =0; i< activeFingers.size(); i++)
+                {
+                    if(activeFingers.get(i).id == actionId) 
                     {
-                        id1 = motionEvent.getPointerId(2);
-                        x1 = motionEvent.getX(2);
-                        y1 = motionEvent.getY(2);
-                    }
-                    else if (id == id2)
-                    {
-                        id2 = motionEvent.getPointerId(2);
-                        x2 = motionEvent.getX(2);
-                        y2 = motionEvent.getY(2);
+                        deadIndex = i;
+                        break;
                     }
                 }
                 
-
-              /*  
-                else if (id == id2)
-                {
-
-                }
-                else
-                {
-
-                }
-*/
-
+                activeFingers.remove(deadIndex);                        
                 break;
             }
             case MotionEvent.ACTION_MOVE:
             {
 
-                if(motionEvent.getPointerCount() == 1){
-                    float oldx = x1, oldy = y1;
-                    x1 = motionEvent.getX(index);
-                    y1 = motionEvent.getY(index);
-                    return onSingleFingerMove(x1 - oldx, y1 - oldy);
-                } else if(motionEvent.getPointerCount() == 2){
-
-                    float oldx1 = x1, oldx2 = x2, oldy1 = y1, oldy2 = y2;
-                   
-                    int i1 = motionEvent.findPointerIndex(id1), i2 = motionEvent.findPointerIndex(id2);
-
-                    try
+                switch (motionEvent.getPointerCount()){
+                    case 1:
                     {
-                        x1 = motionEvent.getX(i1);
-                        y1 = motionEvent.getY(i1);
-                        y2 = motionEvent.getY(i2);
-                        x2 = motionEvent.getX(i2);
+                        Finger f = activeFingers.get(0);
+                        float oldX = f.x, oldY = f.y;
+                        f.x = motionEvent.getX(actionIndex);
+                        f.y = motionEvent.getY(actionIndex);
+                        return onSingleFingerMove(f.x - oldX, f.y - oldY);
                     }
-                    catch (Exception e)
+                    case 2:
                     {
-                        //we did something wrong
-                        return false;
-                    }
+                        Finger f1 = activeFingers.get(0);
+                        Finger f2 = activeFingers.get(1);
+                        
+                        
+                        float oldx1 = f1.x, oldx2 = f2.x, oldy1 = f1.y, oldy2 = f2.y;
+
+                        int i1 = motionEvent.findPointerIndex(f1.id), i2 = motionEvent.findPointerIndex(f2.id);
+
+                        f1.x = motionEvent.getX(i1);
+                        f1.y = motionEvent.getY(i1);
+                        f2.x = motionEvent.getX(i2);
+                        f2.y = motionEvent.getY(i2);
 
 
-                    float dX1 = x1 - oldx1, dX2 = x2 - oldx2, dY1 = y1 - oldy1, dY2 = y2 - oldy2;
-                    
-                    double angle1 = centerRad(Math.atan2(dY1, dX1)), angle2 = centerRad(Math.atan2(dY2, dX2));
-                    boolean isScale = Math.abs(centerRad(angle1 - angle2)) >= (1-scaleTolerance) * Math.PI;
-                    boolean isSwipe = Math.abs(centerRad(angle1 - angle2)) <= swipeTolerance * Math.PI;
-                    
-                    boolean consumed = false;
-                    float oldDX = clamp(Math.abs(oldx2 - oldx1), 10, 1000), oldDY = clamp(Math.abs(oldy2 - oldy1), 10, 1000),
-                            dx =clamp(Math.abs(x2-x1), 10, 1000), dy = clamp(Math.abs(y2 - y1), 10, 1000);
-                    
-                    if(isScale){
-                        float xFactor = oldDX / dx, yFactor = oldDY / dy;
-                        consumed |= onScale(xFactor, yFactor);
-                    }
-                    
-                    if(isSwipe){
-                        consumed |= onTwoFingerSwipe((dX1 + dX2)/2, (dY1 + dY1)/2);
-                    }
-                    
-                    if(!consumed) {
-                        return onTwoFingerMove(dX1, dY1, dX2, dY2);
-                    }
+                        float dX1 = f1.x - oldx1, dX2 = f2.x - oldx2, dY1 = f1.y - oldy1, dY2 = f2.y - oldy2;
+                        
+                        double angleDiff = centerRad(Math.atan2(dY1, dX1) - Math.atan2(dY2, dX2));
 
-                    return consumed;
+                        boolean isScale = Math.abs(angleDiff) >= (1-scaleTolerance) * Math.PI;
+                        boolean isSwipe = Math.abs(angleDiff) <= swipeTolerance * Math.PI;
+
+                        
+                        float oldDX = oldx2 - oldx1, oldDY = oldy2 - oldy1, dx =f2.x-f1.x, dy = f2.y - f1.y;
+                        
+                        
+                        boolean consumed = false;
+                        if(isScale){
+                            float xFactor = clamp(Math.abs(oldDX / dx), 0.1f, 10),
+                                  yFactor = clamp(Math.abs(oldDY / dy), 0.1f, 10);
+                            
+                           // xFactor = (float) Math.sqrt(xFactor);
+                           // yFactor = (float) Math.sqrt(yFactor);
+                            
+                            consumed |= onScale(xFactor, yFactor);
+                        }
+
+                        if(isSwipe){
+                            consumed |= onTwoFingerSwipe((dX1 + dX2)/2, (dY1 + dY1)/2);
+                        }
+
+                        if(!consumed) {
+                            return onTwoFingerMove(dX1, dY1, dX2, dY2);
+                        }
+
+                        return consumed;
+                    }
+                    case 3:
+                    {//todo: extend to more fingers
+                        break;
+                    }
+                    
                 }
-
                 break;
             }
         }
 
         return false;
+    }
+    
+    private Finger addFinger(int id, float x, float y)
+    {
+        Finger f = new Finger();
+        f.id = id;
+        f.x = x;
+        f.y = y;
+        activeFingers.add(f);
+        return f;
     }
     
     private float clamp(float value, float min, float max)
@@ -246,6 +262,17 @@ public abstract class EpicTouchListener implements View.OnTouchListener
      * @param y2 y position of second finger
      */
     protected void onTwoFingerDown(float x1, float y1, float x2, float y2) { }
+
+    /**
+     * Called When the Second finger first touches down on the screen
+     * @param x1 x position of first finger
+     * @param y1 y position of first finger
+     * @param x2 x position of second finger
+     * @param y2 y position of second finger
+     * @param x3 x position of third finger
+     * @param y3 y position of third finger
+     */
+    protected void onThreeFingerDown(float x1, float y1, float x2, float y2, float x3, float y3) { }
 
 
 }

@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import sriracha.frontend.android.results.functions.Function;
 import sriracha.frontend.resultdata.Plot;
 import sriracha.frontend.resultdata.Point;
@@ -90,36 +89,17 @@ public class PlotView extends View
 
         while (index < plot.size() && plot.getPoint(index).getX() <= graph.getXmax())
         {
-
             p = plot.getPoint(index);
 
             double pX = p.getX(), pY = func == null ? p.getY() : func.evaluate(p.getY());
-
             
-            
-            if (previous == null)
+            if (previous == null || ((pY < graph.getYmin() || pY > graph.getYmax()) && (previous.getY() < graph.getYmin() || previous.getY() > graph.getYmax())))
             {
-                //if at first node just skip
-                if( index == 0){
-                    previous = p;
-                    index++;
-                    continue;
-                }
-                //if current node outside of range
-                if(pY < graph.getYmin() || pY > graph.getYmax()){
-                    index ++;
-                    continue;
-                }
-                
-            }
-
-            if ((pY < graph.getYmin() || pY > graph.getYmax()) && previous == null)
-            {
+                previous = p;
                 index++;
-                previous = null;
                 continue;
-
             }
+
 
             double prevX = previous.getX(), prevY = func == null ? previous.getY() : func.evaluate(previous.getY());
 
@@ -137,7 +117,7 @@ public class PlotView extends View
             canvas.drawLine(start[0], start[1], end[0], end[1], paint);
 
 
-            previous = (pY < graph.getYmin() || pY > graph.getYmax()) ? null: p;
+            previous = p;
             index++;
         }
 
