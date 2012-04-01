@@ -131,8 +131,11 @@ public abstract class EpicTouchListener implements View.OnTouchListener
 
                             float xFactor = clamp(Math.abs(oldDX / dx), 0.1f, 10),
                                   yFactor = clamp(Math.abs(oldDY / dy), 0.1f, 10);
-                            
-                            consumed = onScale(xFactor, yFactor);
+
+                            float xCenter = (f1.oldX + f2.oldX + f1.x + f2.x)/4;
+                            float yCenter = (f1.oldY + f2.oldY + f1.y + f2.y)/4;
+
+                            consumed = onScale(xFactor, yFactor, xCenter, yCenter);
                         }
 
                         if(isSwipe){
@@ -232,16 +235,18 @@ public abstract class EpicTouchListener implements View.OnTouchListener
      * This call is followed by a call to OnTwoFingerMove if it returns false
      * @param xFactor scaling factor along x axis
      * @param yFactor scaling factor along y axis
+     * @param xCenter x scale center
+     * @param yCenter y scale center
      * @return true if the the event should be consumed ie not passed on.
      */
-    protected boolean onScale(float xFactor, float yFactor) {return false;}
+    protected boolean onScale(float xFactor, float yFactor, float xCenter, float yCenter) {return false;}
 
 
     /**
      * This is invoked when there are exactly two fingers touching and at at least one of them has moved.
      * This method is only called if a preceding call to a more specific 2 finger gesture handler returns true
      * for example:
-     * @see #onScale(float, float) 
+     * @see #onScale(float, float, float, float)
      * @see #onTwoFingerSwipe(float, float) 
      *
      * @param dX1 x delta from first finger
