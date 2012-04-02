@@ -13,9 +13,11 @@ package sriracha.frontend;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.*;
-import sriracha.frontend.android.*;
-import sriracha.frontend.android.model.*;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import sriracha.frontend.android.CircuitDesigner;
+import sriracha.frontend.android.CircuitDesignerMenu;
 import sriracha.frontend.android.results.Graph;
 import sriracha.frontend.resultdata.Plot;
 import sriracha.frontend.resultdata.Point;
@@ -36,14 +38,14 @@ public class MainActivity extends Activity
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        setContentView(R.layout.main);
+     /*   setContentView(R.layout.main);
 
         circuitDesignerMenu = new CircuitDesignerMenu((MainActivity) this);
         circuitDesigner = new CircuitDesigner(findViewById(R.id.circuit_design_canvas), circuitDesignerMenu, new CircuitElementActivator(this));
 
         showCircuitMenu(R.id.circuit_menu);
-
-//        testGraph();
+*/
+        testGraph();
     }
     
     private void testGraph(){
@@ -51,17 +53,29 @@ public class MainActivity extends Activity
         
         
         //create sin plot
-        Plot p = new Plot();
-        for(double x = -10; x < 10; x+=0.1){
-            p.addPoint(new Point(x, Math.sin(x)));
+        Plot sin = new Plot();
+        for(double x = 0; x <= 100; x+=0.1){
+            sin.addPoint(new Point(x, Math.sin(x)));
+        }
+
+        Plot log = new Plot();
+        for(double x = -10; x <= 10; x+=0.2){
+            log.addPoint(new Point(x, Math.pow(2, x)));
         }
         
         Graph g = (Graph)findViewById(R.id.graph);
         
-        g.addPlot(p, Color.rgb(200, 10, 40));
-        
+        g.beginEdit();
+      //  g.addPlot(sin, Color.rgb(200, 10, 40));
+        g.addPlot(log, Color.rgb(10, 200, 80));
+
         g.setXRange(-10, 10);
-        g.setYRange(-5, 5);
+        g.setYRange(0.001, 2000);
+        
+      //  g.setXLogScale(true);
+        g.setYLogScale(true);
+
+        g.endEdit();
     }
 
     public void sourcesAndGroundOnClick(View view)
