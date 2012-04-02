@@ -282,8 +282,6 @@ class Axis extends LinearLayout
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
         int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
-
-        updateLogSpacing();
         
         //add space for line
         if (getOrientation() == VERTICAL)
@@ -470,9 +468,9 @@ class Axis extends LinearLayout
     }
 
 
-    protected static String axisNumFormat(double val)
+    protected String axisNumFormat(double val)
     {
-        if ((val <= 1000 && val >= -1000 && Math.abs(val) > 1. / 1000.) || val == 0)
+        if (((val <= 1000 && val >= -1000 && Math.abs(val) > 1. / 1000.) || val == 0) && scaleType == LINEARSCALE)
         {
             DecimalFormat format = new DecimalFormat("#.##");
             return format.format(val);
@@ -565,6 +563,8 @@ class Axis extends LinearLayout
     
     public void setPixelRange(float pixelRange){
         this.pixelRange = pixelRange;
+        //update spacing for logscales
+        updateLogSpacing();
     }
 
     /**
@@ -579,6 +579,7 @@ class Axis extends LinearLayout
     {
         this.axisOffset = axisOffset;
         this.graphCrossSpace = graphCrossSpace;
+
         //update labels with new information
         updateLabels();
 
