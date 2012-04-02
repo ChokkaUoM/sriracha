@@ -1,6 +1,5 @@
 package sriracha.frontend.android;
 
-import android.graphics.*;
 import android.view.*;
 import sriracha.frontend.*;
 import sriracha.frontend.android.model.*;

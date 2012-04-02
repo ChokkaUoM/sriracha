@@ -48,26 +48,24 @@
                 />
     </RelativeLayout>
 
-    <RelativeLayout style="@style/CircuitMenuItem">
-        <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
+    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
+        <ImageView style="@style/CircuitMenuItemImage.Element"
                    android:layout_centerInParent="true"
                    android:src="@drawable/circuitmenu_wire"
-                   android:tag="@string/selectable"
                    android:id="@+id/wire"
                    android:onClick="wireOnClick"
                 />
     </RelativeLayout>
 
-    <RelativeLayout style="@style/CircuitMenuItem">
-        <ImageView style="@style/CircuitMenuItemImage"
-                   android:layout_alignParentRight="false"
+    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
+        <ImageView style="@style/CircuitMenuItemImage.Element"
                    android:layout_alignParentLeft="true"
                    android:src="@drawable/circuitmenu_select"
                 />
-        <ImageView style="@style/CircuitMenuItemImage"
+        <ImageView style="@style/CircuitMenuItemImage.Element"
+                   android:layout_alignParentRight="true"
                    android:src="@drawable/circuitmenu_hand"
                    android:background="@drawable/circuitmenu_itembackground"
-                   android:tag="@string/selectable"
                    android:id="@+id/hand"
                    android:onClick="handOnClick"
                 />

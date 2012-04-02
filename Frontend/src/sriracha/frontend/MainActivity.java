@@ -1,13 +1,3 @@
-/**
- * TODO:
- * Validating node names to ensure uniqueness.
- * ===Moving elements breaks 90 degree constraint.===
- * Proper duplication of nodes (issue when dragging the top right of a "T" intersection downward.
- * Also, same issue when rotating elements (causes moving of adjacent nodes).
- * Wire from main menu doesn't work.
- * Occasional "Point not on segment" exceptions when playing around
- */
-
 package sriracha.frontend;
 
 import android.app.Activity;
@@ -18,6 +8,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import sriracha.frontend.android.CircuitDesigner;
 import sriracha.frontend.android.CircuitDesignerMenu;
+import sriracha.frontend.android.model.*;
 import sriracha.frontend.android.results.Graph;
 import sriracha.frontend.resultdata.Plot;
 import sriracha.frontend.resultdata.Point;
@@ -38,14 +29,14 @@ public class MainActivity extends Activity
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-     /*   setContentView(R.layout.main);
+        setContentView(R.layout.main);
 
         circuitDesignerMenu = new CircuitDesignerMenu((MainActivity) this);
         circuitDesigner = new CircuitDesigner(findViewById(R.id.circuit_design_canvas), circuitDesignerMenu, new CircuitElementActivator(this));
 
         showCircuitMenu(R.id.circuit_menu);
-*/
-        testGraph();
+
+//        testGraph();
     }
     
     private void testGraph(){

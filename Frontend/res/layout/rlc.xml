@@ -38,7 +38,6 @@
         <ImageView style="@style/CircuitMenuItemImage.Element"
                    android:layout_centerInParent="true"
                    android:src="@drawable/circuitmenu_wire"
-                   android:tag="@string/selectable"
                    android:id="@+id/wire"
                    android:onClick="wireOnClick"
                 />
@@ -53,7 +52,6 @@
                    android:layout_alignParentRight="true"
                    android:src="@drawable/circuitmenu_hand"
                    android:background="@drawable/circuitmenu_itembackground"
-                   android:tag="@string/selectable"
                    android:id="@+id/hand"
                    android:onClick="handOnClick"
                 />
