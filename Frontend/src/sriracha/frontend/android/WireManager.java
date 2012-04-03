@@ -199,6 +199,9 @@ public class WireManager
                 // Test for case 1.
                 for (WireSegment segment : intersection.getSegments())
                 {
+                    if (segment.getLength() == 0)
+                        continue;
+
                     IWireIntersection otherEnd = segment.otherEnd(intersection);
                     int direction;
                     if (segment.isVertical())

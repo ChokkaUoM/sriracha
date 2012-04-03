@@ -271,8 +271,9 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                 setCanvasState(CanvasState.IDLE);
             }
         }
-        else if (getCursor() == CursorState.HAND)
+        else
         {
+            setCursorToHand();
             circuitDesignerMenu.showElementPropertiesMenu(selectedElement);
         }
     }
@@ -413,6 +414,13 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                 }
             }
         }
+    }
+
+    public void generateNetlist()
+    {
+        NetlistGenerator generator = new NetlistGenerator();
+        String netlist = generator.generate(wireManager, elementManager);
+        System.out.println(netlist);
     }
 
     public static int snap(float coord)

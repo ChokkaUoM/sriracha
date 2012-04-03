@@ -30,9 +30,17 @@ public class WireSegment extends View
         this.end = end;
 
         r = rs++;
-        if (r > 1)        {            rs = 0;            gs++;        }
+        if (r > 1)
+        {
+            rs = 0;
+            gs++;
+        }
         g = gs;
-        if (gs > 1)        {            gs = 0;            bs++;        }
+        if (gs > 1)
+        {
+            gs = 0;
+            bs++;
+        }
         b = bs;
     }
 
@@ -48,8 +56,8 @@ public class WireSegment extends View
         paint.setStrokeWidth(isSelected() ? 6 : 4);
 
         //canvas.drawLine(start.getX(), start.getY(), end.getX(), end.getY(), paint);
-        float randSX = (float)Math.random() * 20 - 10, randSY = (float)Math.random() * 20 - 10;
-        float randEX = (float)Math.random() * 20 - 10, randEY = (float)Math.random() * 20 - 10;
+        float randSX = (float) Math.random() * 20 - 10, randSY = (float) Math.random() * 20 - 10;
+        float randEX = (float) Math.random() * 20 - 10, randEY = (float) Math.random() * 20 - 10;
         canvas.drawLine(start.getX() + randSX, start.getY() + randSY, end.getX() + randEX, end.getY() + randEY, paint);
         canvas.drawCircle(start.getX() + randSX, start.getY() + randSY, 4, paint);
         canvas.drawCircle(end.getX() + randEX, end.getY() + randEY, 4, paint);
@@ -160,9 +168,19 @@ public class WireSegment extends View
     public boolean isPointOnSegment(int x, int y)
     {
         if (isVertical())
-            return x == start.getX() && start.getY() <= y && y <= end.getY();
+        {
+            if (start.getY() <= end.getY())
+                return x == start.getX() && start.getY() <= y && y <= end.getY();
+            else
+                return x == start.getX() && end.getY() <= y && y <= start.getY();
+        }
         else
-            return y == start.getY() && start.getX() <= x && x <= end.getX();
+        {
+            if (start.getX() <= end.getX())
+                return y == start.getY() && start.getX() <= x && x <= end.getX();
+            else
+                return y == start.getY() && end.getX() <= x && x <= start.getX();
+        }
     }
 
     public IWireIntersection otherEnd(IWireIntersection thisEnd)

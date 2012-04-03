@@ -273,7 +273,8 @@ class Axis extends LinearLayout
 
     private boolean hasStartNotch(){
         float startPos = getOrientation() == HORIZONTAL ? 0f : pixelRange;
-        return getNotchPositions().get(0) == startPos;
+        ArrayList<Float> notchPositions = getNotchPositions();
+        return notchPositions.size() > 0 && notchPositions.get(0) == startPos;
     }
     
     @Override

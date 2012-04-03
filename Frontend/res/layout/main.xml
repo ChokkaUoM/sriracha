@@ -54,4 +54,12 @@
                    android:onClick="wrenchMenuOnClick"
                 />
     </sriracha.frontend.android.CircuitDesignerCanvas>
+    <RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+                    android:id="@+id/results_container"
+                    android:layout_marginLeft="-30dip">
+        <RelativeLayout android:layout_width="30dip" android:layout_height="fill_parent"
+                        android:id="@+id/results_handle"
+                        android:background="#C0C"/>
+        <include layout="@layout/results_testing" android:layout_toRightOf="@id/results_handle"/>
+    </RelativeLayout>
 </LinearLayout>
