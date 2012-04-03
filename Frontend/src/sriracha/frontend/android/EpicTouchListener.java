@@ -110,7 +110,7 @@ public abstract class EpicTouchListener implements View.OnTouchListener
                     case 1:
                     {
                         Finger f = activeFingers.get(0);
-                        return onSingleFingerMove(f.distX(), f.distY());
+                        return onSingleFingerMove(f.distX(), f.distY(), f.x, f.y);
                     }
                     case 2:
                     {
@@ -204,11 +204,14 @@ public abstract class EpicTouchListener implements View.OnTouchListener
 
     /**
      * Called whenever there is only 1 finger on the screen and that it has moved.
+     *
      * @param dX X distance moved since last call to this method
      * @param dY Y distance moved since last call to this method
+     * @param finalX X resting place of finger after movement
+     * @param finalY Y resting place of finger after movement
      * @return true if the the event should be consumed ie not passed on.
      */
-    protected boolean onSingleFingerMove(float dX, float dY) {return false;}
+    protected boolean onSingleFingerMove(float dX, float dY, float finalX, float finalY) {return false;}
 
     /**
      * Called whenever there are 2 fingers on the screen and that they have moved

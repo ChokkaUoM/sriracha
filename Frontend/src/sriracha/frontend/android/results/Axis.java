@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import sriracha.frontend.R;
@@ -13,30 +12,35 @@ import sriracha.frontend.R;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-
+/**
+ * Crucial component of the graphing package, the Axis class takes care of drawing labels and
+ * maintaining pixel to coordinate mappings. Supports log and linear scales.
+ */
 class Axis extends LinearLayout
 {
-    
+    /**
+     * Constants representing scale type
+     */
     static final int LOGSCALE = 1, LINEARSCALE = 0;
 
     /**
      * Linear Vertical Notch Space
      * space in pixels between each axis notch for
-     * linear Vertical Axis
+     * linear Vertical Axis - does not change
      */
     protected int linVNS = 60;
 
     /**
      * Linear Horizontal Notch Space
      * space in pixels between each axis notch for
-     * linear Horizontal Axis
+     * linear Horizontal Axis - does not change
      */
     protected int linHNS = 90;
 
     /**
      * Logarithmic Decade Space
      * space in pixels between each decade notch for
-     * log scale Axis dependent on range
+     * log scale Axis - dependent on range
      */
     protected int logDS = 150;
 
@@ -72,8 +76,6 @@ class Axis extends LinearLayout
     private double maxValue;
 
     protected Paint linePaint;
-
-    protected LayoutInflater inflater;
 
     public Axis(Context context)
     {
@@ -127,7 +129,11 @@ class Axis extends LinearLayout
         }
     }
 
-
+    /**
+     * Updates internal text Alignment for the TextViews that hold the axis labels
+     * alignment changes depending on which side of the axis line the labels are drawn and
+     * on axis orientation.
+     */
     private void updateLabelAttributes()
     {
         int start = 0;
@@ -246,7 +252,6 @@ class Axis extends LinearLayout
     private void init()
     {
         setWillNotDraw(false);
-        inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         linePaint = new Paint();
         linePaint.setARGB(255, 255, 255, 255);
         linePaint.setStrokeWidth(2);
@@ -416,9 +421,25 @@ class Axis extends LinearLayout
 
     private void inflateLabel()
     {
-        inflater.inflate(R.layout.results_axis_label, this, true);
+        inflate(getContext(), R.layout.results_axis_label, this);
     }
 
+    /**
+     * Used for drawing dashed preview lines
+     * @return offset in Graph where the axis is actually drawn
+     */
+    public int getDrawnAxisOffset()
+    {
+        if(getOrientation() == VERTICAL)
+        {
+            return getLeft() + (labelSide == 0 ? getWidth() - lineSpace / 2 : lineSpace / 2);
+        }
+        else
+        {
+            return getTop() + (labelSide == 0 ? getHeight() - lineSpace / 2 : lineSpace / 2);
+        }
+
+    }
 
     @Override
     protected void onDraw(Canvas canvas)
@@ -485,26 +506,6 @@ class Axis extends LinearLayout
         return Math.log(val)/Math.log(base);
     }
 
-  /*  //for special use in layout pass of graph in order to get
-    float forcedPFC(double axisValue, float pixelRange)
-    {
-        if (scaleType == LOGSCALE)
-        {
-            if(axisValue <= 0) return getOrientation() == HORIZONTAL ? -1 : pixelRange + 1;//log(x) > 0
-
-            double offset = logDS * log(axisValue/minValue, logBase);
-
-            return (float) (getOrientation() == HORIZONTAL ? offset : pixelRange - offset);
-
-        }
-        else
-        {
-            double percent = (axisValue - minValue) / (maxValue - minValue);
-            if (getOrientation() == VERTICAL) percent = 1 - percent;
-            return (float) (percent * pixelRange);
-        }
-    }
-*/
     /**
      * returns pixel offset from the start of this control to the location
      * corresponding to the axis value requested.

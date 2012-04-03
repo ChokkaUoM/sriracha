@@ -1,22 +1,37 @@
 package sriracha.frontend.android.results;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import sriracha.frontend.R;
 import sriracha.frontend.android.EpicTouchListener;
 import sriracha.frontend.android.results.functions.Function;
 import sriracha.frontend.resultdata.Plot;
+import sriracha.frontend.resultdata.Point;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class Graph extends FrameLayout {
 
-    Axis yAxis;
+    private Axis yAxis;
 
-    Axis xAxis;
+    private Axis xAxis;
+    
+    private TextView previewBox;
+
+    private Point previewPoint;
+    /**
+     * number of dips from the nearest point where 
+     * a touch is considered to be requesting a preview
+     */
+    private double previewThreshold = 20;
 
     private boolean deferInvalidate = false;
 
@@ -82,9 +97,6 @@ public class Graph extends FrameLayout {
         //get estimates for desired axis intersect positions.
         float x0 = xAxis.pixelsFromCoordinate(0);
         float y0 = yAxis.pixelsFromCoordinate(0);
-
-        //will be set true if any of the axes are snapped to an edge
-       // boolean isAnySnapped = false;
         
         //if the y axis will end up aligned to the start or end then it is considered snapped and we
         //reduce the range of the xAxis so it no longer overlaps with the yAxis
@@ -92,7 +104,6 @@ public class Graph extends FrameLayout {
             xrange -= yAxisOffset;
             xAxis.setPixelRange(xrange);
             xAxis.preMeasure(y0, height);
-          //  isAnySnapped = true;
         }
 
         //Similarly, if the x axis will end up aligned to the start or end then it is considered snapped and we
@@ -101,15 +112,8 @@ public class Graph extends FrameLayout {
             yrange -= xAxisOffset;
             yAxis.setPixelRange(yrange);
             yAxis.preMeasure(x0, width);
-          //  isAnySnapped = true;
         }
-        
-      //  if(isAnySnapped)
-       // {
-            //tell axes about where they really intersect the other axis so that they can finalize counting and filling labels
-        //    xAxis.preMeasure(yAxis.pixelsFromCoordinate(0), height);
-         //   yAxis.preMeasure(xAxis.pixelsFromCoordinate(0), width);
-       // }
+
 
         //create internal size specs for plot children and axes with correct x and y ranges
         int internalWidthSpec = MeasureSpec.makeMeasureSpec(xrange, MeasureSpec.AT_MOST);
@@ -158,11 +162,27 @@ public class Graph extends FrameLayout {
         for (PlotView pv : plots) {
             pv.layout(iLeft, iTop, iRight, iBottom);
         }
+        
+        //layout preview if applicable
+        if(previewBox.getVisibility() == VISIBLE)
+        {
+            int iWidth = iRight - iLeft;
+            int mWidth = previewBox.getMeasuredWidth();
+            int mHeight = previewBox.getMeasuredHeight();
+            int pLeft = iLeft + (iWidth - mWidth)/2;
+            int pTop = iBottom - (20 + mHeight);
+            previewBox.layout(pLeft, pTop, pLeft + mWidth, pTop + mHeight);
+            
+        }
+        
 
     }
 
 
     private void init() {
+        
+        setWillNotDraw(false);
+        
         yAxis = new Axis(getContext());
         addView(yAxis, new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
         yAxis.setOrientation(LinearLayout.VERTICAL);
@@ -171,18 +191,155 @@ public class Graph extends FrameLayout {
         xAxis.setOrientation(LinearLayout.HORIZONTAL);
         plots = new ArrayList<PlotView>();
         setOnTouchListener(new GraphGestureListener());
-
+        
+        //inflate and fetch preview text view
+        inflate(getContext(), R.layout.graph_preview, this);
+        previewBox = (TextView) getChildAt(getChildCount() - 1);
+        previewBox.setVisibility(INVISIBLE);
 
     }
 
+    private boolean updatePreview(float x, float y)
+    {
+        double xCoord = xAxis.coordinateFromPixel(x);
+        double yCoord = yAxis.coordinateFromPixel(y);
+
+        ArrayList<Point> closestPoints = new ArrayList<Point>();
+        
+        for(PlotView plot : plots)
+        {
+            
+            Point nearest = plot.findNearestPoint(xCoord, yCoord);
+            if (nearest != null)
+            {
+                closestPoints.add(nearest);
+            }
+            
+        }
+        boolean wasVisible = previewPoint != null;
+        previewPoint = null;
+        double minDistance = Double.POSITIVE_INFINITY;
+        for(Point p : closestPoints)
+        {
+            float pPixX = xAxis.pixelsFromCoordinate(p.getX());
+            float pPixY = yAxis.pixelsFromCoordinate(p.getY());
+            double dipDistance = Math.sqrt(Math.pow(pPixX - x, 2) + Math.pow(pPixY - y, 2));
+            if(dipDistance < minDistance && dipDistance < previewThreshold)
+            {
+                previewPoint = p;
+            }
+        }
+        
+        
+        if(previewPoint != null)
+        {
+            previewBox.setVisibility(VISIBLE);
+            previewBox.setText(previewFormat(previewPoint));
+        }
+        else
+        {
+            previewBox.setVisibility(INVISIBLE);
+        }
+        
+        boolean changed = previewPoint != null || wasVisible;
+        
+        if(changed)
+        {
+            requestLayout();
+            invalidate();
+        }
+
+        
+        return changed;
+    }
+    
+    private String numFormat(double val)
+    {
+        if ((val <= 1000 && val >= -1000 && Math.abs(val) > 1. / 1000.) || val == 0)
+        {
+            DecimalFormat format = new DecimalFormat("#.##");
+            return format.format(val);
+        }
+
+        DecimalFormat format = new DecimalFormat("#.##E00");
+        return format.format(val);
+    }
+    
+    private String previewFormat(Point p){
+        return "(" + numFormat(p.getX()) + ", " + numFormat(p.getY()) + ")";
+    }
+
+
+    @Override
+    protected void onDraw(Canvas canvas)
+    {
+        super.onDraw(canvas);    
+        
+        
+        
+        if(previewBox.getVisibility() == VISIBLE)
+        {
+            int dashlength = 10;
+            
+            //draw dashed lines to axes
+            int xp1 = yAxis.getDrawnAxisOffset();
+            int yp1 = xAxis.getDrawnAxisOffset();
+            int xp2 = (int) xAxis.pixelsFromCoordinate(previewPoint.getX());
+            int yp2 = (int) yAxis.pixelsFromCoordinate(previewPoint.getY());
+            int startx = Math.min(xp1, xp2), endx = Math.max(xp1, xp2);
+            int starty = Math.min(yp1, yp2), endy = Math.max(yp1, yp2);
+
+            Paint p = new Paint();
+            p.setStrokeWidth(1.8f);
+            p.setARGB(255, 180, 180, 180);
+            
+            
+            for(int i = startx; i < endx; i+= 2*dashlength)
+            {
+                canvas.drawLine(i, yp2, Math.min(i + dashlength, endx), yp2, p);
+            }
+
+            for(int i = starty; i < endy; i+= 2*dashlength)
+            {
+                canvas.drawLine(xp2, i, xp2, Math.min(i + dashlength, endy), p);
+            }
+            p.setStrokeWidth(2.5f);
+            p.setStyle(Paint.Style.STROKE);
+            canvas.drawCircle(xp2, yp2, 5f, p);
+
+
+
+            //redraw preview box at the end so that it is on top of lines
+            //previewBox.draw(canvas);
+        }
+        
+        
+    }
 
     private class GraphGestureListener extends EpicTouchListener {
 
-        @Override
-        public boolean onSingleFingerMove(float distanceX, float distanceY) {
 
-            // yAxis.pan(distanceY);
-            // xAxis.pan(distanceX);
+        
+
+        
+
+        @Override
+        protected void onSingleFingerDown(float x, float y)
+        {
+            updatePreview(x, y);
+        }
+
+        @Override
+        public boolean onSingleFingerMove(float distanceX, float distanceY, float finalX, float finalY)
+        {
+            updatePreview(finalX, finalY);
+            return true;
+        }
+        
+        
+        
+        @Override
+        public boolean onTwoFingerSwipe(float distanceX, float distanceY) {
 
             double ymin = yAxis.coordinateFromPixel(yAxis.getHeight() - distanceY);
             double xmin = xAxis.coordinateFromPixel(-distanceX);

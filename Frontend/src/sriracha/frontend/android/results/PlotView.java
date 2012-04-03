@@ -124,4 +124,36 @@ public class PlotView extends View
         }
 
     }
+
+    /**
+     * Finds nearest point in plot to target point does not check non visible points
+     * @param xCoord x coordinate of target point
+     * @param yCoord y coordinate of target point
+     * @return closest point or null if none are currently visible
+     */
+    public Point findNearestPoint(double xCoord, double yCoord)
+    {
+        int index = 0;
+        Point touch = new Point(xCoord, yCoord);
+        double minDistance = Double.POSITIVE_INFINITY;
+        //initialize to null
+        Point closest = null;
+        //skip points before visible range
+        while (index < plot.size() && plot.getPoint(index).getX() < graph.getXmin()) index++;
+
+        //for points inside visible range
+        while (index < plot.size() && plot.getPoint(index).getX() <= graph.getXmax())
+        {
+            Point p = plot.getPoint(index);
+            if(minDistance > touch.distance(p))
+            {
+                //use copy not actual point
+                closest = new Point(p.getX(), p.getY());
+                minDistance = touch.distance(closest);
+            }
+            index++;
+        }
+        
+        return closest;
+    }
 }
