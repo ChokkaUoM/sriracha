@@ -354,11 +354,6 @@ public class Graph extends FrameLayout {
 
     private class GraphGestureListener extends EpicTouchListener {
 
-
-        
-
-        
-
         @Override
         protected void onSingleFingerDown(float x, float y)
         {
@@ -484,7 +479,7 @@ public class Graph extends FrameLayout {
     }
 
 
-    public float[] pixelsFromCoords(double x, double y) {
+    public float[] pixelsFromInternalCoordinates(double x, double y) {
         return new float[]{xAxis.pixelsFromCoordinate(x), yAxis.pixelsFromCoordinate(y)};
     }
 
