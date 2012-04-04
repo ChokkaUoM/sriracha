@@ -15,14 +15,16 @@ public abstract class EpicTouchListener implements View.OnTouchListener
      * 0 -> only perfectly opposed 2 finger motions are considered a scale gesture
      * 1 -> any 2 finger motion is a scale gesture
      */
-    protected double scaleTolerance = 0.2;
+    protected double scaleTolerance = 0.1;
 
     /**
      * a value between 0 and 1
      * 0 -> only perfectly parallel 2 finger motions are considered a swipe gesture
      * 1 -> any 2 finger motion is a swipe gesture
      */
-    protected double swipeTolerance = 0.2;
+    protected double swipeTolerance = 0.1;
+
+   // protected double motionTolerance = 5;
     
     private ArrayList<Finger> activeFingers;
     
@@ -36,6 +38,8 @@ public abstract class EpicTouchListener implements View.OnTouchListener
         float distX(){ return x - oldX;}
         
         float distY(){ return y - oldY;}
+        
+        float dist(){ return (float) Math.sqrt(Math.pow(distX(), 2) + Math.pow(distY(), 2));}
         
         double angle() { return Math.atan2(y - oldY, x - oldX);}
     }
@@ -51,6 +55,7 @@ public abstract class EpicTouchListener implements View.OnTouchListener
         int actionIndex = motionEvent.getActionIndex();
         int actionId = motionEvent.getPointerId(actionIndex);
         int pointerCount = motionEvent.getPointerCount();
+        
 
         switch (motionEvent.getActionMasked())
         {
@@ -59,8 +64,8 @@ public abstract class EpicTouchListener implements View.OnTouchListener
 
                 Finger f1 = addFinger(actionId, motionEvent.getX(), motionEvent.getY());
                 
-                onSingleFingerDown(f1.x, f1.y);            
-                
+                onSingleFingerDown(f1.x, f1.y);
+
                 //always return true for ACTION_DOWN so that we get subsequent ACTION_MOVE events
                 return true;
                 
@@ -90,6 +95,7 @@ public abstract class EpicTouchListener implements View.OnTouchListener
                     //todo: extend to more fingers
                 }
 
+
                 //always return true for ACTION_POINTER_DOWN so that we get subsequent ACTION_MOVE events
                 return true;
             }
@@ -101,10 +107,17 @@ public abstract class EpicTouchListener implements View.OnTouchListener
             }
             case MotionEvent.ACTION_MOVE:
             {
+                
+                if(activeFingers.size() != pointerCount)
+                {
+                    fixPointerMissmatch(motionEvent);
+                }
+
 
                 for(int i =0; i<pointerCount; i++){
                     updateFinger(activeFingers.get(i), motionEvent);
                 }
+
 
                 switch (pointerCount){
                     case 1:
@@ -116,6 +129,7 @@ public abstract class EpicTouchListener implements View.OnTouchListener
                     {
                         Finger f1 = activeFingers.get(0);
                         Finger f2 = activeFingers.get(1);
+
 
                         double angleDiff = centerRad(f2.angle() - f1.angle());
 
@@ -129,13 +143,34 @@ public abstract class EpicTouchListener implements View.OnTouchListener
                                   dx = f2.x - f1.x,
                                   dy = f2.y - f1.y;
 
-                            float xFactor = clamp(Math.abs(oldDX / dx), 0.1f, 10),
-                                  yFactor = clamp(Math.abs(oldDY / dy), 0.1f, 10);
+                            
 
-                            float xCenter = (f1.oldX + f2.oldX + f1.x + f2.x)/4;
-                            float yCenter = (f1.oldY + f2.oldY + f1.y + f2.y)/4;
+                            float xFactor = Math.abs(oldDX / dx),
+                                  yFactor = Math.abs(oldDY / dy);
+                            
+                            double xPerc = Math.abs( 1 - xFactor);
+                            double yPerc = Math.abs( 1 - yFactor);
 
-                            consumed = onScale(xFactor, yFactor, xCenter, yCenter);
+                            if(xPerc/yPerc > 10) yFactor = 1;
+                            else if(yPerc/xPerc > 10) xFactor = 1;
+
+                            xFactor = clamp(xFactor, 0.3f, 3);
+                            yFactor = clamp(yFactor, 0.3f, 3);
+
+                            //very small distances do not cause scale gestures since the factors
+                            //are often way out of whack.
+                           // if(oldDX < 3 || dx < 3) xFactor = 1;
+                           // if(oldDY < 3 || dy < 3) yFactor = 1;
+
+                            if(xFactor != 1 || yFactor != 1)
+                            {
+
+                                float xCenter = (f1.oldX + f2.oldX + f1.x + f2.x)/4;
+                                float yCenter = (f1.oldY + f2.oldY + f1.y + f2.y)/4;
+
+                                consumed = onScale(xFactor, yFactor, xCenter, yCenter);
+                            }
+
                         }
 
                         if(isSwipe){
@@ -160,7 +195,19 @@ public abstract class EpicTouchListener implements View.OnTouchListener
 
         return false;
     }
-    
+
+    private void fixPointerMissmatch(MotionEvent motionEvent) {
+        for(int i = activeFingers.size() -1; i >=0; i--)
+        {
+           int index =  motionEvent.findPointerIndex(activeFingers.get(i).id);
+           if(index == -1)
+           {
+                activeFingers.remove(i);
+
+           }
+        }
+    }
+
     private Finger findById(int id){
         for(int i =0; i<activeFingers.size(); i++){
             Finger f = activeFingers.get(i);

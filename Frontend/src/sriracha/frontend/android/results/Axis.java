@@ -274,6 +274,12 @@ class Axis extends LinearLayout
         
         logDS = (int) (pixelRange / (count -1 + endDecPercent));
 
+        if (logDS == 0)
+        {
+            int kk = 23;
+            kk++;
+        }
+
     }
 
     private boolean hasStartNotch(){

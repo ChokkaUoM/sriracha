@@ -4,10 +4,13 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import sriracha.frontend.R;
+import sriracha.frontend.android.DebugListener;
 import sriracha.frontend.android.EpicTouchListener;
 import sriracha.frontend.android.results.functions.Function;
 import sriracha.frontend.resultdata.Plot;
@@ -130,12 +133,9 @@ public class Graph extends FrameLayout {
         //graph takes all initial available size.
         setMeasuredDimension(width, height);
     }
-
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        int width = right - left;
-        int height = bottom - top;
-        //distance from axis to far ege of axis, or width of labels + linespace /2
+    
+    private int[] internalEdges(int width, int height)
+    {
         int yAxisOffset = yAxis.getMeasuredWidth() - Axis.lineSpace /2 + 1;
         int xAxisOffset = xAxis.getMeasuredHeight() - Axis.lineSpace /2 + 1;
 
@@ -150,35 +150,50 @@ public class Graph extends FrameLayout {
         int iRight = x0 > yAxisOffset && xAxis.getMeasuredWidth() < width ? width - yAxisOffset : width;
         int iTop = y0 < xAxisOffset ? xAxisOffset : 0;
         int iBottom = y0 > xAxisOffset && yAxis.getMeasuredHeight() < height ? height - xAxisOffset : height;
+        
+        return new int[]{iLeft, iTop, iRight, iBottom};
+    }
 
-        int yleft = iLeft != 0 ? 0 : (int) yAxis.getEdgeOffset();
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        int width = right - left;
+        int height = bottom - top;
+        
+        int []edges = internalEdges(width, height);
 
-        yAxis.layout(yleft, iTop, yleft + yAxis.getMeasuredWidth(), iBottom);
+        int yleft = edges[0] != 0 ? 0 : (int) yAxis.getEdgeOffset();
 
-        int xtop = iTop == 0 ? (int) xAxis.getEdgeOffset() : 0;
+        yAxis.layout(yleft, edges[1], yleft + yAxis.getMeasuredWidth(), edges[3]);
 
-        xAxis.layout(iLeft, xtop, iRight, xtop + xAxis.getMeasuredHeight());
+        int xtop = edges[1] == 0 ? (int) xAxis.getEdgeOffset() : 0;
+
+            xAxis.layout(edges[0], xtop, edges[2], xtop + xAxis.getMeasuredHeight());
 
         for (PlotView pv : plots) {
-            pv.layout(iLeft, iTop, iRight, iBottom);
+            pv.layout(edges[0], edges[1], edges[2], edges[3]);
         }
         
         //layout preview if applicable
         if(previewBox.getVisibility() == VISIBLE)
         {
-            int iWidth = iRight - iLeft;
+            int iWidth = edges[2] - edges[0];
             int mWidth = previewBox.getMeasuredWidth();
             int mHeight = previewBox.getMeasuredHeight();
-            int pLeft = iLeft + (iWidth - mWidth)/2;
-            int pTop = iBottom - (20 + mHeight);
+            int pLeft = edges[0] + (iWidth - mWidth)/2;
+            int pTop = edges[3] - (20 + mHeight);
             previewBox.layout(pLeft, pTop, pLeft + mWidth, pTop + mHeight);
             
         }
         
 
     }
+//
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        return detector.onTouchEvent(event);
+//    }
 
-
+//    ScaleGestureDetector detector;
     private void init() {
         
         setWillNotDraw(false);
@@ -190,26 +205,76 @@ public class Graph extends FrameLayout {
         addView(xAxis, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         xAxis.setOrientation(LinearLayout.HORIZONTAL);
         plots = new ArrayList<PlotView>();
+
+//        setOnTouchListener(new DebugListener());
         setOnTouchListener(new GraphGestureListener());
-        
+
         //inflate and fetch preview text view
         inflate(getContext(), R.layout.graph_preview, this);
         previewBox = (TextView) getChildAt(getChildCount() - 1);
         previewBox.setVisibility(INVISIBLE);
 
+//        detector = new ScaleGestureDetector(getContext(), new ScaleGestureDetector.OnScaleGestureListener() {
+//            @Override
+//            public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
+//                float xfactor = scaleGestureDetector.getPreviousSpanX() / scaleGestureDetector.getCurrentSpanX();
+//                float yfactor = scaleGestureDetector.getPreviousSpanY() / scaleGestureDetector.getCurrentSpanY();
+//                new GraphGestureListener().onScale(xfactor, yfactor, scaleGestureDetector.getFocusX(), scaleGestureDetector.getFocusY());
+//                return true;  //To change body of implemented methods use File | Settings | File Templates.
+//            }
+//
+//            @Override
+//            public boolean onScaleBegin(ScaleGestureDetector scaleGestureDetector) {
+//                return false;  //To change body of implemented methods use File | Settings | File Templates.
+//            }
+//
+//            @Override
+//            public void onScaleEnd(ScaleGestureDetector scaleGestureDetector) {
+//                //To change body of implemented methods use File | Settings | File Templates.
+//            }
+//        });
+
+
+
+    }
+
+    /**
+     * Takes into account internal edges and is only valid after layout
+     * @return
+     */
+    public Point pixelsToCoordinate(Point pixel)
+    {
+        
+        int internalEdges[] = internalEdges(getWidth(), getHeight());
+        
+        double cx = xAxis.coordinateFromPixel((float) (pixel.getX() - internalEdges[0]));
+        double cy = yAxis.coordinateFromPixel((float) (pixel.getY() - internalEdges[1]));
+        
+        return new Point(cx, cy);
+        
+    }
+    
+    public Point pixelsFromCoordinate(Point coord)
+    {
+        int internalEdges[] = internalEdges(getWidth(), getHeight());
+        
+        float px = xAxis.pixelsFromCoordinate(coord.getX());
+        float py = yAxis.pixelsFromCoordinate(coord.getY());
+        
+        return new Point(px + internalEdges[0], py + internalEdges[1]);
     }
 
     private boolean updatePreview(float x, float y)
     {
-        double xCoord = xAxis.coordinateFromPixel(x);
-        double yCoord = yAxis.coordinateFromPixel(y);
+        
+        Point coordinates = pixelsToCoordinate(new Point(x, y));
 
         ArrayList<Point> closestPoints = new ArrayList<Point>();
         
         for(PlotView plot : plots)
         {
             
-            Point nearest = plot.findNearestPoint(xCoord, yCoord);
+            Point nearest = plot.findNearestPoint(coordinates.getX(), coordinates.getY());
             if (nearest != null)
             {
                 closestPoints.add(nearest);
@@ -221,9 +286,8 @@ public class Graph extends FrameLayout {
         double minDistance = Double.POSITIVE_INFINITY;
         for(Point p : closestPoints)
         {
-            float pPixX = xAxis.pixelsFromCoordinate(p.getX());
-            float pPixY = yAxis.pixelsFromCoordinate(p.getY());
-            double dipDistance = Math.sqrt(Math.pow(pPixX - x, 2) + Math.pow(pPixY - y, 2));
+            Point pix = pixelsFromCoordinate(p);
+            double dipDistance = Math.sqrt(Math.pow(pix.getX() - x, 2) + Math.pow(pix.getY() - y, 2));
             if(dipDistance < minDistance && dipDistance < previewThreshold)
             {
                 previewPoint = p;
@@ -281,11 +345,14 @@ public class Graph extends FrameLayout {
         {
             int dashlength = 10;
             
+            
+            int edges[] = internalEdges(getWidth(), getHeight());
             //draw dashed lines to axes
             int xp1 = yAxis.getDrawnAxisOffset();
             int yp1 = xAxis.getDrawnAxisOffset();
-            int xp2 = (int) xAxis.pixelsFromCoordinate(previewPoint.getX());
-            int yp2 = (int) yAxis.pixelsFromCoordinate(previewPoint.getY());
+            Point pix = pixelsFromCoordinate(previewPoint);
+            int xp2 = (int) pix.getX();
+            int yp2 = (int) pix.getY();
             int startx = Math.min(xp1, xp2), endx = Math.max(xp1, xp2);
             int starty = Math.min(yp1, yp2), endy = Math.max(yp1, yp2);
 
@@ -310,7 +377,7 @@ public class Graph extends FrameLayout {
 
 
             //redraw preview box at the end so that it is on top of lines
-            //previewBox.draw(canvas);
+            previewBox.bringToFront();
         }
         
         
@@ -332,8 +399,7 @@ public class Graph extends FrameLayout {
         @Override
         public boolean onSingleFingerMove(float distanceX, float distanceY, float finalX, float finalY)
         {
-            updatePreview(finalX, finalY);
-            return true;
+            return updatePreview(finalX, finalY);
         }
         
         
@@ -364,8 +430,9 @@ public class Graph extends FrameLayout {
                 double avg = (minshift + maxshift) / 2;
                 ymin = yAxis.getMinValue() + avg;
                 ymax = yAxis.getMaxValue() + avg;
+
+
             }
-            
 
             xAxis.setRange(xmin, xmax);
             yAxis.setRange(ymin, ymax);
@@ -379,22 +446,31 @@ public class Graph extends FrameLayout {
         @Override
         protected boolean onScale(float xFactor, float yFactor, float xCenter, float yCenter) {
 
-            double xMinSize = xCenter/xAxis.getWidth();
+            int []edges = internalEdges(getWidth(), getHeight());
+            xCenter -= edges[0];
+            yCenter -= edges[1];
+            if(xCenter < 0) xCenter = 0;
+            if(yCenter < 0) yCenter = 0;
+            //center the center always !
+//            xCenter = (edges[2] - edges[0])/2;
+//            yCenter = (edges[3] - edges[1])/2;
+
+            double xMinSize = xCenter/xAxis.getWidth() * xAxis.getWidth();
             double xMaxSize = xAxis.getWidth() - xMinSize;
-            double yMaxSize = yCenter/yAxis.getHeight();
+            double yMaxSize = yCenter/yAxis.getHeight() * yAxis.getHeight();
             double yMinSize = yAxis.getHeight() - yMaxSize;
 
             double xMin = xAxis.coordinateFromPixel((float) (xCenter - xFactor * xMinSize));
             double xMax = xAxis.coordinateFromPixel((float) (xCenter + xFactor * xMaxSize));
-            double yMin = xAxis.coordinateFromPixel((float) (yCenter + yFactor * yMinSize));
-            double yMax = xAxis.coordinateFromPixel((float) (yCenter - yFactor * yMaxSize));
+            double yMin = xAxis.coordinateFromPixel((float) (yCenter - yFactor * yMinSize));
+            double yMax = xAxis.coordinateFromPixel((float) (yCenter + yFactor * yMaxSize));
 
-            xAxis.setRange(xMin, xMax);
-            yAxis.setRange(yMin, yMax);
-
+            if(xFactor != 1)xAxis.setRange(xMin, xMax);
+            if(yFactor != 1)yAxis.setRange(yMin, yMax);
 
             requestLayout();
             invalidate();
+
             return true;
         }
     }
