@@ -4,13 +4,10 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import sriracha.frontend.R;
-import sriracha.frontend.android.DebugListener;
 import sriracha.frontend.android.EpicTouchListener;
 import sriracha.frontend.android.results.functions.Function;
 import sriracha.frontend.resultdata.Plot;
@@ -187,13 +184,7 @@ public class Graph extends FrameLayout {
         
 
     }
-//
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//        return detector.onTouchEvent(event);
-//    }
 
-//    ScaleGestureDetector detector;
     private void init() {
         
         setWillNotDraw(false);
@@ -206,34 +197,12 @@ public class Graph extends FrameLayout {
         xAxis.setOrientation(LinearLayout.HORIZONTAL);
         plots = new ArrayList<PlotView>();
 
-//        setOnTouchListener(new DebugListener());
         setOnTouchListener(new GraphGestureListener());
 
         //inflate and fetch preview text view
         inflate(getContext(), R.layout.graph_preview, this);
         previewBox = (TextView) getChildAt(getChildCount() - 1);
         previewBox.setVisibility(INVISIBLE);
-
-//        detector = new ScaleGestureDetector(getContext(), new ScaleGestureDetector.OnScaleGestureListener() {
-//            @Override
-//            public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
-//                float xfactor = scaleGestureDetector.getPreviousSpanX() / scaleGestureDetector.getCurrentSpanX();
-//                float yfactor = scaleGestureDetector.getPreviousSpanY() / scaleGestureDetector.getCurrentSpanY();
-//                new GraphGestureListener().onScale(xfactor, yfactor, scaleGestureDetector.getFocusX(), scaleGestureDetector.getFocusY());
-//                return true;  //To change body of implemented methods use File | Settings | File Templates.
-//            }
-//
-//            @Override
-//            public boolean onScaleBegin(ScaleGestureDetector scaleGestureDetector) {
-//                return false;  //To change body of implemented methods use File | Settings | File Templates.
-//            }
-//
-//            @Override
-//            public void onScaleEnd(ScaleGestureDetector scaleGestureDetector) {
-//                //To change body of implemented methods use File | Settings | File Templates.
-//            }
-//        });
-
 
 
     }
@@ -451,9 +420,7 @@ public class Graph extends FrameLayout {
             yCenter -= edges[1];
             if(xCenter < 0) xCenter = 0;
             if(yCenter < 0) yCenter = 0;
-            //center the center always !
-//            xCenter = (edges[2] - edges[0])/2;
-//            yCenter = (edges[3] - edges[1])/2;
+
 
             double xMinSize = xCenter/xAxis.getWidth() * xAxis.getWidth();
             double xMaxSize = xAxis.getWidth() - xMinSize;
@@ -462,8 +429,8 @@ public class Graph extends FrameLayout {
 
             double xMin = xAxis.coordinateFromPixel((float) (xCenter - xFactor * xMinSize));
             double xMax = xAxis.coordinateFromPixel((float) (xCenter + xFactor * xMaxSize));
-            double yMin = xAxis.coordinateFromPixel((float) (yCenter - yFactor * yMinSize));
-            double yMax = xAxis.coordinateFromPixel((float) (yCenter + yFactor * yMaxSize));
+            double yMin = yAxis.coordinateFromPixel((float) (yCenter - yFactor * yMinSize));
+            double yMax = yAxis.coordinateFromPixel((float) (yCenter + yFactor * yMaxSize));
 
             if(xFactor != 1)xAxis.setRange(xMin, xMax);
             if(yFactor != 1)yAxis.setRange(yMin, yMax);

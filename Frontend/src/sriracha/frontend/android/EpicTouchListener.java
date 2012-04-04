@@ -15,17 +15,15 @@ public abstract class EpicTouchListener implements View.OnTouchListener
      * 0 -> only perfectly opposed 2 finger motions are considered a scale gesture
      * 1 -> any 2 finger motion is a scale gesture
      */
-    protected double scaleTolerance = 0.1;
+    protected double scaleTolerance = 0.12;
 
     /**
      * a value between 0 and 1
      * 0 -> only perfectly parallel 2 finger motions are considered a swipe gesture
      * 1 -> any 2 finger motion is a swipe gesture
      */
-    protected double swipeTolerance = 0.1;
+    protected double swipeTolerance = 0.12;
 
-   // protected double motionTolerance = 5;
-    
     private ArrayList<Finger> activeFingers;
     
     private static class Finger{       
@@ -156,11 +154,6 @@ public abstract class EpicTouchListener implements View.OnTouchListener
 
                             xFactor = clamp(xFactor, 0.3f, 3);
                             yFactor = clamp(yFactor, 0.3f, 3);
-
-                            //very small distances do not cause scale gestures since the factors
-                            //are often way out of whack.
-                           // if(oldDX < 3 || dx < 3) xFactor = 1;
-                           // if(oldDY < 3 || dy < 3) yFactor = 1;
 
                             if(xFactor != 1 || yFactor != 1)
                             {

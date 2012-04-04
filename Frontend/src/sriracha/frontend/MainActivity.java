@@ -3,10 +3,11 @@ package sriracha.frontend;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.*;
-import android.widget.*;
-import sriracha.frontend.android.*;
-import sriracha.frontend.android.model.*;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import sriracha.frontend.android.CircuitDesigner;
+import sriracha.frontend.android.CircuitDesignerMenu;
 import sriracha.frontend.android.results.Graph;
 import sriracha.frontend.resultdata.Plot;
 import sriracha.frontend.resultdata.Point;
@@ -26,48 +27,48 @@ public class MainActivity extends Activity
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//
+//        setContentView(R.layout.main);
+//
+//        circuitDesignerMenu = new CircuitDesignerMenu((MainActivity) this);
+//        circuitDesigner = new CircuitDesigner(findViewById(R.id.circuit_design_canvas), circuitDesignerMenu, new CircuitElementActivator(this));
+//
+//        showCircuitMenu(R.id.circuit_menu);
+//
+//        findViewById(R.id.results_handle).setOnTouchListener(new View.OnTouchListener()
+//        {
+//            private View container = findViewById(R.id.results_container);
+//            private LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) container.getLayoutParams();
+//            private float leftMargin;
+//            private float downX;
+//            private int pointerId = -1;
+//            @Override
+//            public boolean onTouch(View view, MotionEvent motionEvent)
+//            {
+//                switch (motionEvent.getActionMasked())
+//                {
+//                    case MotionEvent.ACTION_DOWN:
+//                        pointerId = motionEvent.getPointerId(0);
+//                        downX = motionEvent.getRawX();
+//                        leftMargin = params.leftMargin;
+//                        break;
+//                    case MotionEvent.ACTION_MOVE:
+//                        if (motionEvent.getPointerId(0) == pointerId)
+//                        {
+//                            params.setMargins((int) (leftMargin + motionEvent.getRawX() - downX), 0, 0, 0);
+//                            container.setLayoutParams(params);
+//                        }
+//                        break;
+//                    case MotionEvent.ACTION_UP:
+//                    case MotionEvent.ACTION_CANCEL:
+//                        pointerId = -1;
+//                        break;
+//                }
+//                return true;
+//            }
+//        });
 
-        setContentView(R.layout.main);
-
-        circuitDesignerMenu = new CircuitDesignerMenu((MainActivity) this);
-        circuitDesigner = new CircuitDesigner(findViewById(R.id.circuit_design_canvas), circuitDesignerMenu, new CircuitElementActivator(this));
-
-        showCircuitMenu(R.id.circuit_menu);
-
-        findViewById(R.id.results_handle).setOnTouchListener(new View.OnTouchListener()
-        {
-            private View container = findViewById(R.id.results_container);
-            private LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) container.getLayoutParams();
-            private float leftMargin;
-            private float downX;
-            private int pointerId = -1;
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent)
-            {
-                switch (motionEvent.getActionMasked())
-                {
-                    case MotionEvent.ACTION_DOWN:
-                        pointerId = motionEvent.getPointerId(0);
-                        downX = motionEvent.getRawX();
-                        leftMargin = params.leftMargin;
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        if (motionEvent.getPointerId(0) == pointerId)
-                        {
-                            params.setMargins((int) (leftMargin + motionEvent.getRawX() - downX), 0, 0, 0);
-                            container.setLayoutParams(params);
-                        }
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_CANCEL:
-                        pointerId = -1;
-                        break;
-                }
-                return true;
-            }
-        });
-
-//        testGraph();
+        testGraph();
     }
 
     private void testGraph()
@@ -77,7 +78,7 @@ public class MainActivity extends Activity
 
         //create sin plot
         Plot sin = new Plot();
-        for (double x = 0; x <= 100; x += 0.1)
+        for (double x = -50; x <= 50; x += 0.1)
         {
             sin.addPoint(new Point(x, Math.sin(x)));
         }
@@ -91,14 +92,14 @@ public class MainActivity extends Activity
         Graph g = (Graph) findViewById(R.id.graph);
 
         g.beginEdit();
-        //  g.addPlot(sin, Color.rgb(200, 10, 40));
-        g.addPlot(log, Color.rgb(10, 200, 80));
+        g.addPlot(sin, Color.rgb(200, 10, 40));
+//        g.addPlot(log, Color.rgb(10, 200, 80));
 
         g.setXRange(-10, 10);
-        g.setYRange(0.001, 2000);
+        g.setYRange(-2, 2);
 
         //  g.setXLogScale(true);
-        g.setYLogScale(true);
+//        g.setYLogScale(true);
 
         g.endEdit();
     }
