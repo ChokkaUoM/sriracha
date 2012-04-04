@@ -362,7 +362,8 @@ public class Graph extends FrameLayout {
         @Override
         protected void onSingleFingerDown(float x, float y)
         {
-            updatePreview(x, y);
+//            updatePreview(x, y);
+            onScale(1.1f, 1.1f, getWidth()/2, getHeight()/2);
         }
 
         @Override
@@ -429,8 +430,8 @@ public class Graph extends FrameLayout {
 
             double xMin = xAxis.coordinateFromPixel((float) (xCenter - xFactor * xMinSize));
             double xMax = xAxis.coordinateFromPixel((float) (xCenter + xFactor * xMaxSize));
-            double yMin = yAxis.coordinateFromPixel((float) (yCenter - yFactor * yMinSize));
-            double yMax = yAxis.coordinateFromPixel((float) (yCenter + yFactor * yMaxSize));
+            double yMin = yAxis.coordinateFromPixel((float) (yCenter + yFactor * yMinSize));
+            double yMax = yAxis.coordinateFromPixel((float) (yCenter - yFactor * yMaxSize));
 
             if(xFactor != 1)xAxis.setRange(xMin, xMax);
             if(yFactor != 1)yAxis.setRange(yMin, yMax);
