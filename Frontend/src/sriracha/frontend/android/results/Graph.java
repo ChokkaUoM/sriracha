@@ -362,8 +362,7 @@ public class Graph extends FrameLayout {
         @Override
         protected void onSingleFingerDown(float x, float y)
         {
-//            updatePreview(x, y);
-            onScale(1.1f, 1.1f, getWidth()/2, getHeight()/2);
+            updatePreview(x, y);
         }
 
         @Override
