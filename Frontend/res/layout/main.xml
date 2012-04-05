@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="fill_parent" android:layout_height="fill_parent"
-              android:orientation="horizontal"
-              android:background="#003">
-    <RelativeLayout android:layout_width="150dp" android:layout_height="fill_parent"
-                    android:id="@+id/circuit_menu_container">
+              android:weightSum="100"
+              android:orientation="horizontal">
+    <RelativeLayout android:layout_width="0dp" android:layout_height="fill_parent"
+                    android:layout_weight="15"
+                    android:id="@+id/circuit_menu_container"
+                    android:background="#003">
         <include android:id="@+id/circuit_menu" layout="@layout/circuit_menu"/>
         <include android:id="@+id/sources_and_ground" layout="@layout/sources_and_ground"/>
         <include android:id="@+id/rlc" layout="@layout/rlc"/>
         <include android:id="@+id/element_properties" layout="@layout/element_properties"/>
         <include android:id="@+id/wire_properties" layout="@layout/wire_properties"/>
     </RelativeLayout>
-    <sriracha.frontend.android.CircuitDesignerCanvas android:layout_width="fill_parent"
+    <sriracha.frontend.android.CircuitDesignerCanvas android:layout_width="0dip"
                                                      android:layout_height="fill_parent"
+                                                     android:layout_weight="85"
                                                      android:background="#DDD"
                                                      android:id="@+id/circuit_design_canvas">
 
@@ -54,12 +57,13 @@
                    android:onClick="wrenchMenuOnClick"
                 />
     </sriracha.frontend.android.CircuitDesignerCanvas>
-    <RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
-                    android:id="@+id/results_container"
-                    android:layout_marginLeft="-30dip">
-        <RelativeLayout android:layout_width="30dip" android:layout_height="fill_parent"
-                        android:id="@+id/results_handle"
-                        android:background="#C0C"/>
-        <include layout="@layout/results_testing" android:layout_toRightOf="@id/results_handle"/>
-    </RelativeLayout>
+    <RelativeLayout android:layout_width="0dp" android:layout_height="fill_parent"
+                    android:layout_weight="15"
+                    android:id="@+id/results_menu"
+                    android:background="#003"/>
+    <FrameLayout android:layout_width="0dip"
+                 android:layout_height="fill_parent"
+                 android:layout_weight="85">
+        <include layout="@layout/results_testing"/>
+    </FrameLayout>
 </LinearLayout>

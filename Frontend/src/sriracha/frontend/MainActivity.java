@@ -3,11 +3,11 @@ package sriracha.frontend;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.*;
+import android.widget.*;
 import sriracha.frontend.android.CircuitDesigner;
 import sriracha.frontend.android.CircuitDesignerMenu;
+import sriracha.frontend.android.model.*;
 import sriracha.frontend.android.results.Graph;
 import sriracha.frontend.resultdata.Plot;
 import sriracha.frontend.resultdata.Point;
@@ -27,48 +27,15 @@ public class MainActivity extends Activity
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//
-//        setContentView(R.layout.main);
-//
-//        circuitDesignerMenu = new CircuitDesignerMenu((MainActivity) this);
-//        circuitDesigner = new CircuitDesigner(findViewById(R.id.circuit_design_canvas), circuitDesignerMenu, new CircuitElementActivator(this));
-//
-//        showCircuitMenu(R.id.circuit_menu);
-//
-//        findViewById(R.id.results_handle).setOnTouchListener(new View.OnTouchListener()
-//        {
-//            private View container = findViewById(R.id.results_container);
-//            private LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) container.getLayoutParams();
-//            private float leftMargin;
-//            private float downX;
-//            private int pointerId = -1;
-//            @Override
-//            public boolean onTouch(View view, MotionEvent motionEvent)
-//            {
-//                switch (motionEvent.getActionMasked())
-//                {
-//                    case MotionEvent.ACTION_DOWN:
-//                        pointerId = motionEvent.getPointerId(0);
-//                        downX = motionEvent.getRawX();
-//                        leftMargin = params.leftMargin;
-//                        break;
-//                    case MotionEvent.ACTION_MOVE:
-//                        if (motionEvent.getPointerId(0) == pointerId)
-//                        {
-//                            params.setMargins((int) (leftMargin + motionEvent.getRawX() - downX), 0, 0, 0);
-//                            container.setLayoutParams(params);
-//                        }
-//                        break;
-//                    case MotionEvent.ACTION_UP:
-//                    case MotionEvent.ACTION_CANCEL:
-//                        pointerId = -1;
-//                        break;
-//                }
-//                return true;
-//            }
-//        });
 
-        testGraph();
+        setContentView(R.layout.main);
+
+        circuitDesignerMenu = new CircuitDesignerMenu((MainActivity) this);
+        circuitDesigner = new CircuitDesigner(findViewById(R.id.circuit_design_canvas), circuitDesignerMenu, new CircuitElementActivator(this));
+
+        showCircuitMenu(R.id.circuit_menu);
+
+        //testGraph();
     }
 
     private void testGraph()
