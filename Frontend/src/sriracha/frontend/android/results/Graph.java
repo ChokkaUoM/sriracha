@@ -23,12 +23,12 @@ public class Graph extends FrameLayout {
     private Axis yAxis;
 
     private Axis xAxis;
-    
+
     private TextView previewBox;
 
     private Point previewPoint;
     /**
-     * number of dips from the nearest point where 
+     * number of dips from the nearest point where
      * a touch is considered to be requesting a preview
      */
     private double previewThreshold = 20;
@@ -57,6 +57,7 @@ public class Graph extends FrameLayout {
 
     /**
      * Measures the graph, makes 2 passes on Axes in order to determine relative placement
+     *
      * @param widthMeasureSpec
      * @param heightMeasureSpec
      */
@@ -97,7 +98,7 @@ public class Graph extends FrameLayout {
         //get estimates for desired axis intersect positions.
         float x0 = xAxis.pixelsFromCoordinate(0);
         float y0 = yAxis.pixelsFromCoordinate(0);
-        
+
         //if the y axis will end up aligned to the start or end then it is considered snapped and we
         //reduce the range of the xAxis so it no longer overlaps with the yAxis
         if (x0 < yAxisOffset || x0 > width - yAxisOffset) {
@@ -121,8 +122,7 @@ public class Graph extends FrameLayout {
 
         //measure all children with internal spec including axes since they their pixel 
         // ranges might have changed as a result of snapping
-        for(int i =0; i< getChildCount(); i++)
-        {
+        for (int i = 0; i < getChildCount(); i++) {
             getChildAt(i).measure(internalWidthSpec, internalHeightSpec);
         }
 
@@ -130,11 +130,10 @@ public class Graph extends FrameLayout {
         //graph takes all initial available size.
         setMeasuredDimension(width, height);
     }
-    
-    private int[] internalEdges(int width, int height)
-    {
-        int yAxisOffset = yAxis.getMeasuredWidth() - Axis.lineSpace /2 + 1;
-        int xAxisOffset = xAxis.getMeasuredHeight() - Axis.lineSpace /2 + 1;
+
+    private int[] internalEdges(int width, int height) {
+        int yAxisOffset = yAxis.getMeasuredWidth() - Axis.lineSpace / 2 + 1;
+        int xAxisOffset = xAxis.getMeasuredHeight() - Axis.lineSpace / 2 + 1;
 
         // the pixels where x and y are = 0 (for placing the paired axis)
         float x0 = xAxis.pixelsFromCoordinate(0);
@@ -147,7 +146,7 @@ public class Graph extends FrameLayout {
         int iRight = x0 > yAxisOffset && xAxis.getMeasuredWidth() < width ? width - yAxisOffset : width;
         int iTop = y0 < xAxisOffset ? xAxisOffset : 0;
         int iBottom = y0 > xAxisOffset && yAxis.getMeasuredHeight() < height ? height - xAxisOffset : height;
-        
+
         return new int[]{iLeft, iTop, iRight, iBottom};
     }
 
@@ -155,8 +154,8 @@ public class Graph extends FrameLayout {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         int width = right - left;
         int height = bottom - top;
-        
-        int []edges = internalEdges(width, height);
+
+        int[] edges = internalEdges(width, height);
 
         int yleft = edges[0] != 0 ? 0 : (int) yAxis.getEdgeOffset();
 
@@ -164,31 +163,30 @@ public class Graph extends FrameLayout {
 
         int xtop = edges[1] == 0 ? (int) xAxis.getEdgeOffset() : 0;
 
-            xAxis.layout(edges[0], xtop, edges[2], xtop + xAxis.getMeasuredHeight());
+        xAxis.layout(edges[0], xtop, edges[2], xtop + xAxis.getMeasuredHeight());
 
         for (PlotView pv : plots) {
             pv.layout(edges[0], edges[1], edges[2], edges[3]);
         }
-        
+
         //layout preview if applicable
-        if(previewBox.getVisibility() == VISIBLE)
-        {
+        if (previewBox.getVisibility() == VISIBLE) {
             int iWidth = edges[2] - edges[0];
             int mWidth = previewBox.getMeasuredWidth();
             int mHeight = previewBox.getMeasuredHeight();
-            int pLeft = edges[0] + (iWidth - mWidth)/2;
+            int pLeft = edges[0] + (iWidth - mWidth) / 2;
             int pTop = edges[3] - (20 + mHeight);
             previewBox.layout(pLeft, pTop, pLeft + mWidth, pTop + mHeight);
-            
+
         }
-        
+
 
     }
 
     private void init() {
-        
+
         setWillNotDraw(false);
-        
+
         yAxis = new Axis(getContext());
         addView(yAxis, new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
         yAxis.setOrientation(LinearLayout.VERTICAL);
@@ -209,87 +207,75 @@ public class Graph extends FrameLayout {
 
     /**
      * Takes into account internal edges and is only valid after layout
+     *
      * @return
      */
-    public Point pixelsToCoordinate(Point pixel)
-    {
-        
+    public Point pixelsToCoordinate(Point pixel) {
+
         int internalEdges[] = internalEdges(getWidth(), getHeight());
-        
+
         double cx = xAxis.coordinateFromPixel((float) (pixel.getX() - internalEdges[0]));
         double cy = yAxis.coordinateFromPixel((float) (pixel.getY() - internalEdges[1]));
-        
+
         return new Point(cx, cy);
-        
+
     }
-    
-    public Point pixelsFromCoordinate(Point coord)
-    {
+
+    public Point pixelsFromCoordinate(Point coord) {
         int internalEdges[] = internalEdges(getWidth(), getHeight());
-        
+
         float px = xAxis.pixelsFromCoordinate(coord.getX());
         float py = yAxis.pixelsFromCoordinate(coord.getY());
-        
+
         return new Point(px + internalEdges[0], py + internalEdges[1]);
     }
 
-    private boolean updatePreview(float x, float y)
-    {
-        
+    private boolean updatePreview(float x, float y) {
+
         Point coordinates = pixelsToCoordinate(new Point(x, y));
 
         ArrayList<Point> closestPoints = new ArrayList<Point>();
-        
-        for(PlotView plot : plots)
-        {
-            
+
+        for (PlotView plot : plots) {
+
             Point nearest = plot.findNearestPoint(coordinates.getX(), coordinates.getY());
-            if (nearest != null)
-            {
+            if (nearest != null) {
                 closestPoints.add(nearest);
             }
-            
+
         }
         boolean wasVisible = previewPoint != null;
         previewPoint = null;
         double minDistance = Double.POSITIVE_INFINITY;
-        for(Point p : closestPoints)
-        {
+        for (Point p : closestPoints) {
             Point pix = pixelsFromCoordinate(p);
             double dipDistance = Math.sqrt(Math.pow(pix.getX() - x, 2) + Math.pow(pix.getY() - y, 2));
-            if(dipDistance < minDistance && dipDistance < previewThreshold)
-            {
+            if (dipDistance < minDistance && dipDistance < previewThreshold) {
                 previewPoint = p;
             }
         }
-        
-        
-        if(previewPoint != null)
-        {
+
+
+        if (previewPoint != null) {
             previewBox.setVisibility(VISIBLE);
             previewBox.setText(previewFormat(previewPoint));
-        }
-        else
-        {
+        } else {
             previewBox.setVisibility(INVISIBLE);
         }
-        
+
         boolean changed = previewPoint != null || wasVisible;
-        
-        if(changed)
-        {
+
+        if (changed) {
             requestLayout();
             invalidate();
         }
 
-        
+
         return changed;
     }
-    
-    private String numFormat(double val)
-    {
-        if ((val <= 1000 && val >= -1000 && Math.abs(val) > 1. / 1000.) || val == 0)
-        {
+
+    private String numFormat(double val) {
+        if ((val <= 1000 && val >= -1000 && Math.abs(val) > 1. / 1000.) || val == 0) {
             DecimalFormat format = new DecimalFormat("#.##");
             return format.format(val);
         }
@@ -297,24 +283,35 @@ public class Graph extends FrameLayout {
         DecimalFormat format = new DecimalFormat("#.##E00");
         return format.format(val);
     }
-    
-    private String previewFormat(Point p){
+
+    private String previewFormat(Point p) {
         return "(" + numFormat(p.getX()) + ", " + numFormat(p.getY()) + ")";
     }
 
 
     @Override
-    protected void onDraw(Canvas canvas)
-    {
-        super.onDraw(canvas);    
-        
-        
-        
-        if(previewBox.getVisibility() == VISIBLE)
-        {
+    protected void onDraw(Canvas canvas) {
+        Paint snapPaint = new Paint();
+        snapPaint.setARGB(255, 100, 100, 100);
+        if (yAxis.getLeft() == 0) {
+            canvas.drawRect(0, 0, yAxis.getDrawnAxisOffset(), getHeight(), snapPaint);
+        } else if (yAxis.getRight() == getWidth()) {
+            canvas.drawRect(yAxis.getDrawnAxisOffset(), 0, getWidth(), getHeight(), snapPaint);
+        }
+
+        if (xAxis.getTop() == 0) {
+            canvas.drawRect(0, 0, getWidth(), xAxis.getDrawnAxisOffset(), snapPaint);
+        } else if (xAxis.getBottom() == getHeight()) {
+            canvas.drawRect(0, xAxis.getDrawnAxisOffset(), getWidth(), getHeight(), snapPaint);
+        }
+
+
+        super.onDraw(canvas);
+
+
+        if (previewBox.getVisibility() == VISIBLE) {
             int dashlength = 10;
-            
-            
+
             int edges[] = internalEdges(getWidth(), getHeight());
             //draw dashed lines to axes
             int xp1 = yAxis.getDrawnAxisOffset();
@@ -328,46 +325,41 @@ public class Graph extends FrameLayout {
             Paint p = new Paint();
             p.setStrokeWidth(1.8f);
             p.setARGB(255, 180, 180, 180);
-            
-            
-            for(int i = startx; i < endx; i+= 2*dashlength)
-            {
+
+
+            for (int i = startx; i < endx; i += 2 * dashlength) {
                 canvas.drawLine(i, yp2, Math.min(i + dashlength, endx), yp2, p);
             }
 
-            for(int i = starty; i < endy; i+= 2*dashlength)
-            {
+            for (int i = starty; i < endy; i += 2 * dashlength) {
                 canvas.drawLine(xp2, i, xp2, Math.min(i + dashlength, endy), p);
             }
+
             p.setStrokeWidth(2.5f);
             p.setStyle(Paint.Style.STROKE);
             canvas.drawCircle(xp2, yp2, 5f, p);
 
 
-
             //redraw preview box at the end so that it is on top of lines
             previewBox.bringToFront();
         }
-        
-        
+
+
     }
 
     private class GraphGestureListener extends EpicTouchListener {
 
         @Override
-        protected void onSingleFingerDown(float x, float y)
-        {
+        protected void onSingleFingerDown(float x, float y) {
             updatePreview(x, y);
         }
 
         @Override
-        public boolean onSingleFingerMove(float distanceX, float distanceY, float finalX, float finalY)
-        {
+        public boolean onSingleFingerMove(float distanceX, float distanceY, float finalX, float finalY) {
             return updatePreview(finalX, finalY);
         }
-        
-        
-        
+
+
         @Override
         public boolean onTwoFingerSwipe(float distanceX, float distanceY) {
 
@@ -377,18 +369,16 @@ public class Graph extends FrameLayout {
 
             double ymax = yAxis.coordinateFromPixel(-distanceY);
             double xmax = xAxis.coordinateFromPixel(xAxis.getWidth() - distanceX);
-            
+
             //little hack to make sure there is no scaling going on during panning of a linear axis
-            if(xAxis.getScaleType() == Axis.LINEARSCALE)
-            {
+            if (xAxis.getScaleType() == Axis.LINEARSCALE) {
                 double minshift = xmin - xAxis.getMinValue();
                 double maxshift = xmax - xAxis.getMaxValue();
                 double avg = (minshift + maxshift) / 2;
                 xmin = xAxis.getMinValue() + avg;
                 xmax = xAxis.getMaxValue() + avg;
             }
-            if(yAxis.getScaleType() == Axis.LINEARSCALE)
-            {
+            if (yAxis.getScaleType() == Axis.LINEARSCALE) {
                 double minshift = ymin - yAxis.getMinValue();
                 double maxshift = ymax - yAxis.getMaxValue();
                 double avg = (minshift + maxshift) / 2;
@@ -400,7 +390,7 @@ public class Graph extends FrameLayout {
 
             xAxis.setRange(xmin, xmax);
             yAxis.setRange(ymin, ymax);
-            
+
             requestLayout();
             invalidate();
             return true;
@@ -410,16 +400,16 @@ public class Graph extends FrameLayout {
         @Override
         protected boolean onScale(float xFactor, float yFactor, float xCenter, float yCenter) {
 
-            int []edges = internalEdges(getWidth(), getHeight());
+            int[] edges = internalEdges(getWidth(), getHeight());
             xCenter -= edges[0];
             yCenter -= edges[1];
-            if(xCenter < 0) xCenter = 0;
-            if(yCenter < 0) yCenter = 0;
+            if (xCenter < 0) xCenter = 0;
+            if (yCenter < 0) yCenter = 0;
 
 
-            double xMinSize = xCenter/xAxis.getWidth() * xAxis.getWidth();
+            double xMinSize = xCenter / xAxis.getWidth() * xAxis.getWidth();
             double xMaxSize = xAxis.getWidth() - xMinSize;
-            double yMaxSize = yCenter/yAxis.getHeight() * yAxis.getHeight();
+            double yMaxSize = yCenter / yAxis.getHeight() * yAxis.getHeight();
             double yMinSize = yAxis.getHeight() - yMaxSize;
 
             double xMin = xAxis.coordinateFromPixel((float) (xCenter - xFactor * xMinSize));
@@ -427,8 +417,8 @@ public class Graph extends FrameLayout {
             double yMin = yAxis.coordinateFromPixel((float) (yCenter + yFactor * yMinSize));
             double yMax = yAxis.coordinateFromPixel((float) (yCenter - yFactor * yMaxSize));
 
-            if(xFactor != 1)xAxis.setRange(xMin, xMax);
-            if(yFactor != 1)yAxis.setRange(yMin, yMax);
+            if (xFactor != 1) xAxis.setRange(xMin, xMax);
+            if (yFactor != 1) yAxis.setRange(yMin, yMax);
 
             requestLayout();
             invalidate();
@@ -437,13 +427,11 @@ public class Graph extends FrameLayout {
         }
     }
 
-    public void beginEdit()
-    {
+    public void beginEdit() {
         deferInvalidate = true;
     }
 
-    public void endEdit()
-    {
+    public void endEdit() {
         deferInvalidate = false;
         requestLayout();
         invalidate();
@@ -462,9 +450,8 @@ public class Graph extends FrameLayout {
         plotView.setFunc(f);
         plots.add(plotView);
         addView(plotView);
-        
-        if(!deferInvalidate)
-        {
+
+        if (!deferInvalidate) {
             requestLayout();
             invalidate();
         }
@@ -479,59 +466,51 @@ public class Graph extends FrameLayout {
     }
 
 
-    public float[] pixelsFromInternalCoordinates(double x, double y) {
+    public float[] internalPixelsFromCoordinates(double x, double y) {
         return new float[]{xAxis.pixelsFromCoordinate(x), yAxis.pixelsFromCoordinate(y)};
     }
 
-    
-    public void setXLogScale(boolean islogscale)
-    {
-        int newscale = islogscale? Axis.LOGSCALE : Axis.LINEARSCALE;
-        if(xAxis.getScaleType() != newscale)
-        {
+
+    public void setXLogScale(boolean islogscale) {
+        int newscale = islogscale ? Axis.LOGSCALE : Axis.LINEARSCALE;
+        if (xAxis.getScaleType() != newscale) {
             xAxis.setScaleType(newscale);
-            if(!deferInvalidate)
-            {
+            if (!deferInvalidate) {
                 requestLayout();
                 invalidate();
             }
-            
+
         }
     }
 
-    public void setYLogScale(boolean islogscale)
-    {
-        int newscale = islogscale? Axis.LOGSCALE : Axis.LINEARSCALE;
-        if(yAxis.getScaleType() != newscale)
-        {
+    public void setYLogScale(boolean islogscale) {
+        int newscale = islogscale ? Axis.LOGSCALE : Axis.LINEARSCALE;
+        if (yAxis.getScaleType() != newscale) {
             yAxis.setScaleType(newscale);
-            if(!deferInvalidate)
-            {
+            if (!deferInvalidate) {
                 requestLayout();
                 invalidate();
             }
-            
+
         }
     }
 
     public void setYRange(double min, double max) {
         yAxis.setRange(min, max);
-        if(!deferInvalidate)
-        {
+        if (!deferInvalidate) {
             requestLayout();
             invalidate();
         }
-        
+
     }
 
     public void setXRange(double min, double max) {
         xAxis.setRange(min, max);
-        if(!deferInvalidate)
-        {
+        if (!deferInvalidate) {
             requestLayout();
             invalidate();
         }
-        
+
     }
 
     public double getYmin() {

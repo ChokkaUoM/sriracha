@@ -21,7 +21,7 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
      * 0 -> only perfectly parallel 2 finger motions are considered a swipe gesture
      * 1 -> any 2 finger motion is a swipe gesture
      */
-    protected double swipeTolerance = 0.12;
+    protected double swipeTolerance = 0.3;
 
     private ArrayList<Finger> activeFingers;
 
@@ -173,7 +173,26 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
                         return consumed;
                     }
                     case 3: {//todo: extend to more fingers
-                        break;
+
+                        Finger f1 = activeFingers.get(0);
+                        Finger f2 = activeFingers.get(1);
+                        Finger f3 = activeFingers.get(2);
+
+                        double a1 = f1.angle();
+                        double a2 = f2.angle();
+                        double a3 = f3.angle();
+
+                        double max = Math.max(a1, Math.max(a2, a3));
+                        double min = Math.min(a1, Math.min(a2, a3));
+
+                        boolean isSwipe = centerRad(max - min) <= swipeTolerance * Math.PI;
+                        boolean consumed = false;
+                        if (isSwipe) {
+                            consumed |= onThreeFingerSwipe((f1.distX() + f2.distX() + f3.distX()) / 3,
+                                    (f1.distY() + f2.distY() + f3.distY()) / 3);
+                        }
+
+                        return consumed;
                     }
 
                 }
@@ -255,6 +274,18 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
      * @return true if the the event should be consumed ie not passed on.
      */
     protected boolean onTwoFingerSwipe(float dX, float dY) {
+        return false;
+    }
+
+    /**
+     * Called whenever there are 3 fingers on the screen and that they have moved
+     * roughly in parallel
+     *
+     * @param dX average X distance over all fingers
+     * @param dY average Y distance over all fingers
+     * @return true if the the event should be consumed ie not passed on.
+     */
+    protected boolean onThreeFingerSwipe(float dX, float dY) {
         return false;
     }
 

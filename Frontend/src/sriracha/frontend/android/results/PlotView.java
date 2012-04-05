@@ -77,10 +77,11 @@ public class PlotView extends View {
 
         Point previous = index == 0 ? null : plot.getPoint(index - 1), p = null;
 
-        while (index < plot.size() && plot.getPoint(index).getX() <= graph.getXmax()) {
+        while (index < plot.size() && (index == 0 || plot.getPoint(index - 1).getX() <= graph.getXmax())) {
             p = plot.getPoint(index);
 
             double pX = p.getX(), pY = func == null ? p.getY() : func.evaluate(p.getY());
+
 
             if (previous == null || ((pY < graph.getYmin() || pY > graph.getYmax()) && (previous.getY() < graph.getYmin() || previous.getY() > graph.getYmax()))) {
                 previous = p;
@@ -91,8 +92,8 @@ public class PlotView extends View {
 
             double prevX = previous.getX(), prevY = func == null ? previous.getY() : func.evaluate(previous.getY());
 
-            float[] start = graph.pixelsFromInternalCoordinates(prevX, prevY);
-            float[] end = graph.pixelsFromInternalCoordinates(pX, pY);
+            float[] start = graph.internalPixelsFromCoordinates(prevX, prevY);
+            float[] end = graph.internalPixelsFromCoordinates(pX, pY);
 
 
             //don't draw points that are really close together

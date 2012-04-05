@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="fill_parent" android:layout_height="fill_parent"
-              android:weightSum="100"
-              android:orientation="horizontal">
+<sriracha.frontend.android.MainLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                      android:layout_width="fill_parent" android:layout_height="fill_parent"
+                                      android:weightSum="100"
+                                      android:orientation="horizontal">
     <RelativeLayout android:layout_width="0dp" android:layout_height="fill_parent"
                     android:layout_weight="15"
                     android:id="@+id/circuit_menu_container"
@@ -60,10 +60,15 @@
     <RelativeLayout android:layout_width="0dp" android:layout_height="fill_parent"
                     android:layout_weight="15"
                     android:id="@+id/results_menu"
-                    android:background="#003"/>
-    <FrameLayout android:layout_width="0dip"
-                 android:layout_height="fill_parent"
-                 android:layout_weight="85">
-        <include layout="@layout/results_testing"/>
-    </FrameLayout>
-</LinearLayout>
+                    android:background="#003">
+        <TextView android:layout_height="fill_parent"
+                  android:layout_width="fill_parent"
+                  android:text="Some Text"/>
+    </RelativeLayout>
+    <sriracha.frontend.android.results.Graph
+            android:id="@+id/graph"
+            android:layout_width="0dip"
+            android:layout_height="fill_parent"
+            android:layout_weight="85">
+    </sriracha.frontend.android.results.Graph>
+</sriracha.frontend.android.MainLayout>
