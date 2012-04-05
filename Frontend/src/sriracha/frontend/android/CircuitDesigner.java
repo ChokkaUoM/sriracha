@@ -12,7 +12,6 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         CircuitElementView.OnMoveListener
 {
     public static final int GRID_SIZE = 40;
-    private static final int INVALID_POINTER_ID = -1;
 
     public enum CursorState
     {
@@ -27,12 +26,6 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     private CursorState cursor;
     private CanvasState canvasState = CanvasState.IDLE;
 
-    private int activePointerId = INVALID_POINTER_ID;
-    private float touchDownX;
-    private float touchDownY;
-    private WireSegment selectedSegment;
-    private float selectedSegmentStart;
-
     private int selectedItemId;
     private CircuitElementView selectedElement;
 
@@ -41,6 +34,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     private CircuitElementManager elementManager;
 
     private GestureDetector gestureDetector;
+    private EpicTouchListener epicTouchListener;
     private ViewGroup canvasView;
 
     private ArrayList<CircuitElementView> elements;
@@ -54,6 +48,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         elementManager = new CircuitElementManager();
 
         gestureDetector = new GestureDetector(this);
+        epicTouchListener = new TouchListener();
         this.canvasView = (ViewGroup) canvasView;
         this.canvasView.setOnTouchListener(this);
 
@@ -117,62 +112,10 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     public boolean onTouch(View view, MotionEvent motionEvent)
     {
         gestureDetector.onTouchEvent(motionEvent);
-
-        switch (motionEvent.getAction() & MotionEvent.ACTION_MASK)
-        {
-            case MotionEvent.ACTION_DOWN:
-            {
-                selectedSegment = wireManager.getSegmentByPosition(motionEvent.getX(), motionEvent.getY());
-                if (selectedSegment == null)
-                    return true;
-
-                boolean canMoveVertically = !selectedSegment.isVertical();
-                if (canMoveVertically)
-                    selectedSegmentStart = selectedSegment.getStart().getY();
-                else
-                    selectedSegmentStart = selectedSegment.getStart().getX();
-
-                touchDownX = motionEvent.getX();
-                touchDownY = motionEvent.getY();
-
-                // Save the ID of this pointer
-                activePointerId = motionEvent.getPointerId(0);
-                break;
-            }
-
-            case MotionEvent.ACTION_MOVE:
-            {
-                if (activePointerId == INVALID_POINTER_ID)
-                    break;
-
-                // Find the index of the active pointer and fetch its position
-                int pointerIndex = motionEvent.findPointerIndex(activePointerId);
-
-                boolean canMoveHorizontally = selectedSegment.isVertical();
-                if (canMoveHorizontally)
-                {
-                    int deltaX = snap(motionEvent.getX(pointerIndex) - touchDownX);
-                    selectedSegment.moveX((int) selectedSegmentStart + deltaX);
-                }
-                else
-                {
-                    int deltaY = snap(motionEvent.getY(pointerIndex) - touchDownY);
-                    selectedSegment.moveY((int) selectedSegmentStart + deltaY);
-                }
-                selectedSegment.invalidate();
-
-                break;
-            }
-
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL:
-            case MotionEvent.ACTION_POINTER_UP:
-                activePointerId = INVALID_POINTER_ID;
-                wireManager.consolidateIntersections();
-                break;
-        }
-
-        return true;
+        boolean toReturn = epicTouchListener.onTouch(view, motionEvent);
+        if (motionEvent.getActionMasked() == MotionEvent.ACTION_UP)
+            wireManager.consolidateIntersections();
+        return toReturn;
     }
 
     @Override
@@ -426,5 +369,28 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     public static int snap(float coord)
     {
         return (int) (coord / GRID_SIZE + 0.5f) * GRID_SIZE;
+    }
+
+    private class TouchListener extends EpicTouchListener
+    {
+        @Override
+        protected boolean onSingleFingerMove(float dX, float dY, float finalX, float finalY)
+        {
+            WireSegment selectedSegment = wireManager.getSegmentByPosition(finalX, finalY);
+            if (selectedSegment == null)
+                return false;
+
+            boolean canMoveHorizontally = selectedSegment.isVertical();
+            if (canMoveHorizontally)
+            {
+                selectedSegment.moveX(snap(finalX));
+            }
+            else
+            {
+                selectedSegment.moveY(snap(finalY));
+            }
+            selectedSegment.invalidate();
+            return true;
+        }
     }
 }
