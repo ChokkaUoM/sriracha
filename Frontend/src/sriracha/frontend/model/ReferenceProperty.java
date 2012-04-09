@@ -14,17 +14,17 @@ abstract public class ReferenceProperty extends Property
         this.elementManager = elementManager;
     }
 
-    public ArrayList<String> getElementsList()
+    public ArrayList<CircuitElement> getElementsList()
     {
-        ArrayList<String> names = new ArrayList<String>();
+        ArrayList<CircuitElement> elements = new ArrayList<CircuitElement>();
         for (CircuitElement element : elementManager.getElements())
         {
             if (element instanceof VoltageSource || element instanceof CurrentSource
                     || element instanceof DependentVoltageSource || element instanceof DependentCurrentSource)
             {
-                names.add(element.getName());
+                elements.add(element);
             }
         }
-        return names;
+        return elements;
     }
 }

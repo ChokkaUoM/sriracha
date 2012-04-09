@@ -8,6 +8,8 @@ import sriracha.frontend.R;
 import sriracha.frontend.android.model.*;
 import sriracha.frontend.model.*;
 
+import java.util.*;
+
 public class ElementPropertiesView extends LinearLayout
 {
     public ElementPropertiesView(Context context)
@@ -59,7 +61,7 @@ public class ElementPropertiesView extends LinearLayout
         });
     }
 
-    public void showPropertiesFor(CircuitElementView circuitElementView)
+    public void showPropertiesFor(CircuitElementView circuitElementView, final CircuitDesigner circuitDesigner)
     {
         showNameAndType(circuitElementView);
 
@@ -74,34 +76,28 @@ public class ElementPropertiesView extends LinearLayout
                 final View scalarPropertyView = LayoutInflater.from(getContext())
                         .inflate(R.layout.element_scalar_property, this, false);
 
-                final TextView propertyName = (TextView) scalarPropertyView.findViewById(R.id.property_name);
-                final TextView propertyUnit = (TextView) scalarPropertyView.findViewById(R.id.property_unit);
-                final ListView unitsListView = (ListView) scalarPropertyView.findViewById(R.id.property_unit_list);
-                final EditText propertyValue = (EditText) scalarPropertyView.findViewById(R.id.property_value);
+                final TextView propertyName = (TextView) scalarPropertyView.findViewById(R.id.scalar_property_name);
+                final EditText propertyValue = (EditText) scalarPropertyView.findViewById(R.id.scalar_property_value);
+                final Spinner propertyUnits = (Spinner) scalarPropertyView.findViewById(R.id.scalar_property_unit_list);
 
                 propertiesView.addView(scalarPropertyView);
 
                 propertyName.setText(scalarProperty.getName());
-                propertyUnit.setText(scalarProperty.getUnit());
 
-                unitsListView.setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, scalarProperty.getUnitsList()));
-                unitsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, scalarProperty.getUnitsList());
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                propertyUnits.setAdapter(adapter);
+                propertyUnits.setSelection(Arrays.asList(scalarProperty.getUnitsList()).indexOf(scalarProperty.getUnit()));
+                propertyUnits.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
                 {
                     @Override
-                    public void onItemClick(AdapterView<?> adapterView, View textView, int i, long l)
+                    public void onItemSelected(AdapterView<?> adapterView, View textView, int i, long l)
                     {
-                        adapterView.setVisibility(GONE);
                         scalarProperty.setUnit(((TextView) textView).getText().toString());
-                        propertyUnit.setText(scalarProperty.getUnit());
                     }
-                });
-
-                propertyUnit.setOnClickListener(new OnClickListener()
-                {
                     @Override
-                    public void onClick(View view)
+                    public void onNothingSelected(AdapterView<?> adapterView)
                     {
-                        unitsListView.setVisibility(VISIBLE);
                     }
                 });
 
@@ -132,31 +128,36 @@ public class ElementPropertiesView extends LinearLayout
                 final View referencePropertyView = LayoutInflater.from(getContext())
                         .inflate(R.layout.element_reference_property, this, false);
 
-                final TextView propertyValue = (TextView) referencePropertyView.findViewById(R.id.property_value);
-                final ListView valueListView = (ListView) referencePropertyView.findViewById(R.id.property_value_list);
+                final TextView value = (TextView) referencePropertyView.findViewById(R.id.property_value);
 
                 propertiesView.addView(referencePropertyView);
 
-                propertyValue.setText(referenceProperty.getValue());
-
-                valueListView.setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, referenceProperty.getElementsList()));
-                valueListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
-                {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View textView, int i, long l)
-                    {
-                        adapterView.setVisibility(GONE);
-                        referenceProperty._trySetValue(((TextView) textView).getText().toString());
-                        propertyValue.setText(referenceProperty.getValue());
-                    }
-                });
-
-                propertyValue.setOnClickListener(new OnClickListener()
+                value.setText(referenceProperty.getValue());
+                value.setOnClickListener(new OnClickListener()
                 {
                     @Override
                     public void onClick(View view)
                     {
-                        valueListView.setVisibility(VISIBLE);
+                        ArrayList<CircuitElementView> elementViews = new ArrayList<CircuitElementView>();
+                        ArrayList<CircuitElement> elements = referenceProperty.getElementsList();
+                        for (CircuitElementView elementView : circuitDesigner.getElements())
+                        {
+                            if (elements.contains(elementView.getElement()))
+                            {
+                                elementViews.add(elementView);
+                            }
+                        }
+
+                        ElementSelector elementSelector = new ElementSelector((TextView) view, elementViews);
+                        elementSelector.setOnSelectListener(new ElementSelector.OnSelectListener<CircuitElementView>()
+                        {
+                            @Override
+                            public void onSelect(CircuitElementView selectedElement)
+                            {
+                                referenceProperty._trySetValue(selectedElement.getElement().getName());
+                            }
+                        });
+                        circuitDesigner.setCursorToSelectingElement(elementSelector);
                     }
                 });
             }

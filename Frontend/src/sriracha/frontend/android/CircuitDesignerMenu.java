@@ -27,14 +27,14 @@ public class CircuitDesignerMenu
         }
     }
 
-    public void showElementPropertiesMenu(CircuitElementView selectedElement)
+    public void showElementPropertiesMenu(CircuitElementView selectedElement, CircuitDesigner circuitDesigner)
     {
         showSubMenu(R.id.element_properties);
 
         if (selectedElement == null)
             return;
 
-        ((ElementPropertiesView) getSelectedSubMenu()).showPropertiesFor(selectedElement);
+        ((ElementPropertiesView) getSelectedSubMenu()).showPropertiesFor(selectedElement, circuitDesigner);
     }
 
     public ViewGroup getSelectedSubMenu()

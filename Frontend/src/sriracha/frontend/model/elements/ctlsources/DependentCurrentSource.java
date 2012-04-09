@@ -25,6 +25,8 @@ public class DependentCurrentSource extends TwoPortElement
     {
         if (properties == null)
         {
+            final CircuitElement self = this;
+
             properties = new Property[]{
                     new ReferenceProperty(elementManager)
                     {
@@ -51,11 +53,11 @@ public class DependentCurrentSource extends TwoPortElement
                             }
                         }
                         @Override
-                        public ArrayList<String> getElementsList()
+                        public ArrayList<CircuitElement> getElementsList()
                         {
-                            ArrayList<String> names = super.getElementsList();
-                            names.remove(getName());
-                            return names;
+                            ArrayList<CircuitElement> elements = super.getElementsList();
+                            elements.remove(self);
+                            return elements;
                         }
                     },
                     new ScalarProperty("Gain", "") {

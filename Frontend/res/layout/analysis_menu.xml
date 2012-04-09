@@ -75,8 +75,12 @@
     </RelativeLayout>
 
     <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+              android:id="@+id/print_node1_label"
+              android:text="Node to print"/>
+    <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
               android:id="@+id/print_node1"
               android:layout_below="@id/dc_analysis_options"
+              android:textSize="32dip"
               android:text="[Select...]"/>
 
     <Button android:layout_width="wrap_content" android:layout_height="wrap_content"

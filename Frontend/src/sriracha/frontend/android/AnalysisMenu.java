@@ -7,6 +7,7 @@ import android.widget.*;
 import sriracha.frontend.*;
 import sriracha.frontend.android.model.*;
 import sriracha.frontend.android.model.elements.sources.*;
+import sriracha.frontend.android.results.*;
 
 import java.util.*;
 
@@ -30,12 +31,13 @@ public class AnalysisMenu extends RelativeLayout
     {
         setAnalysisTypeItems();
         setElementSelector();
+        setNodeSelector();
         super.onFinishInflate();
     }
 
     private CircuitDesigner getCircuitDesigner()
     {
-        return ((MainActivity)getContext()).getCircuitDesigner();
+        return ((MainActivity) getContext()).getCircuitDesigner();
     }
 
     private void setAnalysisTypeItems()
@@ -50,13 +52,14 @@ public class AnalysisMenu extends RelativeLayout
 
         showDcMenu();
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
             {
-                if (((TextView)view).getText().equals("DC Sweep"))
+                if (((TextView) view).getText().equals("DC Sweep"))
                     showDcMenu();
-                else if (((TextView)view).getText().equals("Frequency"))
+                else if (((TextView) view).getText().equals("Frequency"))
                     showAcMenu();
                 else
                     throw new RuntimeException("Invalid analysis type");
@@ -102,11 +105,25 @@ public class AnalysisMenu extends RelativeLayout
 
     private void setNodeSelector()
     {
-        ((TextView) findViewById(R.id.print_node1)).setOnClickListener(new OnClickListener() {
+        ((TextView) findViewById(R.id.print_node1)).setOnClickListener(new OnClickListener()
+        {
             @Override
             public void onClick(View view)
             {
-                NetlistGenerator generator = new NetlistGenerator();
+                final WireManager wireManager = getCircuitDesigner().getWireManager();
+                NodeSelector nodeSelector = new NodeSelector((TextView) view, wireManager.getSegments());
+                nodeSelector.setOnSelectListener(new IElementSelector.OnSelectListener<WireSegment>()
+                {
+                    @Override
+                    public void onSelect(WireSegment selectedSegment)
+                    {
+                        NetlistGenerator generator = new NetlistGenerator();
+                        NetlistGenerator.NetlistNode node = generator.mapSegmentToNode(selectedSegment, wireManager);
+                        if (node != null)
+                            ((TextView) findViewById(R.id.print_node1)).setText(node.toString());
+                    }
+                });
+                getCircuitDesigner().setCursorToSelectingElement(nodeSelector);
             }
         });
     }

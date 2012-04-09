@@ -115,6 +115,6 @@ public class CircuitElementPortView implements IWireIntersection
     @Override
     public String toString()
     {
-        return "CEPV - " + (segments.size() > 0 ? segments.get(0).toString() : "()");
+        return String.format("Port - (%d, %d)", getX(), getY());
     }
 }
