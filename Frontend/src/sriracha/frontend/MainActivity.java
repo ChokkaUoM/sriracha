@@ -5,9 +5,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
-import sriracha.frontend.android.CircuitDesigner;
-import sriracha.frontend.android.CircuitDesignerMenu;
-import sriracha.frontend.android.model.CircuitElementActivator;
+import sriracha.frontend.android.*;
+import sriracha.frontend.android.model.*;
+import sriracha.frontend.android.model.elements.sources.*;
 import sriracha.frontend.android.results.Graph;
 import sriracha.frontend.model.*;
 import sriracha.frontend.resultdata.Plot;
@@ -16,7 +16,7 @@ import sriracha.simulator.IPrintData;
 import sriracha.simulator.ISimulator;
 import sriracha.simulator.Simulator;
 
-import java.util.List;
+import java.util.*;
 
 public class MainActivity extends Activity
 {
@@ -51,11 +51,15 @@ public class MainActivity extends Activity
         circuitDesigner = new CircuitDesigner(findViewById(R.id.circuit_design_canvas), circuitDesignerMenu, new CircuitElementActivator(this));
 
         showCircuitMenu(R.id.circuit_menu);
-        setAnalysisTypeItems();
 
         simulator = Simulator.Instance;
 
 //        testGraph();
+    }
+
+    public CircuitDesigner getCircuitDesigner()
+    {
+        return circuitDesigner;
     }
 
     private void testGraph()
@@ -89,17 +93,6 @@ public class MainActivity extends Activity
 //        g.setYLogScale(true);
 
         g.endEdit();
-    }
-
-    private void setAnalysisTypeItems()
-    {
-        Spinner spinner = (Spinner) findViewById(R.id.analysis_type);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, new String[]{
-                "DC Sweep",
-                "Frequency"
-        });
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
     }
 
     public void sourcesAndGroundOnClick(View view)
