@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<sriracha.frontend.android.AnalysisMenu xmlns:android="http://schemas.android.com/apk/res/android"
+                                        android:layout_width="0dp" android:layout_height="fill_parent"
+                                        android:layout_weight="15"
+                                        android:id="@+id/results_menu"
+                                        android:background="#003"
+                                        android:paddingTop="20dip"
+                                        android:paddingLeft="20dip"
+                                        android:paddingRight="20dip">
+    <Spinner android:layout_width="fill_parent" android:layout_height="wrap_content"
+             android:id="@+id/analysis_type"/>
+
+    <RelativeLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:id="@+id/ac_analysis_options"
+                    android:layout_below="@id/analysis_type">
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+                  android:id="@+id/ac_analysis_num_label"
+                  android:text="Number of steps"/>
+        <EditText style="@style/AnalysisEditText"
+                  android:id="@+id/ac_analysis_num"
+                  android:layout_below="@id/ac_analysis_num_label"/>
+
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+                  android:id="@+id/ac_analysis_startf_label"
+                  android:layout_below="@id/ac_analysis_num"
+                  android:text="Start Frequency"/>
+        <EditText style="@style/AnalysisEditText"
+                  android:id="@+id/ac_analysis_startf"
+                  android:layout_below="@id/ac_analysis_startf_label"/>
+
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+                  android:id="@+id/ac_analysis_stopf_label"
+                  android:layout_below="@id/ac_analysis_startf"
+                  android:text="Stop Frequency"/>
+        <EditText style="@style/AnalysisEditText"
+                  android:id="@+id/ac_analysis_stopf"
+                  android:layout_below="@id/ac_analysis_stopf_label"/>
+    </RelativeLayout>
+
+    <RelativeLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:id="@+id/dc_analysis_options"
+                    android:layout_below="@id/analysis_type">
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+                  android:id="@+id/dc_analysis_element_label"
+                  android:text="Element to Sweep"/>
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+                  android:id="@+id/dc_analysis_element"
+                  android:layout_below="@id/dc_analysis_element_label"
+                  android:textSize="32dip"
+                  android:text="[Select...]"/>
+
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+                  android:id="@+id/dc_analysis_startv_label"
+                  android:layout_below="@id/dc_analysis_element"
+                  android:text="Start Voltage"/>
+        <EditText style="@style/AnalysisEditText"
+                  android:id="@+id/dc_analysis_startv"
+                  android:layout_below="@id/dc_analysis_startv_label"/>
+
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+                  android:id="@+id/dc_analysis_stopv_label"
+                  android:layout_below="@id/dc_analysis_startv"
+                  android:text="Stop Voltage"/>
+        <EditText style="@style/AnalysisEditText"
+                  android:id="@+id/dc_analysis_stopv"
+                  android:layout_below="@id/dc_analysis_stopv_label"/>
+
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+                  android:id="@+id/dc_analysis_incr_label"
+                  android:layout_below="@id/dc_analysis_stopv"
+                  android:text="Increment"/>
+        <EditText style="@style/AnalysisEditText"
+                  android:id="@+id/dc_analysis_incr"
+                  android:layout_below="@id/dc_analysis_incr_label"/>
+    </RelativeLayout>
+
+    <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+              android:id="@+id/print_node1"
+              android:layout_below="@id/dc_analysis_options"
+              android:text="[Select...]"/>
+
+    <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/print_node1"
+            android:text="GO"
+            android:onClick="goButtonOnClick"/>
+</sriracha.frontend.android.AnalysisMenu>
