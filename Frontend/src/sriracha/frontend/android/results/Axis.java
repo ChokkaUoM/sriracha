@@ -18,6 +18,9 @@ import java.util.ArrayList;
  */
 class Axis extends LinearLayout
 {
+
+    private OnAxisChangedListener changedListener;
+
     /**
      * Constants representing scale type
      */
@@ -46,10 +49,10 @@ class Axis extends LinearLayout
 
     //number of pixels available along the orientation
     private float pixelRange;
-    
+
     //number of pixels in the graph perpendicular to this axis
     private int graphCrossSpace;
-    
+
     public static final int lineSpace = 20;
 
     private float axisOffset;
@@ -68,7 +71,12 @@ class Axis extends LinearLayout
      */
     private int labelSide;
 
-    private double edgeProximity(){return getOrientation() == HORIZONTAL ? 0.25 : 0.1; };
+    private double edgeProximity()
+    {
+        return getOrientation() == HORIZONTAL ? 0.25 : 0.1;
+    }
+
+    ;
 
     //minimum value for axis
     private double minValue;
@@ -121,12 +129,16 @@ class Axis extends LinearLayout
         {
             float left = labelSide == 0 ? axisOffset - (getMeasuredWidth() - edgeDist) : axisOffset - edgeDist;
             edgeOffset = clamp(left, 0, max);
-        }
-        else
+        } else
         {
             float top = labelSide == 0 ? axisOffset - (getMeasuredHeight() - edgeDist) : axisOffset - edgeDist;
             edgeOffset = clamp(top, 0, max);
         }
+    }
+
+    public void setOnAxisChangedListener(OnAxisChangedListener changedListener)
+    {
+        this.changedListener = changedListener;
     }
 
     /**
@@ -137,23 +149,23 @@ class Axis extends LinearLayout
     private void updateLabelAttributes()
     {
         int start = 0;
-        
-        if(hasStartNotch()){
+
+        if (hasStartNotch())
+        {
             TextView view = getLabel(0);
-            if(getOrientation() == VERTICAL)
+            if (getOrientation() == VERTICAL)
             {
                 view.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f));
                 view.setGravity(Gravity.RIGHT | Gravity.BOTTOM);
-            }
-            else
+            } else
             {
                 view.setLayoutParams(new LayoutParams(0, LayoutParams.MATCH_PARENT, 1f));
                 view.setGravity(Gravity.TOP | Gravity.LEFT);
             }
             start = 1;
         }
-        
-        
+
+
         for (int i = start; i < getChildCount(); i++)
         {
             TextView view = (TextView) getChildAt(i);
@@ -161,13 +173,12 @@ class Axis extends LinearLayout
             {
                 view.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f));
                 view.setGravity(labelSide == 0 ? Gravity.RIGHT | Gravity.CENTER_VERTICAL :
-                                        Gravity.LEFT | Gravity.CENTER_VERTICAL);
-            }
-            else
+                        Gravity.LEFT | Gravity.CENTER_VERTICAL);
+            } else
             {
                 view.setLayoutParams(new LayoutParams(0, LayoutParams.MATCH_PARENT, 1f));
                 view.setGravity(labelSide == 0 ? Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL :
-                                        Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+                        Gravity.TOP | Gravity.CENTER_HORIZONTAL);
             }
         }
     }
@@ -188,47 +199,49 @@ class Axis extends LinearLayout
 
     private void updateLabels()
     {
-        
+
         updateLabelCount();
 
         updateLabelContents();
-        
+
         updateLabelsSide();
-        
+
         updateLabelAttributes();
     }
-    
-    private ArrayList<Float> getNotchPositions(){
-        double intersectCoord = scaleType == LINEARSCALE ? 0: minValue;
+
+    private ArrayList<Float> getNotchPositions()
+    {
+        double intersectCoord = scaleType == LINEARSCALE ? 0 : minValue;
         //list of notch positions
         ArrayList<Float> positions = new ArrayList<Float>();
-        
+
         //distance between notches in pixels
-        float spacing = scaleType == LINEARSCALE ?  getOrientation() == HORIZONTAL ? linHNS : linVNS : logDS;
-        
-        if(isPairAlignedStart())
+        float spacing = scaleType == LINEARSCALE ? getOrientation() == HORIZONTAL ? linHNS : linVNS : logDS;
+
+        if (isPairAlignedStart())
         {
             float startPos = getOrientation() == HORIZONTAL ? 0f : pixelRange;
             positions.add(startPos);
         }
-        
+
         //for each valid midpoint after the intersection with the paired axis
-        for(float pos = Math.max(pixelsFromCoordinate(intersectCoord) + spacing, spacing); pos <= pixelRange - edgeProximity()*spacing; pos += spacing)
+        for (float pos = Math.max(pixelsFromCoordinate(intersectCoord) + spacing, spacing); pos <= pixelRange - edgeProximity() * spacing; pos += spacing)
         {
             positions.add(pos);
         }
         //for each valid midpoint before the intersection with the paired axis
-        for(float pos = Math.min(pixelsFromCoordinate(intersectCoord) - spacing, pixelRange - spacing); pos >= edgeProximity()*spacing; pos -= spacing){
+        for (float pos = Math.min(pixelsFromCoordinate(intersectCoord) - spacing, pixelRange - spacing); pos >= edgeProximity() * spacing; pos -= spacing)
+        {
             positions.add(pos);
         }
 
-        
+
         return positions;
     }
 
     private boolean isPairAlignedStart()
     {
-        double intersectCoord = scaleType == LINEARSCALE ? 0: minValue;
+        double intersectCoord = scaleType == LINEARSCALE ? 0 : minValue;
         double intersect = pixelsFromCoordinate(intersectCoord);
         return getOrientation() == HORIZONTAL ? intersect <= pairedXSize : intersect >= pixelRange;
     }
@@ -242,8 +255,7 @@ class Axis extends LinearLayout
         if (cc < labelCount)
         {
             while (cc++ < labelCount) inflateLabel();
-        }
-        else if (cc > labelCount)
+        } else if (cc > labelCount)
         {
             while (cc-- > labelCount) removeViewAt(cc);
         }
@@ -261,18 +273,19 @@ class Axis extends LinearLayout
         logBase = 10;
 
     }
-    
+
     private void updateLogSpacing()
     {
-        if(scaleType != LOGSCALE) return;
+        if (scaleType != LOGSCALE) return;
         int count = 0;
-        for(double notch = minValue; notch <= maxValue; notch*=logBase){
-            count ++;
+        for (double notch = minValue; notch <= maxValue; notch *= logBase)
+        {
+            count++;
         }
 
-        double endDecPercent = log(maxValue / (Math.pow(logBase, count-1) * minValue), logBase);
-        
-        logDS = (int) (pixelRange / (count -1 + endDecPercent));
+        double endDecPercent = log(maxValue / (Math.pow(logBase, count - 1) * minValue), logBase);
+
+        logDS = (int) (pixelRange / (count - 1 + endDecPercent));
 
         if (logDS == 0)
         {
@@ -282,19 +295,20 @@ class Axis extends LinearLayout
 
     }
 
-    private boolean hasStartNotch(){
+    private boolean hasStartNotch()
+    {
         float startPos = getOrientation() == HORIZONTAL ? 0f : pixelRange;
         ArrayList<Float> notchPositions = getNotchPositions();
         return notchPositions.size() > 0 && notchPositions.get(0) == startPos;
     }
-    
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
     {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
         int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
-        
+
         //add space for line
         if (getOrientation() == VERTICAL)
         {
@@ -303,25 +317,25 @@ class Axis extends LinearLayout
             int widthSpec = MeasureSpec.makeMeasureSpec(getMeasuredWidth(), MeasureSpec.EXACTLY);
             int start = 0;
 
-            
-            if(hasStartNotch())
+
+            if (hasStartNotch())
             {
                 //we have a special notch at start
-                int hhspec = MeasureSpec.makeMeasureSpec(height/2, MeasureSpec.EXACTLY);
+                int hhspec = MeasureSpec.makeMeasureSpec(height / 2, MeasureSpec.EXACTLY);
                 getLabel(0).measure(widthSpec, hhspec);
                 start = 1;
 
             }
 
-            for(int i =start; i<getChildCount(); i++){
+            for (int i = start; i < getChildCount(); i++)
+            {
                 getLabel(i).measure(widthSpec, heightSpec);
             }
-            
-            
+
+
             setMeasuredDimension(getMeasuredWidth() + lineSpace, parentHeight);
 
-        }
-        else
+        } else
         {
             int width = scaleType == LINEARSCALE ? linHNS : logDS;
             int heightSpec = MeasureSpec.makeMeasureSpec(getMeasuredHeight(), MeasureSpec.EXACTLY);
@@ -329,23 +343,24 @@ class Axis extends LinearLayout
 
             int start = 0;
 
-            if(hasStartNotch())
+            if (hasStartNotch())
             {
                 //we have a special notch at start
-                int hwspec = MeasureSpec.makeMeasureSpec(widthMeasureSpec/2, MeasureSpec.EXACTLY);
+                int hwspec = MeasureSpec.makeMeasureSpec(widthMeasureSpec / 2, MeasureSpec.EXACTLY);
                 getLabel(0).measure(hwspec, heightSpec);
                 start = 1;
 
             }
 
-            for(int i =start; i<getChildCount(); i++){
+            for (int i = start; i < getChildCount(); i++)
+            {
                 getLabel(i).measure(widthSpec, heightSpec);
             }
             setMeasuredDimension(parentWidth, getMeasuredHeight() + lineSpace);
-            
+
         }
-        
-        
+
+
         updateEdgeOffset(); // now that we know cross section size (measured width for y )
     }
 
@@ -355,38 +370,37 @@ class Axis extends LinearLayout
     {
 
 
-
         int hspace = getScaleType() == LINEARSCALE ? linHNS : logDS;
         int vspace = getScaleType() == LINEARSCALE ? linVNS : logDS;
 
-        float spacing =  getOrientation() == HORIZONTAL ? hspace : vspace;
+        float spacing = getOrientation() == HORIZONTAL ? hspace : vspace;
 
         int start = 0;
-        
-        if(hasStartNotch())
+
+        if (hasStartNotch())
         {
             TextView label = getLabel(start);
             int ltop = getOrientation() == VERTICAL ? (int) (pixelRange - vspace / 2) : labelSide == 0 ? 0 : lineSpace;
             int lleft = getOrientation() == HORIZONTAL ? 1 : labelSide == 0 ? 0 : lineSpace;
             int lwidth = getOrientation() == VERTICAL ? label.getMeasuredWidth() : hspace / 2;
             int lheight = getOrientation() == HORIZONTAL ? label.getMeasuredHeight() : vspace / 2;
-            label.layout(lleft, ltop, lleft + lwidth, ltop + lheight );
+            label.layout(lleft, ltop, lleft + lwidth, ltop + lheight);
             start++;
-            
+
         }
-        
-        
+
+
         ArrayList<Float> notches = getNotchPositions();
-        for(int i = start; i < getChildCount(); i++)
+        for (int i = start; i < getChildCount(); i++)
         {
             TextView label = getLabel(i);
             float mid = notches.get(i);
-            int labelStart =  (int) (mid - spacing/2);
+            int labelStart = (int) (mid - spacing / 2);
             int ltop = getOrientation() == VERTICAL ? labelStart : labelSide == 0 ? 0 : lineSpace;
             int lleft = getOrientation() == HORIZONTAL ? labelStart : labelSide == 0 ? 0 : lineSpace;
             int lwidth = getOrientation() == VERTICAL ? label.getMeasuredWidth() : hspace;
             int lheight = getOrientation() == HORIZONTAL ? label.getMeasuredHeight() : vspace;
-            label.layout(lleft, ltop, lleft + lwidth, ltop + lheight );
+            label.layout(lleft, ltop, lleft + lwidth, ltop + lheight);
         }
 
     }
@@ -395,30 +409,34 @@ class Axis extends LinearLayout
     public void setRange(double minValue, double maxValue)
     {
         //cant have such values on a log scale
-        if(scaleType == LOGSCALE && minValue <=0) minValue = 1;
-        
+        if (scaleType == LOGSCALE && minValue <= 0) minValue = 1;
+
         if (minValue != this.minValue || maxValue != this.maxValue)
         {
             this.maxValue = maxValue;
             this.minValue = minValue;
 
+            if (changedListener != null)
+            {
+                changedListener.onAxisRangeChanged(minValue, maxValue);
+            }
         }
     }
 
 
     private void updateLabelContents()
     {
-        if(scaleType == LINEARSCALE)
+        if (scaleType == LINEARSCALE)
         {
-            int i =0;
-            for(float mid : getNotchPositions()){
+            int i = 0;
+            for (float mid : getNotchPositions())
+            {
                 getLabel(i++).setText(axisNumFormat(coordinateFromPixel(mid)));
             }
 
-        }
-        else   
+        } else
         {
-            for(int i =0; i<getChildCount(); i++)
+            for (int i = 0; i < getChildCount(); i++)
             {
                 getLabel(i).setText(axisNumFormat(minValue * Math.pow(logBase, i)));
             }
@@ -432,15 +450,15 @@ class Axis extends LinearLayout
 
     /**
      * Used for drawing dashed preview lines
+     *
      * @return offset in Graph where the axis is actually drawn
      */
     public int getDrawnAxisOffset()
     {
-        if(getOrientation() == VERTICAL)
+        if (getOrientation() == VERTICAL)
         {
             return getLeft() + (labelSide == 0 ? getWidth() - lineSpace / 2 : lineSpace / 2);
-        }
-        else
+        } else
         {
             return getTop() + (labelSide == 0 ? getHeight() - lineSpace / 2 : lineSpace / 2);
         }
@@ -459,8 +477,7 @@ class Axis extends LinearLayout
             sy = 0;
             ey = getHeight();
             sx = ex = labelSide == 0 ? getWidth() - lineSpace / 2 : lineSpace / 2;
-        }
-        else
+        } else
         {
             sx = 0;
             ex = getWidth();
@@ -471,10 +488,10 @@ class Axis extends LinearLayout
 
         int nlen = (lineSpace - 4) / 2;
         //draw notches vis-a-vis the labels
-        
-        int i =0;
 
-        for(float mid : getNotchPositions())
+        int i = 0;
+
+        for (float mid : getNotchPositions())
         {
 
             if (getOrientation() == VERTICAL)
@@ -482,8 +499,7 @@ class Axis extends LinearLayout
                 sx = labelSide == 0 ? getWidth() - lineSpace + (lineSpace - nlen) / 2 : (lineSpace - nlen) / 2;
                 ex = sx + nlen;
                 sy = ey = (int) mid;
-            }
-            else
+            } else
             {
                 sy = labelSide == 0 ? getHeight() - lineSpace + (lineSpace - nlen) / 2 : (lineSpace - nlen) / 2;
                 ey = sy + nlen;
@@ -507,9 +523,10 @@ class Axis extends LinearLayout
         DecimalFormat format = new DecimalFormat("#.##E00");
         return format.format(val);
     }
-    
-    public double log(double val, double base){
-        return Math.log(val)/Math.log(base);
+
+    public double log(double val, double base)
+    {
+        return Math.log(val) / Math.log(base);
     }
 
     /**
@@ -523,14 +540,13 @@ class Axis extends LinearLayout
     {
         if (scaleType == LOGSCALE)
         {
-            if(axisValue <= 0) return getOrientation() == HORIZONTAL ? -1 : pixelRange + 1;//log(x) > 0
+            if (axisValue <= 0) return getOrientation() == HORIZONTAL ? -1 : pixelRange + 1;//log(x) > 0
 
-            double offset = logDS * log(axisValue/minValue, logBase);
+            double offset = logDS * log(axisValue / minValue, logBase);
 
             return (float) (getOrientation() == HORIZONTAL ? offset : pixelRange - offset);
 
-        }
-        else
+        } else
         {
             double percent = (axisValue - minValue) / (maxValue - minValue);
             if (getOrientation() == VERTICAL) percent = 1 - percent;
@@ -555,8 +571,7 @@ class Axis extends LinearLayout
             double offset = getOrientation() == HORIZONTAL ? pixelValue : pixelRange - pixelValue;
 
             return Math.pow(logBase, (offset / logDS)) * minValue;
-        }
-        else
+        } else
         {
             double range = maxValue - minValue;
             double percnt = pixelValue / pixelRange;
@@ -567,9 +582,10 @@ class Axis extends LinearLayout
 
 
     }
-    
-    
-    public void setPixelRange(float pixelRange){
+
+
+    public void setPixelRange(float pixelRange)
+    {
         this.pixelRange = pixelRange;
         //update spacing for logscales
         updateLogSpacing();
@@ -578,8 +594,8 @@ class Axis extends LinearLayout
     /**
      * passes information the the axis that it will need before calling measure
      *
-     * @param axisOffset distance from edge of graph that the paired axis recommends
-     *                   for this axis line. can be out of bounds
+     * @param axisOffset      distance from edge of graph that the paired axis recommends
+     *                        for this axis line. can be out of bounds
      * @param graphCrossSpace total available space in the graph perpendicular to this axis,
      *                        used to limit axis placement and determine which side of the axis line the label is drawn.
      */
@@ -618,11 +634,30 @@ class Axis extends LinearLayout
         return scaleType;
     }
 
+    /**
+     * sets the type of scale linear or log
+     *
+     * @param scale
+     */
     public void setScaleType(int scale)
     {
-        scaleType = scale;
-        //just to make sure in case user did not change, otherwise infinite loops happen
-        if(scaleType == LOGSCALE && minValue <=0) minValue = 1;
+        if (scaleType != scale)
+        {
+            scaleType = scale;
+
+            if (changedListener != null)
+            {
+                changedListener.onAxisScaleTypeChanged(scale);
+            }
+
+            //just to make sure in case user did not change, otherwise infinite loops happen
+            if (scaleType == LOGSCALE && minValue <= 0)
+            {
+                setMinValue(1);
+            }
+        }
+
+
     }
 
     public int getLogBase()
@@ -632,10 +667,29 @@ class Axis extends LinearLayout
 
     public void setLogBase(int logBase)
     {
-        this.logBase = logBase;
+        if (this.logBase != logBase)
+        {
+            this.logBase = logBase;
+            if (changedListener != null)
+            {
+                changedListener.onAxisLogBaseChanged(logBase);
+            }
+        }
+
     }
 
-    public void setPairedXSize(int pairedXSize) {
+    public void setPairedXSize(int pairedXSize)
+    {
         this.pairedXSize = pairedXSize;
     }
 }
+
+interface OnAxisChangedListener
+{
+    public void onAxisRangeChanged(double minValue, double maxValue);
+
+    public void onAxisScaleTypeChanged(int scaleType);
+
+    public void onAxisLogBaseChanged(int logBase);
+}
+

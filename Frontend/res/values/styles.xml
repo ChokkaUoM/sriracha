@@ -36,4 +36,29 @@
         <item name="android:inputType">numberDecimal|numberSigned</item>
         <item name="android:imeOptions">actionDone</item>
     </style>
+
+    <style name="AxisControllerSelectors">
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:width">0dip</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginLeft">5dip</item>
+        <item name="android:layout_marginRight">5dip</item>
+        <item name="android:layout_marginTop">1dip</item>
+        <item name="android:layout_marginBottom">1dip</item>
+    </style>
+
+    <style name="AxisControllerLabels">
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:width">0dip</item>
+        <item name="android:layout_weight">0.6</item>
+        <item name="android:gravity">right|center_vertical</item>
+    </style>
+
+    <style name="AxisController">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+
+    </style>
+
+
 </resources>

@@ -8,7 +8,8 @@ import java.util.ArrayList;
 /**
  * Extend this class for simplified Touch event handling.
  */
-public abstract class EpicTouchListener implements View.OnTouchListener {
+public abstract class EpicTouchListener implements View.OnTouchListener
+{
     /**
      * a value between 0 and 1
      * 0 -> only perfectly opposed 2 finger motions are considered a scale gesture
@@ -25,43 +26,52 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
 
     private ArrayList<Finger> activeFingers;
 
-    private static class Finger {
+    private static class Finger
+    {
         int id;
 
         float x, y;
 
         float oldX, oldY;
 
-        float distX() {
+        float distX()
+        {
             return x - oldX;
         }
 
-        float distY() {
+        float distY()
+        {
             return y - oldY;
         }
 
-        float dist() {
+        float dist()
+        {
             return (float) Math.sqrt(Math.pow(distX(), 2) + Math.pow(distY(), 2));
         }
 
-        double angle() {
+        double angle()
+        {
             return Math.atan2(y - oldY, x - oldX);
         }
     }
 
-    protected EpicTouchListener() {
+    protected EpicTouchListener()
+    {
         activeFingers = new ArrayList<Finger>();
     }
 
     @Override
-    public boolean onTouch(View view, MotionEvent motionEvent) {
+    public boolean onTouch(View view, MotionEvent motionEvent)
+    {
         int actionIndex = motionEvent.getActionIndex();
         int actionId = motionEvent.getPointerId(actionIndex);
         int pointerCount = motionEvent.getPointerCount();
 
-
-        switch (motionEvent.getActionMasked()) {
-            case MotionEvent.ACTION_DOWN: {
+        boolean eatEvent = false;
+        switch (motionEvent.getActionMasked())
+        {
+            case MotionEvent.ACTION_DOWN:
+            {
 
                 Finger f1 = addFinger(actionId, motionEvent.getX(), motionEvent.getY());
 
@@ -71,19 +81,23 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
                 return true;
 
             }
-            case MotionEvent.ACTION_POINTER_DOWN: {
+            case MotionEvent.ACTION_POINTER_DOWN:
+            {
 
                 addFinger(actionId, motionEvent.getX(actionIndex), motionEvent.getY(actionIndex));
 
 
-                switch (pointerCount) {
-                    case 2: {
+                switch (pointerCount)
+                {
+                    case 2:
+                    {
                         Finger f1 = activeFingers.get(0);
                         Finger f2 = activeFingers.get(1);
                         onTwoFingerDown(f1.x, f1.y, f2.x, f2.y);
                         break;
                     }
-                    case 3: {
+                    case 3:
+                    {
                         Finger f1 = activeFingers.get(0);
                         Finger f2 = activeFingers.get(1);
                         Finger f3 = activeFingers.get(2);
@@ -98,28 +112,36 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
                 return true;
             }
             case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_POINTER_UP: {
+                eatEvent = onAllFingersUp();
+            case MotionEvent.ACTION_POINTER_UP:
                 activeFingers.remove(findById(actionId));
+                if (eatEvent) return true;
                 break;
-            }
-            case MotionEvent.ACTION_MOVE: {
 
-                if (activeFingers.size() != pointerCount) {
+            case MotionEvent.ACTION_MOVE:
+            {
+
+                if (activeFingers.size() != pointerCount)
+                {
                     fixPointerMissmatch(motionEvent);
                 }
 
 
-                for (int i = 0; i < pointerCount; i++) {
+                for (int i = 0; i < pointerCount; i++)
+                {
                     updateFinger(activeFingers.get(i), motionEvent);
                 }
 
 
-                switch (pointerCount) {
-                    case 1: {
+                switch (pointerCount)
+                {
+                    case 1:
+                    {
                         Finger f = activeFingers.get(0);
                         return onSingleFingerMove(f.distX(), f.distY(), f.x, f.y);
                     }
-                    case 2: {
+                    case 2:
+                    {
                         Finger f1 = activeFingers.get(0);
                         Finger f2 = activeFingers.get(1);
 
@@ -130,7 +152,8 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
                         boolean isSwipe = Math.abs(angleDiff) <= swipeTolerance * Math.PI;
 
                         boolean consumed = false;
-                        if (isScale) {
+                        if (isScale)
+                        {
                             float oldDX = f2.oldX - f1.oldX,
                                     oldDY = f2.oldY - f1.oldY,
                                     dx = f2.x - f1.x,
@@ -152,7 +175,8 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
                             xFactor = clamp(xFactor, 0.9f, 1.1f);
                             yFactor = clamp(yFactor, 0.9f, 1.1f);
 
-                            if (xFactor != 1 || yFactor != 1) {
+                            if (xFactor != 1 || yFactor != 1)
+                            {
 
                                 float xCenter = (f1.oldX + f2.oldX + f1.x + f2.x) / 4;
                                 float yCenter = (f1.oldY + f2.oldY + f1.y + f2.y) / 4;
@@ -162,17 +186,20 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
 
                         }
 
-                        if (isSwipe) {
+                        if (isSwipe)
+                        {
                             consumed |= onTwoFingerSwipe((f1.distX() + f2.distX()) / 2, (f1.distY() + f2.distY()) / 2);
                         }
 
-                        if (!consumed) {
+                        if (!consumed)
+                        {
                             return onTwoFingerMove(f1.distX(), f1.distY(), f2.distX(), f2.distY());
                         }
 
                         return consumed;
                     }
-                    case 3: {//todo: extend to more fingers
+                    case 3:
+                    {//todo: extend to more fingers
 
                         Finger f1 = activeFingers.get(0);
                         Finger f2 = activeFingers.get(1);
@@ -187,7 +214,8 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
 
                         boolean isSwipe = centerRad(max - min) <= swipeTolerance * Math.PI;
                         boolean consumed = false;
-                        if (isSwipe) {
+                        if (isSwipe)
+                        {
                             consumed |= onThreeFingerSwipe((f1.distX() + f2.distX() + f3.distX()) / 3,
                                     (f1.distY() + f2.distY() + f3.distY()) / 3);
                         }
@@ -203,25 +231,31 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
         return false;
     }
 
-    private void fixPointerMissmatch(MotionEvent motionEvent) {
-        for (int i = activeFingers.size() - 1; i >= 0; i--) {
+    private void fixPointerMissmatch(MotionEvent motionEvent)
+    {
+        for (int i = activeFingers.size() - 1; i >= 0; i--)
+        {
             int index = motionEvent.findPointerIndex(activeFingers.get(i).id);
-            if (index == -1) {
+            if (index == -1)
+            {
                 activeFingers.remove(i);
 
             }
         }
     }
 
-    private Finger findById(int id) {
-        for (int i = 0; i < activeFingers.size(); i++) {
+    private Finger findById(int id)
+    {
+        for (int i = 0; i < activeFingers.size(); i++)
+        {
             Finger f = activeFingers.get(i);
             if (f.id == id) return f;
         }
         return null;
     }
 
-    private void updateFinger(Finger f, MotionEvent e) {
+    private void updateFinger(Finger f, MotionEvent e)
+    {
         int index = e.findPointerIndex(f.id);
         f.oldX = f.x;
         f.oldY = f.y;
@@ -230,7 +264,8 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
 
     }
 
-    private Finger addFinger(int id, float x, float y) {
+    private Finger addFinger(int id, float x, float y)
+    {
         Finger f = new Finger();
         f.id = id;
         f.x = x;
@@ -239,12 +274,14 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
         return f;
     }
 
-    private float clamp(float value, float min, float max) {
+    private float clamp(float value, float min, float max)
+    {
         return value < min ? min : value > max ? max : value;
     }
 
 
-    private double centerRad(double radians) {
+    private double centerRad(double radians)
+    {
         radians = radians % (2 * Math.PI);
         if (radians < -Math.PI) return radians + 2 * Math.PI;
         if (radians > Math.PI) return radians - 2 * Math.PI;
@@ -261,7 +298,8 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
      * @param finalY Y resting place of finger after movement
      * @return true if the the event should be consumed ie not passed on.
      */
-    protected boolean onSingleFingerMove(float dX, float dY, float finalX, float finalY) {
+    protected boolean onSingleFingerMove(float dX, float dY, float finalX, float finalY)
+    {
         return false;
     }
 
@@ -273,7 +311,8 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
      * @param dY average Y distance over both fingers
      * @return true if the the event should be consumed ie not passed on.
      */
-    protected boolean onTwoFingerSwipe(float dX, float dY) {
+    protected boolean onTwoFingerSwipe(float dX, float dY)
+    {
         return false;
     }
 
@@ -285,7 +324,8 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
      * @param dY average Y distance over all fingers
      * @return true if the the event should be consumed ie not passed on.
      */
-    protected boolean onThreeFingerSwipe(float dX, float dY) {
+    protected boolean onThreeFingerSwipe(float dX, float dY)
+    {
         return false;
     }
 
@@ -297,7 +337,8 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
      * @param x x position
      * @param y y position
      */
-    protected void onSingleFingerDown(float x, float y) {
+    protected void onSingleFingerDown(float x, float y)
+    {
     }
 
     /**
@@ -310,7 +351,8 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
      * @param yCenter y scale center
      * @return true if the the event should be consumed ie not passed on.
      */
-    protected boolean onScale(float xFactor, float yFactor, float xCenter, float yCenter) {
+    protected boolean onScale(float xFactor, float yFactor, float xCenter, float yCenter)
+    {
         return false;
     }
 
@@ -328,7 +370,8 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
      * @see #onScale(float, float, float, float)
      * @see #onTwoFingerSwipe(float, float)
      */
-    protected boolean onTwoFingerMove(float dX1, float dY1, float dX2, float dY2) {
+    protected boolean onTwoFingerMove(float dX1, float dY1, float dX2, float dY2)
+    {
         return false;
     }
 
@@ -340,7 +383,8 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
      * @param x2 x position of second finger
      * @param y2 y position of second finger
      */
-    protected void onTwoFingerDown(float x1, float y1, float x2, float y2) {
+    protected void onTwoFingerDown(float x1, float y1, float x2, float y2)
+    {
     }
 
     /**
@@ -353,8 +397,19 @@ public abstract class EpicTouchListener implements View.OnTouchListener {
      * @param x3 x position of third finger
      * @param y3 y position of third finger
      */
-    protected void onThreeFingerDown(float x1, float y1, float x2, float y2, float x3, float y3) {
+    protected void onThreeFingerDown(float x1, float y1, float x2, float y2, float x3, float y3)
+    {
     }
 
+
+    /**
+     * Called when the last finger touching has just been lifted up
+     *
+     * @return true if the the event should be consumed ie not passed on.
+     */
+    protected boolean onAllFingersUp()
+    {
+        return false;
+    }
 
 }

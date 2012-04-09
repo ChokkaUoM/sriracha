@@ -10,7 +10,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 
-public class MainLayout extends LinearLayout {
+public class MainLayout extends LinearLayout
+{
 
 
     private ObjectAnimator anim1, anim2;
@@ -21,25 +22,35 @@ public class MainLayout extends LinearLayout {
 
     private MainLayoutListener listener;
 
-    public MainLayout(Context context) {
+
+    private boolean fingersStillDown = false;
+
+    private boolean isAnimating = false;
+
+    public MainLayout(Context context)
+    {
         super(context);
     }
 
-    public MainLayout(Context context, AttributeSet attrs) {
+    public MainLayout(Context context, AttributeSet attrs)
+    {
         super(context, attrs);
     }
 
-    public MainLayout(Context context, AttributeSet attrs, int defStyle) {
+    public MainLayout(Context context, AttributeSet attrs, int defStyle)
+    {
         super(context, attrs, defStyle);
     }
 
     @Override
-    protected void onFinishInflate() {
+    protected void onFinishInflate()
+    {
         super.onFinishInflate();    //To change body of overridden methods use File | Settings | File Templates.
         init();
     }
 
-    private void init() {
+    private void init()
+    {
         percentSmall = ((LayoutParams) getChildAt(0).getLayoutParams()).weight / getWeightSum();
 
         int width = ((Activity) getContext()).getWindowManager().getDefaultDisplay().getWidth();
@@ -62,13 +73,15 @@ public class MainLayout extends LinearLayout {
     }
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
+    public boolean onInterceptTouchEvent(MotionEvent ev)
+    {
         boolean ret = listener.onTouch(this, ev);
         return false;
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
+    {
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = MeasureSpec.getSize(heightMeasureSpec);
         int heighSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
@@ -89,7 +102,8 @@ public class MainLayout extends LinearLayout {
 
 
     @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom)
+    {
         View c0 = getChildAt(0);
         View c1 = getChildAt(1);
         View c2 = getChildAt(2);
@@ -107,86 +121,128 @@ public class MainLayout extends LinearLayout {
 
     }
 
-    private class MainLayoutListener extends EpicTouchListener implements ValueAnimator.AnimatorListener, ValueAnimator.AnimatorUpdateListener {
+    public boolean shiftLeft()
+    {
+        View c0 = getChildAt(0);
+        View c1 = getChildAt(1);
 
-        protected MainLayoutListener() {
+        int offset0 = c0.getMeasuredWidth();
+        int offset1 = offset0 + c1.getMeasuredWidth();
+
+        if (Math.abs(layoutOffset - offset0) < 2)
+        {
+            anim1.reverse();
+            return true;
+        }
+        if (Math.abs(layoutOffset - offset1) < 2)
+        {
+            anim2.reverse();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean shiftRight()
+    {
+        View c0 = getChildAt(0);
+        int offset0 = c0.getMeasuredWidth();
+
+        if (layoutOffset == 0)
+        {
+            anim1.start();
+            return true;
+        }
+        if (Math.abs(layoutOffset - offset0) < 2)
+        {
+            anim2.start();
+            return true;
+        }
+
+        return false;
+    }
+
+    private class MainLayoutListener extends EpicTouchListener implements ValueAnimator.AnimatorListener, ValueAnimator.AnimatorUpdateListener
+    {
+
+        protected MainLayoutListener()
+        {
 
         }
 
-        private boolean isAnimating = false;
-
         @Override
-        protected boolean onThreeFingerSwipe(float dX, float dY) {
-            if (isAnimating || Math.abs(dX) < 5) return false;
-
-            View c0 = getChildAt(0);
-            View c1 = getChildAt(1);
-
-            int offset0 = c0.getMeasuredWidth();
-            int offset1 = offset0 + c1.getMeasuredWidth();
-
-
-            if (Math.abs(dX) > 1.5 * Math.abs(dY)) {
-                if (layoutOffset == 0) {
-                    if (dX < 0) {
-                        anim1.start();
-                        return true;
-                    }
-                } else if (Math.abs(layoutOffset - offset0) < 2) {
-                    if (dX < 0) anim2.start();
-                    else anim1.reverse();
-                    return true;
-                } else if (Math.abs(layoutOffset - offset1) < 2) {
-                    if (dX > 0) {
-                        anim2.reverse();
-                        return true;
-                    }
-                }
-
-            }
+        protected boolean onAllFingersUp()
+        {
+            fingersStillDown = false;
             return false;
         }
 
         @Override
-        public void onAnimationUpdate(ValueAnimator valueAnimator) {
+        protected boolean onThreeFingerSwipe(float dX, float dY)
+        {
+            if (isAnimating || fingersStillDown) return false;
+
+            boolean shifted = false;
+
+            if (Math.abs(dX) > 1.5 * Math.abs(dY))
+            {
+                if (dX < 0)
+                    shifted |= shiftRight();
+                else
+                    shifted |= shiftLeft();
+
+            }
+            return shifted;
+        }
+
+        @Override
+        public void onAnimationUpdate(ValueAnimator valueAnimator)
+        {
             requestLayout();
             invalidate();
         }
 
         @Override
-        public void onAnimationStart(Animator animator) {
+        public void onAnimationStart(Animator animator)
+        {
             isAnimating = true;
         }
 
         @Override
-        public void onAnimationEnd(Animator animator) {
+        public void onAnimationEnd(Animator animator)
+        {
             isAnimating = false;
         }
 
         @Override
-        public void onAnimationCancel(Animator animator) {
+        public void onAnimationCancel(Animator animator)
+        {
             isAnimating = false;
         }
 
         @Override
-        public void onAnimationRepeat(Animator animator) {
+        public void onAnimationRepeat(Animator animator)
+        {
             //To change body of implemented methods use File | Settings | File Templates.
         }
     }
 
-    public int getLayoutOffset() {
+    public int getLayoutOffset()
+    {
         return layoutOffset;
     }
 
-    public void setLayoutOffset(int layoutOffset) {
+    public void setLayoutOffset(int layoutOffset)
+    {
         this.layoutOffset = layoutOffset;
     }
 
-    public double getPercentSmall() {
+    public double getPercentSmall()
+    {
         return percentSmall;
     }
 
-    public void setPercentSmall(double percentSmall) {
+    public void setPercentSmall(double percentSmall)
+    {
         this.percentSmall = percentSmall;
     }
 }

@@ -3,20 +3,25 @@ package sriracha.frontend;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.*;
-import android.widget.*;
-import sriracha.frontend.android.*;
-import sriracha.frontend.android.model.*;
-import sriracha.frontend.android.model.elements.sources.*;
+import android.view.Gravity;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+import sriracha.frontend.android.CircuitDesigner;
+import sriracha.frontend.android.CircuitDesignerMenu;
+import sriracha.frontend.android.model.CircuitElementActivator;
 import sriracha.frontend.android.results.Graph;
-import sriracha.frontend.model.*;
+import sriracha.frontend.model.CircuitElement;
 import sriracha.frontend.resultdata.Plot;
 import sriracha.frontend.resultdata.Point;
 import sriracha.simulator.IPrintData;
 import sriracha.simulator.ISimulator;
 import sriracha.simulator.Simulator;
 
-import java.util.*;
+import java.util.List;
 
 public class MainActivity extends Activity
 {
@@ -37,7 +42,6 @@ public class MainActivity extends Activity
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.main);
-
         Graph g = (Graph) findViewById(R.id.graph);
         //create sin plot
         Plot sin = new Plot();
@@ -45,7 +49,13 @@ public class MainActivity extends Activity
         {
             sin.addPoint(new Point(x, Math.sin(x)));
         }
+        g.beginEdit();
+
         g.addPlot(sin, Color.argb(255, 200, 100, 88));
+
+
+        g.endEdit();
+
 
         circuitDesignerMenu = new CircuitDesignerMenu((MainActivity) this);
         circuitDesigner = new CircuitDesigner(findViewById(R.id.circuit_design_canvas), circuitDesignerMenu, new CircuitElementActivator(this));
@@ -176,15 +186,13 @@ public class MainActivity extends Activity
             {
                 String analysis = String.format(".DC %s %f %f %f", element.getName(), startV, stopV, incr);
                 simulator.addAnalysis(analysis);
-            }
-            else
+            } else
             {
                 Toast toast = Toast.makeText(this, "You must choose an element to sweep", Toast.LENGTH_LONG);
                 toast.setGravity(Gravity.CENTER, 0, 0);
                 toast.show();
             }
-        }
-        else if (analysisType.equals("Frequency"))
+        } else if (analysisType.equals("Frequency"))
         {
             float num = Float.parseFloat(((TextView) findViewById(R.id.ac_analysis_num)).getText().toString());
             float startF = Float.parseFloat(((TextView) findViewById(R.id.ac_analysis_startf)).getText().toString());
@@ -192,8 +200,7 @@ public class MainActivity extends Activity
 
             String analysis = String.format(".AC LIN %f %f %f");
             simulator.addAnalysis(analysis);
-        }
-        else
+        } else
         {
             throw new RuntimeException("Invalid analysis type: " + analysisType);
         }
