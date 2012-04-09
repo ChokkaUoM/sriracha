@@ -9,6 +9,7 @@ import sriracha.frontend.R;
 import sriracha.frontend.android.model.CircuitElementActivator;
 import sriracha.frontend.android.model.CircuitElementPortView;
 import sriracha.frontend.android.model.CircuitElementView;
+import sriracha.frontend.android.results.*;
 import sriracha.frontend.model.*;
 
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     private WireManager wireManager;
     private IWireIntersection lastInsertedIntersection;
 
-    private ElementSelector elementSelector;
+    private IElementSelector elementSelector;
 
     public CircuitDesigner(View canvasView, CircuitDesignerMenu circuitDesignerMenu, CircuitElementActivator activator)
     {
@@ -86,7 +87,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         setCursor(CursorState.WIRE);
     }
 
-    public void setCursorToSelectingElement(ElementSelector elementSelector)
+    public void setCursorToSelectingElement(IElementSelector elementSelector)
     {
         setElementSelector(elementSelector);
         setCursor(CursorState.SELECTING_ELEMENT);
@@ -142,7 +143,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         setCursor(CursorState.ELEMENT);
     }
 
-    private void setElementSelector(ElementSelector elementSelector)
+    private void setElementSelector(IElementSelector elementSelector)
     {
         this.elementSelector = elementSelector;
         canvasView.setElementSelector(elementSelector);
@@ -197,8 +198,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
 
             return true;
         }
-
-        if (getCursor() == CursorState.HAND)
+        else if (getCursor() == CursorState.HAND)
         {
             WireSegment segment = wireManager.getSegmentByPosition(snappedX, snappedY);
             if (segment != null)
@@ -209,6 +209,20 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                 return true;
             }
         }
+        else if (getCursor() == CursorState.SELECTING_ELEMENT && elementSelector instanceof NodeSelector)
+        {
+            WireSegment segment = wireManager.getSegmentByPosition(snappedX, snappedY);
+            if (segment != null)
+            {
+                if (elementSelector.onSelect(segment))
+                {
+                    setCursorToHand();
+                    setElementSelector(null);
+                    canvasView.invalidate();
+                }
+            }
+        }
+
 
         if (getCursor() != CursorState.ELEMENT)
             return false;
@@ -256,7 +270,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                 setCanvasState(CanvasState.IDLE);
             }
         }
-        else if (getCursor() == CursorState.SELECTING_ELEMENT)
+        else if (getCursor() == CursorState.SELECTING_ELEMENT && elementSelector instanceof ElementSelector)
         {
             if (elementSelector.onSelect((CircuitElementView) view))
             {
@@ -429,6 +443,11 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     public ArrayList<CircuitElementView> getElements()
     {
         return elements;
+    }
+
+    public WireManager getWireManager()
+    {
+        return wireManager;
     }
 
     public static int snap(float coord)
