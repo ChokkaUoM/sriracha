@@ -68,6 +68,9 @@ public class WireSegment extends View
 
     public boolean moveX(int x, IWireIntersection onlyThisNode)
     {
+        if (getLength() == 0)
+            return true;
+
         int currentX = onlyThisNode == null ? start.getX() : onlyThisNode.getX();
         if (x == currentX)
             return false;
@@ -110,6 +113,9 @@ public class WireSegment extends View
 
     public boolean moveY(int y, IWireIntersection onlyThisNode)
     {
+        if (getLength() == 0)
+            return true;
+
         int currentY = onlyThisNode == null ? start.getY() : onlyThisNode.getY();
         if (y == currentY)
             return false;

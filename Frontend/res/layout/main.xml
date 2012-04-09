@@ -61,9 +61,37 @@
                     android:layout_weight="15"
                     android:id="@+id/results_menu"
                     android:background="#003">
-        <TextView android:layout_height="fill_parent"
-                  android:layout_width="fill_parent"
-                  android:text="Some Text"/>
+        <Spinner android:layout_width="fill_parent" android:layout_height="wrap_content"
+                 android:id="@+id/analysis_type"/>
+
+        <EditText style="@style/AnalysisEditText"
+                  android:id="@+id/ac_analysis_num"
+                  android:layout_below="@id/analysis_type"/>
+        <EditText style="@style/AnalysisEditText"
+                  android:id="@+id/ac_analysis_startf"
+                  android:layout_below="@id/ac_analysis_num"/>
+        <EditText style="@style/AnalysisEditText"
+                  android:id="@+id/ac_analysis_stopf"
+                  android:layout_below="@id/ac_analysis_startf"/>
+
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+                  android:id="@+id/dc_analysis_element"
+                  android:layout_below="@id/analysis_type"/>
+        <EditText style="@style/AnalysisEditText"
+                  android:id="@+id/dc_analysis_startv"
+                  android:layout_below="@id/dc_analysis_element"/>
+        <EditText style="@style/AnalysisEditText"
+                  android:id="@+id/dc_analysis_stopv"
+                  android:layout_below="@id/dc_analysis_startv"/>
+        <EditText style="@style/AnalysisEditText"
+                  android:id="@+id/dc_analysis_incr"
+                  android:layout_below="@id/dc_analysis_stopv"/>
+
+        <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/dc_analysis_stopv"
+                android:text="GO"
+                android:onClick="goButtonOnClick"/>
     </RelativeLayout>
     <sriracha.frontend.android.results.Graph
             android:id="@+id/graph"

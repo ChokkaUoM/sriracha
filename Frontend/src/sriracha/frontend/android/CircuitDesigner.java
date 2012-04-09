@@ -9,7 +9,7 @@ import sriracha.frontend.R;
 import sriracha.frontend.android.model.CircuitElementActivator;
 import sriracha.frontend.android.model.CircuitElementPortView;
 import sriracha.frontend.android.model.CircuitElementView;
-import sriracha.frontend.model.CircuitElementManager;
+import sriracha.frontend.model.*;
 
 import java.util.ArrayList;
 
@@ -19,7 +19,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     public static final int GRID_SIZE = 40;
 
     public enum CursorState {
-        ELEMENT, HAND, SELECTION, WIRE
+        ELEMENT, HAND, SELECTION, WIRE, SELECTING_ELEMENT
     }
 
     public enum CanvasState {
@@ -74,6 +74,10 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
 
     public void setCursorToWire() {
         setCursor(CursorState.WIRE);
+    }
+
+    public void setCursorToSelectingElement() {
+        setCursor(CursorState.SELECTING_ELEMENT);
     }
 
     private void setCursor(CursorState newCursor) {
@@ -212,6 +216,8 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                 lastInsertedIntersection = null;
                 setCanvasState(CanvasState.IDLE);
             }
+        } else if (getCursor() == CursorState.SELECTING_ELEMENT) {
+            setCursorToHand();
         } else {
             setCursorToHand();
             circuitDesignerMenu.showElementPropertiesMenu(selectedElement);
@@ -332,14 +338,39 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         return netlist;
     }
 
+    public CircuitElement getElementByName(String elementName)
+    {
+        return elementManager.getElementByName(elementName);
+    }
+
     public static int snap(float coord) {
         return (int) (coord / GRID_SIZE + 0.5f) * GRID_SIZE;
     }
 
     private class TouchListener extends EpicTouchListener {
+        private WireSegment selectedSegment;
+
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent)
+        {
+            // We want to record the selectedSegment outside the onSingleFingerMove()
+            // method because otherwise it causes some issues.
+            // As you move your finger, at some point before the segment snaps to the
+            // next grid-line, the finger will leave its collision bounds, causing the
+            // drag to end.
+            switch (motionEvent.getActionMasked())
+            {
+                case MotionEvent.ACTION_DOWN:
+                    selectedSegment = wireManager.getSegmentByPosition(motionEvent.getX(), motionEvent.getY());
+                    break;
+                case MotionEvent.ACTION_UP:
+                    selectedSegment = null;
+                    break;
+            }
+            return super.onTouch(view, motionEvent);
+        }
         @Override
         protected boolean onSingleFingerMove(float dX, float dY, float finalX, float finalY) {
-            WireSegment selectedSegment = wireManager.getSegmentByPosition(finalX, finalY);
             if (selectedSegment == null)
                 return false;
 

@@ -42,12 +42,15 @@ public class WireManager
     {
         for (CircuitElementPortView port : element.getElementPorts())
         {
-            WireIntersection newIntersection = new WireIntersection(port.getX(), port.getY());
-            intersections.add(newIntersection);
-            for (WireSegment segment : port.getSegments())
+            if (port.getSegments().size() > 0)
             {
-                segment.replaceIntersection(port, newIntersection);
-                newIntersection.addSegment(segment);
+                WireIntersection newIntersection = new WireIntersection(port.getX(), port.getY());
+                intersections.add(newIntersection);
+                for (WireSegment segment : port.getSegments())
+                {
+                    segment.replaceIntersection(port, newIntersection);
+                    newIntersection.addSegment(segment);
+                }
             }
             intersections.remove(port);
         }
@@ -151,10 +154,10 @@ public class WireManager
          *
          * - Case 1: There are overlapping segments coming out of different intersections.
          *           This means that consolidating the intersections will likely change the structure of the circuit.
-         *           Once again, we do nothing.
+         *           We do nothing.
          *
          * - Case 2: Two or more of the intersections are ports.
-         *           In this case, we do nothing, since we obviously can't
+         *           Once again, we do nothing, since we obviously can't
          *           eliminate any of the elements. Furthermore, we must not delete any zero-length segments that exist,
          *           since that would break the connection between the elements.
          *
@@ -240,6 +243,11 @@ public class WireManager
                 {
                     if (segment.getLength() == 0)
                     {
+                        // If one end is a port, and it's a zero-length
+                        // then we have to make sure that the segment gets removed
+                        // from the port, since the port won't be removed.
+                        segment.getStart().removeSegment(segment);
+                        segment.getEnd().removeSegment(segment);
                         removeSegment(segment);
                     }
                     else
