@@ -28,4 +28,12 @@
         <item name="android:background">@drawable/circuitmenu_itembackground</item>
         <item name="android:layout_alignParentRight">false</item>
     </style>
+
+    <style name="AnalysisEditText">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:inputType">numberDecimal|numberSigned</item>
+        <item name="android:imeOptions">actionDone</item>
+    </style>
 </resources>
