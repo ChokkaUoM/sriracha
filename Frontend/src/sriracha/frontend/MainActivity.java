@@ -42,19 +42,6 @@ public class MainActivity extends Activity
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.main);
-        Graph g = (Graph) findViewById(R.id.graph);
-        //create sin plot
-        Plot sin = new Plot();
-        for (double x = -50; x <= 50; x += 0.1)
-        {
-            sin.addPoint(new Point(x, Math.sin(x)));
-        }
-        g.beginEdit();
-
-        g.addPlot(sin, Color.argb(255, 200, 100, 88));
-
-
-        g.endEdit();
 
 
         circuitDesignerMenu = new CircuitDesignerMenu((MainActivity) this);

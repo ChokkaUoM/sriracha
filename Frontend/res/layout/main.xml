@@ -57,7 +57,26 @@
                    android:onClick="wrenchMenuOnClick"
                 />
     </sriracha.frontend.android.CircuitDesignerCanvas>
-    <include layout="@layout/analysis_menu"/>
+
+    <TabHost android:id="@+id/tab_host"
+             android:layout_width="0dip"
+             android:layout_weight="15"
+             android:layout_height="fill_parent">
+        <LinearLayout android:layout_width="fill_parent"
+                      android:layout_height="fill_parent"
+                      android:orientation="vertical">
+
+            <FrameLayout android:id="@android:id/tabcontent"
+                         android:layout_width="fill_parent"
+                         android:layout_height="fill_parent"/>
+
+            <TabWidget android:id="@android:id/tabs"
+                       android:layout_width="fill_parent"
+                       android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+    </TabHost>
+
     <sriracha.frontend.android.results.Graph
             android:id="@+id/graph"
             android:layout_width="0dip"

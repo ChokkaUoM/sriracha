@@ -9,6 +9,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TabHost;
+import sriracha.frontend.R;
 
 public class MainLayout extends LinearLayout
 {
@@ -21,7 +23,6 @@ public class MainLayout extends LinearLayout
     private double percentSmall = 0.2;
 
     private MainLayoutListener listener;
-
 
     private boolean fingersStillDown = false;
 
@@ -62,6 +63,15 @@ public class MainLayout extends LinearLayout
         anim1.setDuration(100);
         anim2.setDuration(250);
 
+        TabHost tabHost = (TabHost) findViewById(R.id.tab_host);
+
+        TabHost.TabSpec analysisMenu = tabHost.newTabSpec("A").setContent(R.layout.analysis_menu).setIndicator("Analysis");
+        TabHost.TabSpec plotMenu = tabHost.newTabSpec("G").setContent(R.layout.results_graph_controller).setIndicator("Graph");
+
+        tabHost.addTab(analysisMenu);
+        tabHost.addTab(plotMenu);
+
+        tabHost.setCurrentTab(0);
 
         listener = new MainLayoutListener();
 
