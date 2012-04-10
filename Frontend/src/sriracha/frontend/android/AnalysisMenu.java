@@ -340,8 +340,8 @@ public class AnalysisMenu extends LinearLayout
                     @Override
                     public void onSelect(WireSegment selectedSegment)
                     {
-                        NetlistGenerator generator = new NetlistGenerator();
-                        NetlistGenerator.NetlistNode node = generator.mapSegmentToNode(selectedSegment, wireManager);
+                        NodeCrawler crawler = new NodeCrawler();
+                        NetlistNode node = crawler.mapSegmentToNode(selectedSegment, wireManager);
                         if (node != null)
                             textView.setText(node.toString());
                     }
