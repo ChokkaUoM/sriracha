@@ -5,7 +5,8 @@ import java.util.List;
 /**
  * Interface for the only class that the FrontEnd should ever use from the backend.
  */
-public interface ISimulator {
+public interface ISimulator
+{
 
     /**
      * Sets the current netlist.
@@ -13,8 +14,9 @@ public interface ISimulator {
      * the results will all be streamed right away.
      *
      * @param netlist
+     * @return true task was completed, false if cancelled
      */
-    public void setNetlist(String netlist);
+    public boolean setNetlist(String netlist);
 
     /**
      * adds an analysis request to the simulator. The string should be one line that
@@ -22,8 +24,9 @@ public interface ISimulator {
      * ex.: ".AC LIN 100 1000 2000"
      *
      * @param analysis string representation of analysis spec
+     * @return true if analysis was completed, false if cancelled
      */
-    public void addAnalysis(String analysis);
+    public boolean addAnalysis(String analysis);
 
     /**
      * Corresponds to one of spices output specification lines.
@@ -42,6 +45,12 @@ public interface ISimulator {
      * @return all computed results so far
      */
     public List<IPrintData> getAllResults();
+
+    /**
+     * In order to request that the simulator stop what it is doing
+     * it is assumed this call comes in on a thread different than the one the simulator is running on.
+     */
+    public void requestCancel();
 
 
 }

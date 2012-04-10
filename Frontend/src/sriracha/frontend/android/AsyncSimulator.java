@@ -28,10 +28,12 @@ public class AsyncSimulator
         {
             public void run()
             {
+                final boolean success;
+
                 synchronized (simLock)
                 {
                     busy = true;
-                    simulator.setNetlist(netlist);
+                    success = simulator.setNetlist(netlist);
                     busy = false;
                 }
 
@@ -39,7 +41,14 @@ public class AsyncSimulator
                 {
                     public void run()
                     {
-                        callbackHandler.OnSimulatorReady();
+                        if (success)
+                        {
+                            callbackHandler.OnSimulatorReady();
+                        } else
+                        {
+                            callbackHandler.OnSimulatorSetupCancelled();
+                        }
+
                     }
 
                 };
@@ -57,10 +66,12 @@ public class AsyncSimulator
         {
             public void run()
             {
+                final boolean success;
+
                 synchronized (simLock)
                 {
                     busy = true;
-                    simulator.addAnalysis(analysis);
+                    success = simulator.addAnalysis(analysis);
                     busy = false;
                 }
 
@@ -68,7 +79,13 @@ public class AsyncSimulator
                 {
                     public void run()
                     {
-                        callbackHandler.OnSimulatorAnalysisDone();
+                        if (success)
+                        {
+                            callbackHandler.OnSimulatorAnalysisDone();
+                        } else
+                        {
+                            callbackHandler.OnSimulatorAnalysisCancelled();
+                        }
                     }
 
                 };
@@ -78,6 +95,11 @@ public class AsyncSimulator
 
             }
         }.start();
+    }
+
+    public void cancelAnalysis()
+    {
+        simulator.requestCancel();
     }
 
     /**
@@ -98,11 +120,30 @@ public class AsyncSimulator
 
     public interface OnSimulatorReadyListener
     {
+        /**
+         * called once the netlist has been parsed and any included analyses
+         * have been run
+         */
         public void OnSimulatorReady();
+
+        /**
+         * Called if the setNetlist call was cancelled.
+         * will not happen if no analysis was requested inside the original
+         * netlist
+         */
+        public void OnSimulatorSetupCancelled();
     }
 
     public interface OnSimulatorAnalysisDoneListener
     {
+        /**
+         * called when analysis is finished
+         */
         public void OnSimulatorAnalysisDone();
+
+        /**
+         * called if analysis was finished early
+         */
+        public void OnSimulatorAnalysisCancelled();
     }
 }

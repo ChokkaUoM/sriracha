@@ -19,6 +19,8 @@ public class Simulator implements ISimulator
 
     public static Simulator Instance = new Simulator();
 
+    private boolean cancelRequested;
+
     private Circuit circuit;
 
     private CircuitBuilder builder;
@@ -38,17 +40,33 @@ public class Simulator implements ISimulator
 
     }
 
-    private void saveAll()
+    private boolean saveAll()
     {
+        boolean success = true;
         for (Analysis analysis : requestedAnalysis)
         {
-            save(analysis);
+            success &= save(analysis);
+
+            if (!success) break;
         }
+
+        return success;
     }
 
-    private void save(Analysis analysis)
+    private boolean save(Analysis analysis)
     {
-        results.put(analysis.getType(), analysis.run());
+        IAnalysisResults res = analysis.run();
+
+        if (res == null)
+        {
+            cancelRequested = false;
+            return false;
+        }
+
+        results.put(analysis.getType(), res);
+        return true;
+
+
     }
 
     /**
@@ -56,7 +74,7 @@ public class Simulator implements ISimulator
      *
      * @param circuit
      */
-    private void setCircuit(Circuit circuit)
+    private boolean setCircuit(Circuit circuit)
     {
         this.circuit = circuit;
         circuit.assignAdditionalVarIndices();
@@ -65,7 +83,7 @@ public class Simulator implements ISimulator
             System.out.println(circuit);
         }
 
-        saveAll();
+        return saveAll();
 
     }
 
@@ -76,7 +94,7 @@ public class Simulator implements ISimulator
      * @param netlist - the text circuit and analysis description
      */
     @Override
-    public void setNetlist(String netlist)
+    public boolean setNetlist(String netlist)
     {
         clearData();
 
@@ -93,17 +111,17 @@ public class Simulator implements ISimulator
 
         outputFilters.addAll(builder.getOutputFilters());
 
-        saveAll();
+        return saveAll();
     }
 
 
     @Override
-    public void addAnalysis(String analysis)
+    public boolean addAnalysis(String analysis)
     {
         Analysis a = builder.parseAnalysis(analysis);
         requestedAnalysis.add(a);
         a.extractSolvingInfo(circuit);
-        save(a);
+        return save(a);
     }
 
     @Override
@@ -166,4 +184,18 @@ public class Simulator implements ISimulator
     }
 
 
+    public boolean isCancelRequested()
+    {
+        return cancelRequested;
+    }
+
+    /**
+     * In order to request that the simulator stop what it is doing
+     * it is assumed this call comes in on a thread different than the one the simulator is running on.
+     */
+    @Override
+    public void requestCancel()
+    {
+        cancelRequested = true;
+    }
 }
