@@ -22,6 +22,8 @@ public class MainLayout extends LinearLayout
 
     private int layoutOffset = 0;
 
+    private TabHost tabHost;
+
     private double percentSmall = 0.2;
 
     private MainLayoutListener listener;
@@ -69,7 +71,7 @@ public class MainLayout extends LinearLayout
         GraphController gController = (GraphController) findViewById(R.id.tab_graph);
         gController.setGraph((Graph) findViewById(R.id.graph));
 
-        TabHost tabHost = (TabHost) findViewById(R.id.tab_host);
+        tabHost = (TabHost) findViewById(R.id.tab_host);
         tabHost.setup();
 
         TabHost.TabSpec analysisMenu = tabHost.newTabSpec("A");
@@ -84,7 +86,7 @@ public class MainLayout extends LinearLayout
         tabHost.addTab(analysisMenu);
         tabHost.addTab(plotMenu);
 
-        tabHost.setCurrentTab(1);
+        tabHost.setCurrentTab(0);
 
         listener = new MainLayoutListener();
 
@@ -160,6 +162,7 @@ public class MainLayout extends LinearLayout
         if (Math.abs(layoutOffset - offset1) < 2)
         {
             anim2.reverse();
+            tabHost.setCurrentTab(0);
             return true;
         }
         return false;
@@ -178,6 +181,7 @@ public class MainLayout extends LinearLayout
         if (Math.abs(layoutOffset - offset0) < 2)
         {
             anim2.start();
+            tabHost.setCurrentTab(1);
             return true;
         }
 
