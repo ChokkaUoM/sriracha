@@ -4,10 +4,13 @@ import sriracha.simulator.IDataPoint;
 
 import java.text.DecimalFormat;
 
+/**
+ * Main implementation of IDataPoint Interface
+ * holds subset of complete solution vector for a
+ * specific point
+ */
 public class FilteredVector implements IDataPoint
 {
-
-
     private double x;
     private double[][] data;
 

@@ -34,7 +34,7 @@ public final class ACAnalysis extends Analysis
 
 
     /**
-     * Helper method for analyse(IEquation)
+     * Helper method for analysis
      *
      * @param base
      * @return analysis results
