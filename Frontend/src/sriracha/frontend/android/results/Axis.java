@@ -38,7 +38,7 @@ class Axis extends LinearLayout
      * space in pixels between each axis notch for
      * linear Horizontal Axis - does not change
      */
-    protected int linHNS = 90;
+    protected int linHNS = 100;
 
     /**
      * Logarithmic Decade Space

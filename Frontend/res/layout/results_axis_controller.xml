@@ -5,14 +5,14 @@
               android:layout_height="180dip"
               android:orientation="vertical"
               android:gravity="center"
-              android:background="#44A">
+              android:background="@color/MenuLight">
 
     <TextView android:layout_height="40dip"
               android:layout_width="fill_parent"
               android:id="@+id/actl_title"
               android:gravity="center"
               android:text="Axis Controller"
-              android:background="#555"/>
+              android:background="@color/SnappyGrey"/>
 
     <TableLayout
             android:layout_width="fill_parent"

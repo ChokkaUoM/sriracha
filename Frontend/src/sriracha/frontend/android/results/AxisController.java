@@ -76,7 +76,7 @@ public class AxisController extends FrameLayout implements AdapterView.OnItemSel
         scaleSelector = (Spinner) findViewById(R.id.actl_scale_select);
 
         scaleSelector.setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item,
-                new String[]{"LIN", "DEC", "OCT"}));
+                new String[]{"LIN", "LOG10", "LOG8"}));
         ((ArrayAdapter<String>) scaleSelector.getAdapter()).setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         titleView = (TextView) findViewById(R.id.actl_title);
@@ -85,6 +85,7 @@ public class AxisController extends FrameLayout implements AdapterView.OnItemSel
 
         scaleSelector.setOnItemSelectedListener(this);
         minValueSelector.setOnEditorActionListener(this);
+        maxValueSelector.setOnEditorActionListener(this);
 
     }
 

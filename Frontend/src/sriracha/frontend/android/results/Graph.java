@@ -326,7 +326,9 @@ public class Graph extends FrameLayout
     protected void onDraw(Canvas canvas)
     {
         Paint snapPaint = new Paint();
-        snapPaint.setARGB(255, 100, 100, 100);
+
+        snapPaint.setColor(getResources().getColor(R.color.SnappyGrey));
+
         if (yAxis.getLeft() == 0)
         {
             canvas.drawRect(0, 0, yAxis.getDrawnAxisOffset(), getHeight(), snapPaint);

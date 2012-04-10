@@ -1,14 +1,19 @@
 package sriracha.frontend.android.model;
 
-import android.content.*;
-import android.graphics.*;
-import android.view.*;
-import android.widget.*;
-import sriracha.frontend.*;
-import sriracha.frontend.android.*;
-import sriracha.frontend.model.*;
-
-import java.util.*;
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PointF;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import sriracha.frontend.R;
+import sriracha.frontend.android.CircuitDesigner;
+import sriracha.frontend.android.WireManager;
+import sriracha.frontend.android.WireSegment;
+import sriracha.frontend.model.CircuitElement;
 
 abstract public class CircuitElementView extends ImageView implements View.OnTouchListener
 {
@@ -26,6 +31,7 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
     private OnElementClickListener onElementClickListener;
     private OnInvalidateListener onInvalidateListener;
     private OnMoveListener onMoveListener;
+    private OnDropListener onDropListener;
 
     private float positionX;
     private float positionY;
@@ -65,10 +71,21 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         return element;
     }
 
-    public float getPositionX() { return positionX; }
-    public float getPositionY() { return positionY; }
+    public float getPositionX()
+    {
+        return positionX;
+    }
 
-    public float getOrientation() { return orientation; }
+    public float getPositionY()
+    {
+        return positionY;
+    }
+
+    public float getOrientation()
+    {
+        return orientation;
+    }
+
     public void setOrientation(float orientation)
     {
         this.orientation = orientation;
@@ -76,6 +93,7 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         if (onInvalidateListener != null)
             onInvalidateListener.onInvalidate();
     }
+
     public void rotate(int degrees)
     {
         setOrientation((orientation + degrees) % 360);
@@ -99,7 +117,11 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         return closestPort;
     }
 
-    public boolean isElementSelected() { return isElementSelected; }
+    public boolean isElementSelected()
+    {
+        return isElementSelected;
+    }
+
     public void setElementSelected(boolean elementSelected)
     {
         isElementSelected = elementSelected;
@@ -114,6 +136,11 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
     public void setOnInvalidateListener(OnInvalidateListener onInvalidateListener)
     {
         this.onInvalidateListener = onInvalidateListener;
+    }
+
+    public void setOnDropListener(OnDropListener onDropListener)
+    {
+        this.onDropListener = onDropListener;
     }
 
     public void setOnMoveListener(OnMoveListener onMoveListener)
@@ -177,7 +204,7 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
 
                 if (hasMoved)
                     wireManager.consolidateIntersections();
-                
+
                 if (onMoveListener != null)
                     onMoveListener.onMove(this);
 
@@ -189,6 +216,10 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
                 {
                     possibleClickPointerId = INVALID_POINTER_ID;
                     onClick(motionEvent.getX(), motionEvent.getY());
+                } else
+                {
+                    if (onDropListener != null)
+                        onDropListener.onDrop(this);
                 }
                 // Fall through
 
@@ -251,9 +282,14 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
     {
         public void onInvalidate();
     }
-    
+
     public interface OnMoveListener
     {
         public void onMove(CircuitElementView elementView);
+    }
+
+    public interface OnDropListener
+    {
+        public void onDrop(CircuitElementView elementView);
     }
 }

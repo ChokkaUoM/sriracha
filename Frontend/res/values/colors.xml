@@ -1,0 +1,5 @@
+<resources>
+    <color name="MenuBackground">#000033</color>
+    <color name="MenuLight">#00004B</color>
+    <color name="SnappyGrey">#FF646464</color>
+</resources>
