@@ -1,9 +1,12 @@
 package sriracha.frontend.android.model;
 
-import android.graphics.*;
-import sriracha.frontend.android.*;
+import android.graphics.Matrix;
+import sriracha.frontend.android.designer.IWireIntersection;
+import sriracha.frontend.android.designer.WireIntersection;
+import sriracha.frontend.android.designer.WireManager;
+import sriracha.frontend.android.designer.WireSegment;
 
-import java.util.*;
+import java.util.ArrayList;
 
 public class CircuitElementPortView implements IWireIntersection
 {
@@ -20,10 +23,20 @@ public class CircuitElementPortView implements IWireIntersection
         this.positionY = positionY;
     }
 
-    public CircuitElementView getElement() { return element; }
+    public CircuitElementView getElement()
+    {
+        return element;
+    }
 
-    public float getUntransformedPositionX() { return positionX; }
-    public float getUntransformedPositionY() { return positionY; }
+    public float getUntransformedPositionX()
+    {
+        return positionX;
+    }
+
+    public float getUntransformedPositionY()
+    {
+        return positionY;
+    }
 
     public float[] getTransformedPosition()
     {
@@ -38,7 +51,7 @@ public class CircuitElementPortView implements IWireIntersection
         matrix.mapPoints(transformed, new float[]{positionX, positionY});
         return transformed;
     }
-    
+
     public float getRelativeX()
     {
         return element.getWidth() / 2 + element.getWidth() * getTransformedPosition()[0];
@@ -92,6 +105,7 @@ public class CircuitElementPortView implements IWireIntersection
     {
         return true;
     }
+
     @Override
     public WireIntersection duplicate(WireSegment segment, WireManager wireManager)
     {

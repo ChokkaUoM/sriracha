@@ -9,20 +9,16 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TabHost;
-import sriracha.frontend.R;
-import sriracha.frontend.android.results.Graph;
-import sriracha.frontend.android.results.GraphController;
 
 public class MainLayout extends LinearLayout
 {
 
 
-    private ObjectAnimator anim1, anim2;
+    private ObjectAnimator anim1, anim2, anim3;
 
     private int layoutOffset = 0;
 
-    private TabHost tabHost;
+//    private TabHost tabHost;
 
     private double percentSmall = 0.2;
 
@@ -62,31 +58,34 @@ public class MainLayout extends LinearLayout
         int width = ((Activity) getContext()).getWindowManager().getDefaultDisplay().getWidth();
         int a1Start = 0, a1End = (int) (percentSmall * width);
         int a2Start = a1End, a2End = width;
+        int a3Start = a2End, a3End = width + a1End;
 
         anim1 = ObjectAnimator.ofInt(this, "layoutOffset", a1Start, a1End);
         anim2 = ObjectAnimator.ofInt(this, "layoutOffset", a2Start, a2End);
-        anim1.setDuration(100);
-        anim2.setDuration(250);
+        anim3 = ObjectAnimator.ofInt(this, "layoutOffset", a3Start, a3End);
+        anim1.setDuration(110);
+        anim2.setDuration(220);
+        anim3.setDuration(110);
 
-        GraphController gController = (GraphController) findViewById(R.id.tab_graph);
-        gController.setGraph((Graph) findViewById(R.id.graph));
-
-        tabHost = (TabHost) findViewById(R.id.tab_host);
-        tabHost.setup();
-
-        TabHost.TabSpec analysisMenu = tabHost.newTabSpec("A");
-        analysisMenu.setIndicator("Analysis");
-        analysisMenu.setContent(R.id.tab_analysis);
-
-        TabHost.TabSpec plotMenu = tabHost.newTabSpec("G");
-        plotMenu.setIndicator("Graph");
-        plotMenu.setContent(R.id.tab_graph);
-
-
-        tabHost.addTab(analysisMenu);
-        tabHost.addTab(plotMenu);
-
-        tabHost.setCurrentTab(0);
+//        GraphController gController = (GraphController) findViewById(R.id.tab_graph);
+//        gController.setGraph((Graph) findViewById(R.id.graph));
+//
+//        tabHost = (TabHost) findViewById(R.id.tab_host);
+//        tabHost.setup();
+//
+//        TabHost.TabSpec analysisMenu = tabHost.newTabSpec("A");
+//        analysisMenu.setIndicator("Analysis");
+//        analysisMenu.setContent(R.id.tab_analysis);
+//
+//        TabHost.TabSpec plotMenu = tabHost.newTabSpec("G");
+//        plotMenu.setIndicator("Graph");
+//        plotMenu.setContent(R.id.tab_graph);
+//
+//
+//        tabHost.addTab(analysisMenu);
+//        tabHost.addTab(plotMenu);
+//
+//        tabHost.setCurrentTab(0);
 
         listener = new MainLayoutListener();
 
@@ -94,6 +93,8 @@ public class MainLayout extends LinearLayout
         anim1.addUpdateListener(listener);
         anim2.addListener(listener);
         anim2.addUpdateListener(listener);
+        anim3.addListener(listener);
+        anim3.addUpdateListener(listener);
 
     }
 
@@ -117,11 +118,12 @@ public class MainLayout extends LinearLayout
 
         getChildAt(0).measure(leftWMS, heighSpec);
         getChildAt(2).measure(leftWMS, heighSpec);
+        getChildAt(4).measure(leftWMS, heighSpec);
 
         getChildAt(1).measure(rightWMS, heighSpec);
         getChildAt(3).measure(rightWMS, heighSpec);
 
-        setMeasuredDimension(2 * width, height);
+        setMeasuredDimension((int) ((2 + percentSmall) * width), height);
 
     }
 
@@ -133,16 +135,19 @@ public class MainLayout extends LinearLayout
         View c1 = getChildAt(1);
         View c2 = getChildAt(2);
         View c3 = getChildAt(3);
+        View c4 = getChildAt(4);
 
         int offset0 = c0.getMeasuredWidth();
         int offset1 = offset0 + c1.getMeasuredWidth();
         int offset2 = offset1 + c2.getMeasuredWidth();
         int offset3 = offset2 + c3.getMeasuredWidth();
+        int offset4 = offset3 + c4.getMeasuredWidth();
 
         c0.layout(-layoutOffset, 0, offset0 - layoutOffset, c0.getMeasuredHeight());
         c1.layout(offset0 - layoutOffset, 0, offset1 - layoutOffset, c1.getMeasuredHeight());
         c2.layout(offset1 - layoutOffset, 0, offset2 - layoutOffset, c2.getMeasuredHeight());
-        c3.layout(offset2 - layoutOffset, 0, offset3 - layoutOffset, c2.getMeasuredHeight());
+        c3.layout(offset2 - layoutOffset, 0, offset3 - layoutOffset, c3.getMeasuredHeight());
+        c4.layout(offset3 - layoutOffset, 0, offset4 - layoutOffset, c4.getMeasuredHeight());
 
     }
 
@@ -150,9 +155,11 @@ public class MainLayout extends LinearLayout
     {
         View c0 = getChildAt(0);
         View c1 = getChildAt(1);
+        View c2 = getChildAt(2);
 
         int offset0 = c0.getMeasuredWidth();
         int offset1 = offset0 + c1.getMeasuredWidth();
+        int offset2 = offset1 + c2.getMeasuredWidth();
 
         if (Math.abs(layoutOffset - offset0) < 2)
         {
@@ -162,8 +169,12 @@ public class MainLayout extends LinearLayout
         if (Math.abs(layoutOffset - offset1) < 2)
         {
             anim2.reverse();
-            tabHost.setCurrentTab(0);
+//            tabHost.setCurrentTab(0);
             return true;
+        }
+        if (Math.abs(layoutOffset - offset2) < 2)
+        {
+            anim3.reverse();
         }
         return false;
     }
@@ -171,7 +182,10 @@ public class MainLayout extends LinearLayout
     public boolean shiftRight()
     {
         View c0 = getChildAt(0);
+        View c1 = getChildAt(1);
         int offset0 = c0.getMeasuredWidth();
+        int offset1 = offset0 + c1.getMeasuredWidth();
+
 
         if (layoutOffset == 0)
         {
@@ -181,9 +195,15 @@ public class MainLayout extends LinearLayout
         if (Math.abs(layoutOffset - offset0) < 2)
         {
             anim2.start();
-            tabHost.setCurrentTab(1);
+//            tabHost.setCurrentTab(1);
             return true;
         }
+        if (Math.abs(layoutOffset - offset1) < 2)
+        {
+            anim3.start();
+            return true;
+        }
+
 
         return false;
     }
@@ -210,7 +230,7 @@ public class MainLayout extends LinearLayout
 
             boolean shifted = false;
 
-            if (Math.abs(dX) > 1.5 * Math.abs(dY))
+            if (Math.abs(dX) > 2 * Math.abs(dY))
             {
                 if (dX < 0)
                     shifted |= shiftRight();

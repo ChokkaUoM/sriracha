@@ -1,8 +1,11 @@
-package sriracha.frontend.android;
+package sriracha.frontend.android.designer;
 
-import android.content.*;
-import android.graphics.*;
-import android.view.*;
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.view.View;
 
 public class WireSegment extends View
 {
@@ -20,6 +23,7 @@ public class WireSegment extends View
 
     int r, g, b;
     static int rs, gs, bs;
+
     public WireSegment(Context context, WireManager wireManager, IWireIntersection start, IWireIntersection end)
     {
         super(context);
@@ -44,8 +48,15 @@ public class WireSegment extends View
         b = bs;
     }
 
-    public IWireIntersection getStart() { return start; }
-    public IWireIntersection getEnd() { return end; }
+    public IWireIntersection getStart()
+    {
+        return start;
+    }
+
+    public IWireIntersection getEnd()
+    {
+        return end;
+    }
 
     @Override
     protected void onDraw(Canvas canvas)
@@ -63,8 +74,15 @@ public class WireSegment extends View
         canvas.drawCircle(end.getX() + randEX, end.getY() + randEY, 4, paint);
     }
 
-    public boolean moveX(int x) { return moveX(x, null); }
-    public boolean moveY(int y) { return moveY(y, null); }
+    public boolean moveX(int x)
+    {
+        return moveX(x, null);
+    }
+
+    public boolean moveY(int y)
+    {
+        return moveY(y, null);
+    }
 
     public boolean moveX(int x, IWireIntersection onlyThisNode)
     {
@@ -179,8 +197,7 @@ public class WireSegment extends View
                 return x == start.getX() && start.getY() <= y && y <= end.getY();
             else
                 return x == start.getX() && end.getY() <= y && y <= start.getY();
-        }
-        else
+        } else
         {
             if (start.getX() <= end.getX())
                 return y == start.getY() && start.getX() <= x && x <= end.getX();

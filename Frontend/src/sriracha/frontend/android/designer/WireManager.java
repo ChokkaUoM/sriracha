@@ -1,12 +1,13 @@
-package sriracha.frontend.android;
+package sriracha.frontend.android.designer;
 
-import android.content.*;
-import android.graphics.*;
-import android.view.*;
-import android.webkit.*;
-import sriracha.frontend.android.model.*;
+import android.content.Context;
+import android.graphics.Point;
+import android.view.ViewGroup;
+import sriracha.frontend.android.model.CircuitElementPortView;
+import sriracha.frontend.android.model.CircuitElementView;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class WireManager
 {
@@ -229,8 +230,7 @@ public class WireManager
             {
                 // Case 3.
                 newIntersection = port;
-            }
-            else
+            } else
             {
                 // Case 4. Create a new intersection to replace all the old ones.
                 newIntersection = new WireIntersection(intersectionList.get(0).getX(), intersectionList.get(0).getY());
@@ -250,8 +250,7 @@ public class WireManager
                         segment.getStart().removeSegment(segment);
                         segment.getEnd().removeSegment(segment);
                         removeSegment(segment);
-                    }
-                    else
+                    } else
                     {
                         // When consolidating intersections, each affected segment must have the
                         // relevant intersection replaced.
@@ -289,8 +288,7 @@ public class WireManager
                     {
                         seg2.getEnd().replaceSegment(seg2, seg1);
                         seg1.replaceIntersection(intersection, seg2.getEnd());
-                    }
-                    else
+                    } else
                     {
                         seg2.getStart().replaceSegment(seg2, seg1);
                         seg1.replaceIntersection(intersection, seg2.getStart());

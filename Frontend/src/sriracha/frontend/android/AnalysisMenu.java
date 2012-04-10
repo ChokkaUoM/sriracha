@@ -1,17 +1,24 @@
 package sriracha.frontend.android;
 
-import android.content.*;
-import android.util.*;
-import android.view.*;
+import android.content.Context;
+import android.util.AttributeSet;
+import android.view.Gravity;
+import android.view.View;
 import android.widget.*;
-import sriracha.frontend.*;
-import sriracha.frontend.android.model.*;
-import sriracha.frontend.android.model.elements.sources.*;
-import sriracha.frontend.android.results.*;
-import sriracha.frontend.model.*;
-import sriracha.simulator.*;
+import sriracha.frontend.MainActivity;
+import sriracha.frontend.NetlistGenerator;
+import sriracha.frontend.R;
+import sriracha.frontend.android.designer.CircuitDesigner;
+import sriracha.frontend.android.designer.WireManager;
+import sriracha.frontend.android.designer.WireSegment;
+import sriracha.frontend.android.model.CircuitElementView;
+import sriracha.frontend.android.model.elements.sources.VoltageSourceView;
+import sriracha.frontend.android.results.IElementSelector;
+import sriracha.frontend.model.CircuitElement;
+import sriracha.simulator.IPrintData;
+import sriracha.simulator.ISimulator;
 
-import java.util.*;
+import java.util.ArrayList;
 
 public class AnalysisMenu extends RelativeLayout
 {
@@ -19,10 +26,12 @@ public class AnalysisMenu extends RelativeLayout
     {
         super(context);
     }
+
     public AnalysisMenu(Context context, AttributeSet attrs)
     {
         super(context, attrs);
     }
+
     public AnalysisMenu(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
@@ -50,13 +59,11 @@ public class AnalysisMenu extends RelativeLayout
         {
             addDcAnalysis(simulator);
             analysisType = "DC";
-        }
-        else if (analysisType.equals("Frequency"))
+        } else if (analysisType.equals("Frequency"))
         {
             addAcAnalysis(simulator);
             analysisType = "AC";
-        }
-        else
+        } else
             throw new RuntimeException("Invalid analysis type: " + analysisType);
 
         String printTypeLong = ((TextView) ((Spinner) findViewById(R.id.print_type)).getSelectedView()).getText().toString();
@@ -81,8 +88,7 @@ public class AnalysisMenu extends RelativeLayout
         {
             String analysis = String.format(".DC %s %f %f %f", element.getName(), startV, stopV, incr);
             simulator.addAnalysis(analysis);
-        }
-        else
+        } else
         {
             Toast toast = Toast.makeText(getContext(), "You must choose an element to sweep", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER, 0, 0);
@@ -108,8 +114,7 @@ public class AnalysisMenu extends RelativeLayout
         if (node1 != null && node2 != null)
         {
             return String.format(".PRINT %s %s(%s,%s)", analysisType, printType, node1, node2);
-        }
-        else
+        } else
         {
             Toast toast = Toast.makeText(getContext(), "You must choose a node to measure voltage", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER, 0, 0);
@@ -126,8 +131,7 @@ public class AnalysisMenu extends RelativeLayout
         if (element != null)
         {
             return String.format(".PRINT %s %s(%s)", analysisType, printType, element.getName());
-        }
-        else
+        } else
         {
             Toast toast = Toast.makeText(getContext(), "You must choose an element to measure current", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER, 0, 0);
@@ -161,6 +165,7 @@ public class AnalysisMenu extends RelativeLayout
                 else
                     throw new RuntimeException("Invalid analysis type");
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> adapterView)
             {
@@ -192,6 +197,7 @@ public class AnalysisMenu extends RelativeLayout
                 else
                     throw new RuntimeException("Invalid plot type");
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> adapterView)
             {

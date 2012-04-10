@@ -1,8 +1,8 @@
 package sriracha.frontend;
 
-import sriracha.frontend.android.IWireIntersection;
-import sriracha.frontend.android.WireManager;
-import sriracha.frontend.android.WireSegment;
+import sriracha.frontend.android.designer.IWireIntersection;
+import sriracha.frontend.android.designer.WireManager;
+import sriracha.frontend.android.designer.WireSegment;
 import sriracha.frontend.android.model.CircuitElementPortView;
 import sriracha.frontend.model.CircuitElement;
 import sriracha.frontend.model.CircuitElementManager;

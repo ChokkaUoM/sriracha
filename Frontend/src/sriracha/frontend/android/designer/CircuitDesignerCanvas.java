@@ -1,11 +1,12 @@
-package sriracha.frontend.android;
+package sriracha.frontend.android.designer;
 
-import android.content.*;
-import android.graphics.*;
-import android.util.*;
-import android.widget.*;
-import sriracha.frontend.android.*;
-import sriracha.frontend.android.results.*;
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.util.AttributeSet;
+import android.widget.RelativeLayout;
+import sriracha.frontend.android.results.IElementSelector;
 
 public class CircuitDesignerCanvas extends RelativeLayout
 {
@@ -19,11 +20,13 @@ public class CircuitDesignerCanvas extends RelativeLayout
         super(context);
         initPaint();
     }
+
     public CircuitDesignerCanvas(Context context, AttributeSet attrs)
     {
         super(context, attrs);
         initPaint();
-}
+    }
+
     public CircuitDesignerCanvas(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
@@ -37,7 +40,11 @@ public class CircuitDesignerCanvas extends RelativeLayout
         paint.setStrokeWidth(1);
     }
 
-    public boolean isShowGrid() { return showGrid; }
+    public boolean isShowGrid()
+    {
+        return showGrid;
+    }
+
     public void setShowGrid(boolean showGrid)
     {
         this.showGrid = showGrid;

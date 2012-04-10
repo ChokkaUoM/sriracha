@@ -7,18 +7,17 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
-import sriracha.frontend.android.*;
+import sriracha.frontend.android.AnalysisMenu;
+import sriracha.frontend.android.AsyncSimulator;
+import sriracha.frontend.android.MainLayout;
+import sriracha.frontend.android.designer.CircuitDesigner;
+import sriracha.frontend.android.designer.CircuitDesignerMenu;
 import sriracha.frontend.android.model.CircuitElementActivator;
 import sriracha.frontend.android.results.Graph;
-import sriracha.frontend.model.CircuitElement;
 import sriracha.frontend.resultdata.Plot;
 import sriracha.frontend.resultdata.Point;
 import sriracha.simulator.IPrintData;
-import sriracha.simulator.ISimulator;
-import sriracha.simulator.Simulator;
 
 import java.util.List;
 
@@ -27,7 +26,8 @@ public class MainActivity extends Activity
     private CircuitDesignerMenu circuitDesignerMenu;
     private CircuitDesigner circuitDesigner;
 
-    private ISimulator simulator;
+    private AsyncSimulator simulator;
+
 
     /**
      * Called when the activity is first created.
@@ -48,7 +48,7 @@ public class MainActivity extends Activity
 
         showCircuitMenu(R.id.circuit_menu);
 
-        simulator = Simulator.Instance;
+        simulator = new AsyncSimulator(this);
 
 //        testGraph();
     }
@@ -132,7 +132,7 @@ public class MainActivity extends Activity
         circuitDesigner.deleteSelectedElement();
     }
 
-    public ISimulator getSimulator()
+    public AsyncSimulator getSimulator()
     {
         return simulator;
     }
@@ -172,8 +172,7 @@ public class MainActivity extends Activity
             g.addPlot(plots.get(0), Color.argb(255, 200, 12, 233));
 
             ((MainLayout) findViewById(R.id.main)).shiftRight();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Toast toast = Toast.makeText(this, "Something seems to have gone slightly awry.", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER, 0, 0);

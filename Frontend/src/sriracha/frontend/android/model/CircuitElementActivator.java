@@ -1,15 +1,27 @@
 package sriracha.frontend.android.model;
 
-import android.content.*;
-import sriracha.frontend.*;
-import sriracha.frontend.android.*;
-import sriracha.frontend.android.model.elements.*;
-import sriracha.frontend.android.model.elements.ctlsources.*;
-import sriracha.frontend.android.model.elements.sources.*;
-import sriracha.frontend.model.*;
-import sriracha.frontend.model.elements.*;
-import sriracha.frontend.model.elements.ctlsources.*;
-import sriracha.frontend.model.elements.sources.*;
+import android.content.Context;
+import sriracha.frontend.R;
+import sriracha.frontend.android.designer.WireManager;
+import sriracha.frontend.android.model.elements.CapacitorView;
+import sriracha.frontend.android.model.elements.InductorView;
+import sriracha.frontend.android.model.elements.ResistorView;
+import sriracha.frontend.android.model.elements.ctlsources.DependentCurrentSourceView;
+import sriracha.frontend.android.model.elements.ctlsources.DependentVoltageSourceView;
+import sriracha.frontend.android.model.elements.sources.CurrentSourceView;
+import sriracha.frontend.android.model.elements.sources.GroundView;
+import sriracha.frontend.android.model.elements.sources.VCCView;
+import sriracha.frontend.android.model.elements.sources.VoltageSourceView;
+import sriracha.frontend.model.CircuitElementManager;
+import sriracha.frontend.model.elements.Capacitor;
+import sriracha.frontend.model.elements.Inductor;
+import sriracha.frontend.model.elements.Resistor;
+import sriracha.frontend.model.elements.ctlsources.DependentCurrentSource;
+import sriracha.frontend.model.elements.ctlsources.DependentVoltageSource;
+import sriracha.frontend.model.elements.sources.CurrentSource;
+import sriracha.frontend.model.elements.sources.Ground;
+import sriracha.frontend.model.elements.sources.VCC;
+import sriracha.frontend.model.elements.sources.VoltageSource;
 
 public class CircuitElementActivator
 {

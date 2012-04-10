@@ -678,18 +678,19 @@ class Axis extends LinearLayout
 
     }
 
+    interface OnAxisChangedListener
+    {
+        public void onAxisRangeChanged(double minValue, double maxValue);
+
+        public void onAxisScaleTypeChanged(int scaleType);
+
+        public void onAxisLogBaseChanged(int logBase);
+    }
+
     public void setPairedXSize(int pairedXSize)
     {
         this.pairedXSize = pairedXSize;
     }
 }
 
-interface OnAxisChangedListener
-{
-    public void onAxisRangeChanged(double minValue, double maxValue);
-
-    public void onAxisScaleTypeChanged(int scaleType);
-
-    public void onAxisLogBaseChanged(int logBase);
-}
 

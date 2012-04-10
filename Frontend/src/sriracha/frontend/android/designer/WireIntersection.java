@@ -1,6 +1,6 @@
-package sriracha.frontend.android;
+package sriracha.frontend.android.designer;
 
-import java.util.*;
+import java.util.ArrayList;
 
 public class WireIntersection implements IWireIntersection
 {
@@ -116,10 +116,16 @@ public class WireIntersection implements IWireIntersection
     }
 
     @Override
-    public int getX() { return x; }
+    public int getX()
+    {
+        return x;
+    }
 
     @Override
-    public int getY() { return y; }
+    public int getY()
+    {
+        return y;
+    }
 
     @Override
     public String toString()

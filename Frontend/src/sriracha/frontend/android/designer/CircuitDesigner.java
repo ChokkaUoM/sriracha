@@ -1,10 +1,13 @@
-package sriracha.frontend.android;
+package sriracha.frontend.android.designer;
 
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import sriracha.frontend.NetlistGenerator;
 import sriracha.frontend.R;
+import sriracha.frontend.android.ElementSelector;
+import sriracha.frontend.android.EpicTouchListener;
+import sriracha.frontend.android.NodeSelector;
 import sriracha.frontend.android.model.CircuitElementActivator;
 import sriracha.frontend.android.model.CircuitElementPortView;
 import sriracha.frontend.android.model.CircuitElementView;

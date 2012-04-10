@@ -1,11 +1,13 @@
-package sriracha.frontend.android;
+package sriracha.frontend.android.designer;
 
-import android.view.*;
-import android.widget.*;
-import sriracha.frontend.*;
-import sriracha.frontend.android.model.*;
+import android.view.View;
+import android.view.ViewGroup;
+import sriracha.frontend.MainActivity;
+import sriracha.frontend.R;
+import sriracha.frontend.android.ElementPropertiesView;
+import sriracha.frontend.android.model.CircuitElementView;
 
-import java.util.*;
+import java.util.ArrayList;
 
 public class CircuitDesignerMenu
 {

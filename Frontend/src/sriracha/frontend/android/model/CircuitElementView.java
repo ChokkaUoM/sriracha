@@ -10,9 +10,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import sriracha.frontend.R;
-import sriracha.frontend.android.CircuitDesigner;
-import sriracha.frontend.android.WireManager;
-import sriracha.frontend.android.WireSegment;
+import sriracha.frontend.android.designer.CircuitDesigner;
+import sriracha.frontend.android.designer.WireManager;
+import sriracha.frontend.android.designer.WireSegment;
 import sriracha.frontend.model.CircuitElement;
 
 abstract public class CircuitElementView extends ImageView implements View.OnTouchListener

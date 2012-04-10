@@ -1,14 +1,16 @@
 package sriracha.frontend.android;
 
-import android.content.*;
-import android.util.*;
+import android.content.Context;
+import android.util.AttributeSet;
 import android.view.*;
 import android.widget.*;
 import sriracha.frontend.R;
-import sriracha.frontend.android.model.*;
+import sriracha.frontend.android.designer.CircuitDesigner;
+import sriracha.frontend.android.model.CircuitElementView;
 import sriracha.frontend.model.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ElementPropertiesView extends LinearLayout
 {
@@ -16,10 +18,12 @@ public class ElementPropertiesView extends LinearLayout
     {
         super(context);
     }
+
     public ElementPropertiesView(Context context, AttributeSet attrs)
     {
         super(context, attrs);
     }
+
     public ElementPropertiesView(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
@@ -48,8 +52,7 @@ public class ElementPropertiesView extends LinearLayout
                 {
                     element.setName(newName);
                     circuitElementView.invalidate();
-                }
-                else
+                } else
                 {
                     name.setText(element.getName());
                     Toast toast = Toast.makeText(getContext(), "The name \"" + newName + "\" is already in use.", Toast.LENGTH_LONG);
@@ -95,6 +98,7 @@ public class ElementPropertiesView extends LinearLayout
                     {
                         scalarProperty.setUnit(((TextView) textView).getText().toString());
                     }
+
                     @Override
                     public void onNothingSelected(AdapterView<?> adapterView)
                     {
@@ -110,8 +114,7 @@ public class ElementPropertiesView extends LinearLayout
                         try
                         {
                             scalarProperty.trySetValue(textView.getText().toString());
-                        }
-                        catch (Exception e)
+                        } catch (Exception e)
                         {
                             propertyValue.setText(scalarProperty.getValue());
                             Toast toast = Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG);
@@ -121,8 +124,7 @@ public class ElementPropertiesView extends LinearLayout
                         return true;
                     }
                 });
-            }
-            else if (property instanceof ReferenceProperty)
+            } else if (property instanceof ReferenceProperty)
             {
                 final ReferenceProperty referenceProperty = (ReferenceProperty) property;
                 final View referencePropertyView = LayoutInflater.from(getContext())

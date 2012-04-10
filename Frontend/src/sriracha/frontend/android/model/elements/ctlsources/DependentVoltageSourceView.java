@@ -1,10 +1,11 @@
 package sriracha.frontend.android.model.elements.ctlsources;
 
-import android.content.*;
-import sriracha.frontend.*;
-import sriracha.frontend.android.*;
-import sriracha.frontend.android.model.*;
-import sriracha.frontend.model.*;
+import android.content.Context;
+import sriracha.frontend.R;
+import sriracha.frontend.android.designer.WireManager;
+import sriracha.frontend.android.model.CircuitElementPortView;
+import sriracha.frontend.android.model.CircuitElementView;
+import sriracha.frontend.model.CircuitElement;
 
 public class DependentVoltageSourceView extends CircuitElementView
 {

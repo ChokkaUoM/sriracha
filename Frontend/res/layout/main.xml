@@ -15,11 +15,11 @@
         <include android:id="@+id/element_properties" layout="@layout/element_properties"/>
         <include android:id="@+id/wire_properties" layout="@layout/wire_properties"/>
     </RelativeLayout>
-    <sriracha.frontend.android.CircuitDesignerCanvas android:layout_width="0dip"
-                                                     android:layout_height="fill_parent"
-                                                     android:layout_weight="85"
-                                                     android:background="#DDD"
-                                                     android:id="@+id/circuit_design_canvas">
+    <sriracha.frontend.android.designer.CircuitDesignerCanvas android:layout_width="0dip"
+                                                              android:layout_height="fill_parent"
+                                                              android:layout_weight="85"
+                                                              android:background="#DDD"
+                                                              android:id="@+id/circuit_design_canvas">
 
         <RelativeLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
@@ -58,9 +58,9 @@
                    android:src="@drawable/wrenchmenu_icon"
                    android:onClick="wrenchMenuOnClick"
                 />
-    </sriracha.frontend.android.CircuitDesignerCanvas>
+    </sriracha.frontend.android.designer.CircuitDesignerCanvas>
 
-    <TabHost android:id="@+id/tab_host"
+    <!--TabHost android:id="@+id/tab_host"
              android:layout_width="0dip"
              android:layout_weight="15"
              android:layout_height="fill_parent">
@@ -92,7 +92,9 @@
 
 
         </LinearLayout>
-    </TabHost>
+    </TabHost-->
+
+    <include android:id="@+id/tab_analysis" layout="@layout/analysis_menu"/>
 
     <sriracha.frontend.android.results.Graph
             android:id="@+id/graph"
@@ -100,4 +102,11 @@
             android:layout_height="fill_parent"
             android:layout_weight="85">
     </sriracha.frontend.android.results.Graph>
+
+    <sriracha.frontend.android.results.GraphController android:id="@+id/tab_graph"
+                                                       android:layout_width="fill_parent"
+                                                       android:layout_height="fill_parent"
+                                                       android:background="@color/MenuBackground"
+                                                       android:padding="4dp"/>
+
 </sriracha.frontend.android.MainLayout>

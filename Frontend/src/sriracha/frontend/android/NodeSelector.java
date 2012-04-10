@@ -1,13 +1,14 @@
 package sriracha.frontend.android;
 
-import android.graphics.*;
-import android.widget.*;
-import org.w3c.dom.*;
-import sriracha.frontend.*;
-import sriracha.frontend.android.model.*;
-import sriracha.frontend.android.results.*;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.widget.TextView;
+import sriracha.frontend.android.designer.WireSegment;
+import sriracha.frontend.android.results.IElementSelector;
 
-import java.util.*;
+import java.util.ArrayList;
 
 public class NodeSelector implements IElementSelector<WireSegment>
 {
