@@ -171,7 +171,7 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
             case MotionEvent.ACTION_MOVE:
             {
                 float distance = new PointF(motionEvent.getRawX() - touchDownRawX, motionEvent.getRawY() - touchDownRawY).length();
-                if (distance > 8)
+                if (distance > 12)
                     possibleClickPointerId = INVALID_POINTER_ID;
 
                 if (activePointerId == INVALID_POINTER_ID)

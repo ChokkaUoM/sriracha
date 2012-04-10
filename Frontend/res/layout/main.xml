@@ -24,6 +24,7 @@
         <RelativeLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
                         android:id="@+id/elementmenu_container">
+<!--
             <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
                        android:layout_marginRight="30dip"
                        android:src="@drawable/elementmenu_flip_horizontal"
@@ -37,9 +38,10 @@
                        android:id="@+id/elementmenu_flip_vertical"
                        android:onClick="flipVerticalOnClick"
                     />
+-->
+            <!--(goes in rotate ccw) android:layout_toRightOf="@id/elementmenu_flip_vertical"-->
             <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
                        android:layout_marginRight="30dip"
-                       android:layout_toRightOf="@id/elementmenu_flip_vertical"
                        android:src="@drawable/elementmenu_rotate_ccw"
                        android:id="@+id/elementmenu_rotate_ccw"
                        android:onClick="rotateCCWOnClick"

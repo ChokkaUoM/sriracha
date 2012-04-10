@@ -29,10 +29,23 @@
         <item name="android:layout_alignParentRight">false</item>
     </style>
 
-    <style name="AnalysisEditText">
+    <style name="HorizontalWeight">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="HorizontalWeight.AnalysisEditText">
+        <item name="android:inputType">numberDecimal|numberSigned</item>
+        <item name="android:imeOptions">actionDone</item>
+    </style>
+
+    <style name="HorizontalFull">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_centerHorizontal">true</item>
+    </style>
+
+    <style name="HorizontalFull.AnalysisEditText">
         <item name="android:inputType">numberDecimal|numberSigned</item>
         <item name="android:imeOptions">actionDone</item>
     </style>

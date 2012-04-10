@@ -28,7 +28,6 @@ public class MainActivity extends Activity
 
     private AsyncSimulator simulator;
 
-
     /**
      * Called when the activity is first created.
      */
@@ -132,11 +131,6 @@ public class MainActivity extends Activity
         circuitDesigner.deleteSelectedElement();
     }
 
-    public AsyncSimulator getSimulator()
-    {
-        return simulator;
-    }
-
     public void deleteWireOnClick(View view)
     {
         circuitDesigner.deleteSelectedWire();
@@ -155,23 +149,23 @@ public class MainActivity extends Activity
     {
         String netlist;
         IPrintData result;
+        final AnalysisMenu analysisMenu = (AnalysisMenu) findViewById(R.id.tab_analysis);
         try
         {
             netlist = circuitDesigner.generateNetlist();
             System.out.print(netlist);
-            simulator.setNetlist(netlist);
-
-            result = ((AnalysisMenu) findViewById(R.id.tab_analysis)).addAnalysesAndPrints(simulator);
-            if (result == null)
-                return;
-
-            ResultsParser parser = new ResultsParser();
-            List<Plot> plots = parser.getPlots(result);
-
-            Graph g = (Graph) findViewById(R.id.graph);
-            g.addPlot(plots.get(0), Color.argb(255, 200, 12, 233));
-
-            ((MainLayout) findViewById(R.id.main)).shiftRight();
+            simulator.setNetlistAsync(netlist, new AsyncSimulator.OnSimulatorReadyListener()
+            {
+                @Override
+                public void OnSimulatorReady()
+                {
+                    analysisMenu.requestAnalyses(simulator);
+                }
+                @Override
+                public void OnSimulatorSetupCancelled()
+                {
+                }
+            });
         } catch (Exception e)
         {
             Toast toast = Toast.makeText(this, "Something seems to have gone slightly awry.", Toast.LENGTH_LONG);

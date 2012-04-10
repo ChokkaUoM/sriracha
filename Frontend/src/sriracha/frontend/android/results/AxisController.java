@@ -10,7 +10,7 @@ import sriracha.frontend.R;
 
 public class AxisController extends FrameLayout implements AdapterView.OnItemSelectedListener,
         TextView.OnEditorActionListener,
-        OnAxisChangedListener
+        Axis.OnAxisChangedListener
 {
     private Spinner scaleSelector;
 
@@ -26,19 +26,19 @@ public class AxisController extends FrameLayout implements AdapterView.OnItemSel
     public AxisController(Context context)
     {
         super(context);
-        init();
+//        init();
     }
 
     public AxisController(Context context, AttributeSet attrs)
     {
         super(context, attrs);
-        init();
+//        init();
     }
 
     public AxisController(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
-        init();
+//        init();
     }
 
 
@@ -68,6 +68,13 @@ public class AxisController extends FrameLayout implements AdapterView.OnItemSel
     @Override
     public void onNothingSelected(AdapterView<?> adapterView)
     {
+    }
+
+    @Override
+    protected void onFinishInflate()
+    {
+        init();
+        super.onFinishInflate();
     }
 
     private void init()

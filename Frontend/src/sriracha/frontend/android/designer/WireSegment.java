@@ -21,9 +21,6 @@ public class WireSegment extends View
 
     private WireManager wireManager;
 
-    int r, g, b;
-    static int rs, gs, bs;
-
     public WireSegment(Context context, WireManager wireManager, IWireIntersection start, IWireIntersection end)
     {
         super(context);
@@ -32,20 +29,6 @@ public class WireSegment extends View
 
         this.start = start;
         this.end = end;
-
-        r = rs++;
-        if (r > 1)
-        {
-            rs = 0;
-            gs++;
-        }
-        g = gs;
-        if (gs > 1)
-        {
-            gs = 0;
-            bs++;
-        }
-        b = bs;
     }
 
     public IWireIntersection getStart()
@@ -62,16 +45,12 @@ public class WireSegment extends View
     protected void onDraw(Canvas canvas)
     {
         Paint paint = new Paint();
-        //paint.setColor(isSelected() ? Color.rgb(0xCC, 0xCC, 0) : Color.GRAY);
-        paint.setColor(Color.argb(0x7F, 0x7F * r, 0x7F * g, 0x7F * b));
+        paint.setColor(isSelected() ? Color.rgb(0xCC, 0xCC, 0) : Color.GRAY);
         paint.setStrokeWidth(isSelected() ? 6 : 4);
 
-        //canvas.drawLine(start.getX(), start.getY(), end.getX(), end.getY(), paint);
-        float randSX = (float) Math.random() * 20 - 10, randSY = (float) Math.random() * 20 - 10;
-        float randEX = (float) Math.random() * 20 - 10, randEY = (float) Math.random() * 20 - 10;
-        canvas.drawLine(start.getX() + randSX, start.getY() + randSY, end.getX() + randEX, end.getY() + randEY, paint);
-        canvas.drawCircle(start.getX() + randSX, start.getY() + randSY, 4, paint);
-        canvas.drawCircle(end.getX() + randEX, end.getY() + randEY, 4, paint);
+        canvas.drawLine(start.getX(), start.getY(), end.getX(), end.getY(), paint);
+        canvas.drawCircle(start.getX(), start.getY(), 4, paint);
+        canvas.drawCircle(end.getX(), end.getY(), 4, paint);
     }
 
     public boolean moveX(int x)
