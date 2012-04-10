@@ -9,6 +9,9 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
+import sriracha.frontend.R;
+import sriracha.frontend.android.results.Graph;
+import sriracha.frontend.android.results.GraphController;
 
 public class MainLayout extends LinearLayout
 {
@@ -17,8 +20,6 @@ public class MainLayout extends LinearLayout
     private ObjectAnimator anim1, anim2, anim3;
 
     private int layoutOffset = 0;
-
-//    private TabHost tabHost;
 
     private double percentSmall = 0.2;
 
@@ -67,25 +68,8 @@ public class MainLayout extends LinearLayout
         anim2.setDuration(220);
         anim3.setDuration(110);
 
-//        GraphController gController = (GraphController) findViewById(R.id.tab_graph);
-//        gController.setGraph((Graph) findViewById(R.id.graph));
-//
-//        tabHost = (TabHost) findViewById(R.id.tab_host);
-//        tabHost.setup();
-//
-//        TabHost.TabSpec analysisMenu = tabHost.newTabSpec("A");
-//        analysisMenu.setIndicator("Analysis");
-//        analysisMenu.setContent(R.id.tab_analysis);
-//
-//        TabHost.TabSpec plotMenu = tabHost.newTabSpec("G");
-//        plotMenu.setIndicator("Graph");
-//        plotMenu.setContent(R.id.tab_graph);
-//
-//
-//        tabHost.addTab(analysisMenu);
-//        tabHost.addTab(plotMenu);
-//
-//        tabHost.setCurrentTab(0);
+        GraphController gController = (GraphController) findViewById(R.id.tab_graph);
+        gController.setGraph((Graph) findViewById(R.id.graph));
 
         listener = new MainLayoutListener();
 
