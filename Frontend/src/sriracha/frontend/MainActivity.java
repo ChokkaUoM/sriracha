@@ -164,6 +164,7 @@ public class MainActivity extends Activity
                 @Override
                 public void OnSimulatorSetupCancelled()
                 {
+                    analysisMenu.showAnalyseButton();
                 }
             });
         } catch (Exception e)
@@ -172,6 +173,11 @@ public class MainActivity extends Activity
             toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();
         }
+    }
+
+    public void cancelButtonOnClick(View view)
+    {
+        simulator.cancelAnalysis();
     }
 
     public void flipHorizontalOnClick(View view)

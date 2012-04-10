@@ -2,33 +2,22 @@ package sriracha.frontend.android;
 
 import android.graphics.*;
 
+import java.util.*;
+
 public class Colors
 {
-    private final static int NUM_COLORS = 27;
-    private static int[] colors;
+    private static ArrayList<Integer> colors;
 
     public static void init()
     {
-        colors = new int[NUM_COLORS];
-        int rs = 0, gs = 0, bs = 0;
-        for (int i = 0; i < NUM_COLORS; i++)
+        colors = new ArrayList<Integer>();
+        for (int i = 0; i < 2; i++)
         {
-            int r, g, b;
-            r = rs++;
-            if (r > 1)
+            float saturation = i == 0 ? 1 : 0.5f;
+            for (float hue = 0; hue < 360; hue += 60)
             {
-                rs = 0;
-                gs++;
+                colors.add(Color.HSVToColor(new float[]{hue, saturation, 1}));
             }
-            g = gs;
-            if (gs > 1)
-            {
-                gs = 0;
-                bs++;
-            }
-            b = bs;
-
-            colors[i] = Color.rgb(0x7F * r, 0x7F * g, 0x7F * b);
         }
     }
 
@@ -36,6 +25,8 @@ public class Colors
     {
         if (colors == null)
             init();
-        return colors[Math.max(0, Math.max(colors.length - 1, index))];
+
+        index %= colors.size();
+        return colors.get(index);
     }
 }

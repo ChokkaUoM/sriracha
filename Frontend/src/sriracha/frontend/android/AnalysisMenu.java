@@ -1,7 +1,7 @@
 package sriracha.frontend.android;
 
+import android.app.*;
 import android.content.*;
-import android.graphics.*;
 import android.util.*;
 import android.view.*;
 import android.widget.*;
@@ -19,7 +19,7 @@ import java.util.*;
 
 public class AnalysisMenu extends LinearLayout
 {
-    private ArrayAdapter<String> adapter;
+    private ColoredStringAdapter adapter;
 
     public AnalysisMenu(Context context)
     {
@@ -62,6 +62,8 @@ public class AnalysisMenu extends LinearLayout
 
         if (analysis != null)
         {
+            showCancelButton();
+
             simulator.requestAnalysisAsync(analysis, new AsyncSimulator.OnSimulatorAnalysisDoneListener()
             {
                 @Override
@@ -70,6 +72,7 @@ public class AnalysisMenu extends LinearLayout
                     MainActivity mainActivity = (MainActivity) getContext();
                     MainLayout mainLayout = (MainLayout) mainActivity.findViewById(R.id.main);
                     Graph graph = (Graph) mainActivity.findViewById(R.id.graph);
+                    graph.clearPlots();
 
                     ArrayList<String> prints = getPrints();
                     for (int i = 0; i < prints.size(); i++)
@@ -80,11 +83,14 @@ public class AnalysisMenu extends LinearLayout
 
                         graph.addPlot(plots.get(0), Colors.get(i));
                     }
+
+                    showAnalyseButton();
                     mainLayout.shiftRight();
                 }
                 @Override
                 public void OnSimulatorAnalysisCancelled()
                 {
+                    showAnalyseButton();
                 }
             });
         }
@@ -278,6 +284,20 @@ public class AnalysisMenu extends LinearLayout
         findViewById(R.id.print_type_current).setVisibility(VISIBLE);
     }
 
+    public void showAnalyseButton()
+    {
+        findViewById(R.id.analyse_button).setVisibility(VISIBLE);
+        findViewById(R.id.cancel_button).setVisibility(GONE);
+        findViewById(R.id.analysis_progress).setVisibility(GONE);
+    }
+
+    public void showCancelButton()
+    {
+        findViewById(R.id.analyse_button).setVisibility(GONE);
+        findViewById(R.id.cancel_button).setVisibility(VISIBLE);
+        findViewById(R.id.analysis_progress).setVisibility(VISIBLE);
+    }
+
     private void setElementSelector()
     {
         View.OnClickListener listener = new View.OnClickListener()
@@ -336,8 +356,37 @@ public class AnalysisMenu extends LinearLayout
 
     private void setPrintAddButton()
     {
-        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1);
-        ((ListView) findViewById(R.id.print_statements)).setAdapter(adapter);
+        adapter = new ColoredStringAdapter(getContext(), android.R.layout.simple_list_item_1);
+
+        ListView listView = (ListView) findViewById(R.id.print_statements);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(final AdapterView<?> adapterView, final View view, final int position, long id)
+            {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setMessage("Delete this .PRINT statement?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                        {
+                            public void onClick(DialogInterface dialog, int id)
+                            {
+                                String item = adapter.getItem(position);
+                                adapter.remove(item);
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener()
+                        {
+                            public void onClick(DialogInterface dialog, int id)
+                            {
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+        });
 
         findViewById(R.id.print_add).setOnClickListener(new OnClickListener()
         {

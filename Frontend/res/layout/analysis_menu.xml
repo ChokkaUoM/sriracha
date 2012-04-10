@@ -8,7 +8,7 @@
                                         android:focusable="true"
                                         android:focusableInTouchMode="true"
                                         android:orientation="vertical"
-                                        >
+        >
 
     <LinearLayout android:layout_width="fill_parent"
                   android:layout_height="0dp"
@@ -51,7 +51,6 @@
 
             <EditText style="@style/HorizontalFull.AnalysisEditText"
                       android:id="@+id/ac_analysis_num"/>
-
 
 
         </LinearLayout>
@@ -143,7 +142,6 @@
             </TableRow>
 
 
-
         </TableLayout>
 
         <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content"
@@ -163,21 +161,36 @@
                 android:text="Add"/>
 
 
-
         <ListView android:layout_width="fill_parent" android:layout_height="fill_parent"
                   android:id="@+id/print_statements"/>
     </LinearLayout>
 
 
+    <RelativeLayout android:layout_width="fill_parent" android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginTop="4dip"
+                    android:layout_gravity="bottom"
+            >
+        <Button android:layout_width="fill_parent" android:layout_height="fill_parent"
+                android:text="Analyse"
+                android:textSize="32dip"
+                android:textColor="#FFF"
+                android:background="@color/GoGreen"
+                android:id="@+id/analyse_button"
+                android:onClick="goButtonOnClick"/>
+        <Button android:layout_width="fill_parent" android:layout_height="fill_parent"
+                android:text="Cancel"
+                android:textSize="32dip"
+                android:textColor="#FFF"
+                android:background="@color/CancelRed"
+                android:id="@+id/cancel_button"
+                android:onClick="cancelButtonOnClick"
+                android:visibility="gone"/>
+    </RelativeLayout>
 
-    <Button android:layout_width="fill_parent" android:layout_height="0dp"
-            android:layout_weight="1"
-            android:text="Analyze"
-            android:layout_marginTop="4dip"
-            android:textSize="32dip"
-            android:textColor="#FFF"
-            android:layout_gravity="bottom"
-            android:background="@color/GoGreen"
-            android:onClick="goButtonOnClick"/>
+    <ProgressBar android:layout_width="wrap_content" android:layout_height="wrap_content"
+                 android:id="@+id/analysis_progress"
+                 android:layout_gravity="center"
+                 android:visibility="gone"/>
 
 </sriracha.frontend.android.AnalysisMenu>
