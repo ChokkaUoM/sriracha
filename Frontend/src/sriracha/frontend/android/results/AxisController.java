@@ -45,6 +45,8 @@ public class AxisController extends FrameLayout implements AdapterView.OnItemSel
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id)
     {
+        if (axis == null) return;
+
         switch (position)
         {
             case 0:
@@ -74,7 +76,8 @@ public class AxisController extends FrameLayout implements AdapterView.OnItemSel
         scaleSelector = (Spinner) findViewById(R.id.actl_scale_select);
 
         scaleSelector.setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item,
-                new String[]{"Linear scale", "Log scale (base 10)", "log scale (base 8)"}));
+                new String[]{"LIN", "DEC", "OCT"}));
+        ((ArrayAdapter<String>) scaleSelector.getAdapter()).setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         titleView = (TextView) findViewById(R.id.actl_title);
         minValueSelector = (EditText) findViewById(R.id.actl_minval_select);

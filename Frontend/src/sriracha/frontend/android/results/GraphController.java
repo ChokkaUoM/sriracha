@@ -17,18 +17,27 @@ public class GraphController extends FrameLayout
     public GraphController(Context context)
     {
         super(context);
+        init();
     }
 
     public GraphController(Context context, AttributeSet attrs)
     {
         super(context, attrs);
+        init();
     }
 
     public GraphController(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
+        init();
     }
 
+//    @Override
+//    protected void onFinishInflate()
+//    {
+//        super.onFinishInflate();
+//        init();
+//    }
 
     private void init()
     {

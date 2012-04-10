@@ -50,13 +50,15 @@
     <style name="AxisControllerLabels">
         <item name="android:layout_height">fill_parent</item>
         <item name="android:width">0dip</item>
-        <item name="android:layout_weight">0.6</item>
+        <item name="android:layout_weight">1</item>
         <item name="android:gravity">right|center_vertical</item>
     </style>
 
     <style name="AxisController">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">10dip</item>
+        <item name="android:layout_marginTop">10dip</item>
 
     </style>
 

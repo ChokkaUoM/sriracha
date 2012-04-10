@@ -8,7 +8,8 @@
 
     <sriracha.frontend.android.results.AxisController
             android:id="@+id/yAxisCtl"
-            style="@style/AxisController"/>
+            style="@style/AxisController"
+            />
 
     <sriracha.frontend.android.results.AxisController
             android:id="@+id/xAxisCtl"

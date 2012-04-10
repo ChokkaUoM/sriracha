@@ -6,7 +6,9 @@
                                         android:background="#003"
                                         android:paddingTop="20dip"
                                         android:paddingLeft="20dip"
-                                        android:paddingRight="20dip">
+                                        android:paddingRight="20dip"
+                                        android:focusable="true"
+                                        android:focusableInTouchMode="true">
     <Spinner android:layout_width="fill_parent" android:layout_height="wrap_content"
              android:id="@+id/analysis_type"/>
 

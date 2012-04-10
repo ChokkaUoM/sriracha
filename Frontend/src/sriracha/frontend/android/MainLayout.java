@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
 import sriracha.frontend.R;
+import sriracha.frontend.android.results.Graph;
+import sriracha.frontend.android.results.GraphController;
 
 public class MainLayout extends LinearLayout
 {
@@ -50,6 +52,7 @@ public class MainLayout extends LinearLayout
         init();
     }
 
+
     private void init()
     {
         percentSmall = ((LayoutParams) getChildAt(0).getLayoutParams()).weight / getWeightSum();
@@ -63,15 +66,25 @@ public class MainLayout extends LinearLayout
         anim1.setDuration(100);
         anim2.setDuration(250);
 
-        TabHost tabHost = (TabHost) findViewById(R.id.tab_host);
+        GraphController gController = (GraphController) findViewById(R.id.tab_graph);
+        gController.setGraph((Graph) findViewById(R.id.graph));
 
-        TabHost.TabSpec analysisMenu = tabHost.newTabSpec("A").setContent(R.layout.analysis_menu).setIndicator("Analysis");
-        TabHost.TabSpec plotMenu = tabHost.newTabSpec("G").setContent(R.layout.results_graph_controller).setIndicator("Graph");
+        TabHost tabHost = (TabHost) findViewById(R.id.tab_host);
+        tabHost.setup();
+
+        TabHost.TabSpec analysisMenu = tabHost.newTabSpec("A");
+        analysisMenu.setIndicator("Analysis");
+        analysisMenu.setContent(R.id.tab_analysis);
+
+        TabHost.TabSpec plotMenu = tabHost.newTabSpec("G");
+        plotMenu.setIndicator("Graph");
+        plotMenu.setContent(R.id.tab_graph);
+
 
         tabHost.addTab(analysisMenu);
         tabHost.addTab(plotMenu);
 
-        tabHost.setCurrentTab(0);
+        tabHost.setCurrentTab(1);
 
         listener = new MainLayoutListener();
 
@@ -201,6 +214,9 @@ public class MainLayout extends LinearLayout
                     shifted |= shiftLeft();
 
             }
+
+            fingersStillDown = shifted;
+
             return shifted;
         }
 
