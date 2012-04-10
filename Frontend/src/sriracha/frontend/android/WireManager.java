@@ -239,7 +239,8 @@ public class WireManager
 
             for (IWireIntersection intersection : intersectionList)
             {
-                for (WireSegment segment : intersection.getSegments())
+                ArrayList<WireSegment> intersectionSegments = new ArrayList<WireSegment>(intersection.getSegments());
+                for (WireSegment segment : intersectionSegments)
                 {
                     if (segment.getLength() == 0)
                     {

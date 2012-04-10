@@ -15,6 +15,8 @@ import java.util.HashSet;
 
 /**
  * Generates the netlist representation of the current circuit and analysis requests
+ * Note: this could be made more efficient if needed, because we traverse the graph
+ * in generate(), but also in mapSegmentToNode().
  */
 public class NetlistGenerator
 {
@@ -71,7 +73,7 @@ public class NetlistGenerator
         {
             int[] indices = getNodeIndices(nodes, element);
 
-            if (nodes.size() == 2)
+            if (indices.length == 2)
             {
                 NetlistNode node1 = nodes.get(indices[0]);
                 NetlistNode node2 = nodes.get(indices[1]);
@@ -86,9 +88,9 @@ public class NetlistGenerator
                 }
             }
 
-            String[] nodeStrings = new String[nodes.size()];
-            for (int i = 0; i < nodes.size(); i++)
-                nodeStrings[i] = nodes.get(i).toString();
+            String[] nodeStrings = new String[indices.length];
+            for (int i = 0; i < indices.length; i++)
+                nodeStrings[i] = nodes.get(indices[i]).toString();
 
             result += element.toNetlistString(nodeStrings) + "\n";
         }
@@ -159,7 +161,8 @@ public class NetlistGenerator
 
         processedSegments.add(parent);
 
-        ArrayList<WireSegment> toProcess = parent.getStart().getSegments();
+        ArrayList<WireSegment> toProcess = new ArrayList<WireSegment>();
+        toProcess.addAll(parent.getStart().getSegments());
         toProcess.addAll(parent.getEnd().getSegments());
         toProcess.removeAll(processedSegments);
 

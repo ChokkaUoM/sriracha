@@ -65,6 +65,6 @@ public class Resistor extends TwoPortElement
     @Override
     public String toNetlistString(String[] nodes)
     {
-        return super.toNetlistString(nodes) + resistance + "k";
+        return super.toNetlistString(nodes) + resistance + ScalarProperty.translateUnit(unit);
     }
 }

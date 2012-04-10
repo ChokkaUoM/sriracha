@@ -115,6 +115,6 @@ public class CircuitElementPortView implements IWireIntersection
     @Override
     public String toString()
     {
-        return String.format("Port - (%d, %d)", getX(), getY());
+        return String.format("Port(%d, %d)", getX(), getY());
     }
 }

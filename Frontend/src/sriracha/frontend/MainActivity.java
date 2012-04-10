@@ -10,8 +10,7 @@ import android.view.WindowManager;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import sriracha.frontend.android.CircuitDesigner;
-import sriracha.frontend.android.CircuitDesignerMenu;
+import sriracha.frontend.android.*;
 import sriracha.frontend.android.model.CircuitElementActivator;
 import sriracha.frontend.android.results.Graph;
 import sriracha.frontend.model.CircuitElement;
@@ -154,53 +153,32 @@ public class MainActivity extends Activity
 
     public void goButtonOnClick(View view)
     {
-        String netlist = circuitDesigner.generateNetlist();
-
-        System.out.println(netlist);
-
-        simulator.setNetlist(netlist);
-
-        String analysisType = ((TextView) ((Spinner) findViewById(R.id.analysis_type)).getSelectedView()).getText().toString();
-        if (analysisType.equals("DC Sweep"))
+        String netlist;
+        IPrintData result;
+        try
         {
-            String elementName = ((TextView) findViewById(R.id.dc_analysis_element)).getText().toString();
-            CircuitElement element = circuitDesigner.getElementByName(elementName);
-            float startV = Float.parseFloat(((TextView) findViewById(R.id.dc_analysis_startv)).getText().toString());
-            float stopV = Float.parseFloat(((TextView) findViewById(R.id.dc_analysis_stopv)).getText().toString());
-            float incr = Float.parseFloat(((TextView) findViewById(R.id.dc_analysis_incr)).getText().toString());
+            netlist = circuitDesigner.generateNetlist();
+            System.out.print(netlist);
+            simulator.setNetlist(netlist);
 
-            if (element != null)
-            {
-                String analysis = String.format(".DC %s %f %f %f", element.getName(), startV, stopV, incr);
-                simulator.addAnalysis(analysis);
-            } else
-            {
-                Toast toast = Toast.makeText(this, "You must choose an element to sweep", Toast.LENGTH_LONG);
-                toast.setGravity(Gravity.CENTER, 0, 0);
-                toast.show();
-            }
-        } else if (analysisType.equals("Frequency"))
-        {
-            float num = Float.parseFloat(((TextView) findViewById(R.id.ac_analysis_num)).getText().toString());
-            float startF = Float.parseFloat(((TextView) findViewById(R.id.ac_analysis_startf)).getText().toString());
-            float stopF = Float.parseFloat(((TextView) findViewById(R.id.ac_analysis_stopf)).getText().toString());
+            result = ((AnalysisMenu) findViewById(R.id.tab_analysis)).addAnalysesAndPrints(simulator);
+            if (result == null)
+                return;
 
-            String analysis = String.format(".AC LIN %f %f %f");
-            simulator.addAnalysis(analysis);
-        } else
-        {
-            throw new RuntimeException("Invalid analysis type: " + analysisType);
+            ResultsParser parser = new ResultsParser();
+            List<Plot> plots = parser.getPlots(result);
+
+            Graph g = (Graph) findViewById(R.id.graph);
+            g.addPlot(plots.get(0), Color.argb(255, 200, 12, 233));
+
+            ((MainLayout) findViewById(R.id.main)).shiftRight();
         }
-
-        IPrintData result = simulator.requestPrintData(".PRINT DC V(n1)");
-
-        ResultsParser parser = new ResultsParser();
-
-        List<Plot> plots = parser.getPlots(result);
-
-        Graph g = (Graph) findViewById(R.id.graph);
-        g.addPlot(plots.get(0), Color.argb(255, 200, 12, 233));
-
+        catch (Exception e)
+        {
+            Toast toast = Toast.makeText(this, "Something seems to have gone slightly awry.", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+        }
     }
 
     public void flipHorizontalOnClick(View view)

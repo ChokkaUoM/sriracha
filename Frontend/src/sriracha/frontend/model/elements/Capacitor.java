@@ -66,6 +66,6 @@ public class Capacitor extends TwoPortElement
     @Override
     public String toNetlistString(String[] nodes)
     {
-        return super.toNetlistString(nodes) + capacitance + "u";
+        return super.toNetlistString(nodes) + capacitance + ScalarProperty.translateUnit(unit);
     }
 }

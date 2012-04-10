@@ -2,7 +2,7 @@
 
 <sriracha.frontend.android.AnalysisMenu xmlns:android="http://schemas.android.com/apk/res/android"
                                         android:layout_width="fill_parent" android:layout_height="fill_parent"
-                                        android:id="@+id/results_menu"
+                                        android:id="@+id/analysis_menu"
                                         android:background="#003"
                                         android:paddingTop="20dip"
                                         android:paddingLeft="20dip"
@@ -77,17 +77,52 @@
     </RelativeLayout>
 
     <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
-              android:id="@+id/print_node1_label"
-              android:text="Node to print"/>
-    <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
-              android:id="@+id/print_node1"
+              android:id="@+id/print_type_label"
               android:layout_below="@id/dc_analysis_options"
-              android:textSize="32dip"
-              android:text="[Select...]"/>
+              android:text="Plot Type"/>
+    <Spinner android:layout_width="fill_parent" android:layout_height="wrap_content"
+             android:id="@+id/print_type"
+             android:layout_below="@id/print_type_label"/>
+
+    <RelativeLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:id="@+id/print_type_voltage"
+                    android:layout_below="@id/print_type">
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+                  android:id="@+id/print_node1_label"
+                  android:text="Voltage from"/>
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+                  android:id="@+id/print_node1"
+                  android:layout_below="@id/print_node1_label"
+                  android:textSize="32dip"
+                  android:text="[Select...]"/>
+
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+                  android:id="@+id/print_node2_label"
+                  android:layout_below="@id/print_node1"
+                  android:text="Voltage to"/>
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+                  android:id="@+id/print_node2"
+                  android:layout_below="@id/print_node2_label"
+                  android:textSize="32dip"
+                  android:text="0"/>
+    </RelativeLayout>
+
+    <RelativeLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:id="@+id/print_type_current"
+                    android:layout_below="@id/print_type">
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+                  android:id="@+id/print_node_current_label"
+                  android:text="Current across"/>
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+                  android:id="@+id/print_node_current"
+                  android:layout_below="@id/print_node_current_label"
+                  android:textSize="32dip"
+                  android:text="[Select...]"/>
+    </RelativeLayout>
 
     <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_below="@id/print_node1"
+            android:layout_below="@id/print_type_voltage"
             android:text="GO"
             android:onClick="goButtonOnClick"/>
 </sriracha.frontend.android.AnalysisMenu>

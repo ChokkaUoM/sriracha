@@ -8,6 +8,8 @@ import sriracha.frontend.*;
 import sriracha.frontend.android.model.*;
 import sriracha.frontend.android.model.elements.sources.*;
 import sriracha.frontend.android.results.*;
+import sriracha.frontend.model.*;
+import sriracha.simulator.*;
 
 import java.util.*;
 
@@ -32,12 +34,107 @@ public class AnalysisMenu extends RelativeLayout
         setAnalysisTypeItems();
         setElementSelector();
         setNodeSelector();
+        setPlotTypeItems();
         super.onFinishInflate();
     }
 
     private CircuitDesigner getCircuitDesigner()
     {
         return ((MainActivity) getContext()).getCircuitDesigner();
+    }
+
+    public IPrintData addAnalysesAndPrints(ISimulator simulator)
+    {
+        String analysisType = ((TextView) ((Spinner) findViewById(R.id.analysis_type)).getSelectedView()).getText().toString();
+        if (analysisType.equals("DC Sweep"))
+        {
+            addDcAnalysis(simulator);
+            analysisType = "DC";
+        }
+        else if (analysisType.equals("Frequency"))
+        {
+            addAcAnalysis(simulator);
+            analysisType = "AC";
+        }
+        else
+            throw new RuntimeException("Invalid analysis type: " + analysisType);
+
+        String printTypeLong = ((TextView) ((Spinner) findViewById(R.id.print_type)).getSelectedView()).getText().toString();
+        String printType = printTypeLong.split(" ")[0];
+        if (printType.startsWith("V"))
+            return simulator.requestPrintData(getVoltagePrint(analysisType, printType));
+        else if (printType.startsWith("I"))
+            return simulator.requestPrintData(getCurrentPrint(analysisType, printType));
+        else
+            throw new RuntimeException("Invalid print type");
+    }
+
+    private void addDcAnalysis(ISimulator simulator)
+    {
+        String elementName = ((TextView) findViewById(R.id.dc_analysis_element)).getText().toString();
+        CircuitElement element = getCircuitDesigner().getElementByName(elementName);
+        float startV = Float.parseFloat(((TextView) findViewById(R.id.dc_analysis_startv)).getText().toString());
+        float stopV = Float.parseFloat(((TextView) findViewById(R.id.dc_analysis_stopv)).getText().toString());
+        float incr = Float.parseFloat(((TextView) findViewById(R.id.dc_analysis_incr)).getText().toString());
+
+        if (element != null)
+        {
+            String analysis = String.format(".DC %s %f %f %f", element.getName(), startV, stopV, incr);
+            simulator.addAnalysis(analysis);
+        }
+        else
+        {
+            Toast toast = Toast.makeText(getContext(), "You must choose an element to sweep", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+        }
+    }
+
+    private void addAcAnalysis(ISimulator simulator)
+    {
+        float num = Float.parseFloat(((TextView) findViewById(R.id.ac_analysis_num)).getText().toString());
+        float startF = Float.parseFloat(((TextView) findViewById(R.id.ac_analysis_startf)).getText().toString());
+        float stopF = Float.parseFloat(((TextView) findViewById(R.id.ac_analysis_stopf)).getText().toString());
+
+        String analysis = String.format(".AC LIN %f %f %f");
+        simulator.addAnalysis(analysis);
+    }
+
+    private String getVoltagePrint(String analysisType, String printType)
+    {
+        String node1 = ((TextView) findViewById(R.id.print_node1)).getText().toString();
+        String node2 = ((TextView) findViewById(R.id.print_node2)).getText().toString();
+
+        if (node1 != null && node2 != null)
+        {
+            return String.format(".PRINT %s %s(%s,%s)", analysisType, printType, node1, node2);
+        }
+        else
+        {
+            Toast toast = Toast.makeText(getContext(), "You must choose a node to measure voltage", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+        }
+        return null;
+    }
+
+    private String getCurrentPrint(String analysisType, String printType)
+    {
+        String elementName = ((TextView) findViewById(R.id.dc_analysis_element)).getText().toString();
+        CircuitElement element = getCircuitDesigner().getElementByName(elementName);
+
+        if (element != null)
+        {
+            return String.format(".PRINT %s %s(%s)", analysisType, printType, element.getName());
+        }
+        else
+        {
+            Toast toast = Toast.makeText(getContext(), "You must choose an element to measure current", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+        }
+
+        return null;
     }
 
     private void setAnalysisTypeItems()
@@ -57,12 +154,43 @@ public class AnalysisMenu extends RelativeLayout
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
             {
-                if (((TextView) view).getText().equals("DC Sweep"))
+                if (((TextView) view).getText().toString().equals("DC Sweep"))
                     showDcMenu();
-                else if (((TextView) view).getText().equals("Frequency"))
+                else if (((TextView) view).getText().toString().equals("Frequency"))
                     showAcMenu();
                 else
                     throw new RuntimeException("Invalid analysis type");
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView)
+            {
+            }
+        });
+    }
+
+    private void setPlotTypeItems()
+    {
+        Spinner spinner = (Spinner) findViewById(R.id.print_type);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, new String[]{
+                "V (real and complex)", "VR (real)", "VI (complex)", "VM (magnitude)", "VDB (magnitude in dB)", "VP (phase)",
+                "I (real and complex)", "IR (real)", "II (complex)", "IM (magnitude)", "IDB (magnitude in dB)", "IP (phase)",
+        });
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        showVoltagePrintMenu();
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
+            {
+                if (((TextView) view).getText().toString().startsWith("V"))
+                    showVoltagePrintMenu();
+                else if (((TextView) view).getText().toString().startsWith("I"))
+                    showCurrentPrintMenu();
+                else
+                    throw new RuntimeException("Invalid plot type");
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView)
@@ -83,9 +211,21 @@ public class AnalysisMenu extends RelativeLayout
         findViewById(R.id.ac_analysis_options).setVisibility(VISIBLE);
     }
 
+    private void showVoltagePrintMenu()
+    {
+        findViewById(R.id.print_type_voltage).setVisibility(VISIBLE);
+        findViewById(R.id.print_type_current).setVisibility(INVISIBLE);
+    }
+
+    private void showCurrentPrintMenu()
+    {
+        findViewById(R.id.print_type_voltage).setVisibility(INVISIBLE);
+        findViewById(R.id.print_type_current).setVisibility(VISIBLE);
+    }
+
     private void setElementSelector()
     {
-        ((TextView) findViewById(R.id.dc_analysis_element)).setOnClickListener(new View.OnClickListener()
+        View.OnClickListener listener = new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
@@ -100,17 +240,25 @@ public class AnalysisMenu extends RelativeLayout
                 ElementSelector elementSelector = new ElementSelector((TextView) view, elementViews);
                 getCircuitDesigner().setCursorToSelectingElement(elementSelector);
             }
-        });
+        };
+
+        // Choose element to sweep
+        findViewById(R.id.dc_analysis_element).setOnClickListener(listener);
+
+        // Choose element for printing current through (in future, will not be only voltage sources)
+        findViewById(R.id.print_node_current).setOnClickListener(listener);
     }
 
     private void setNodeSelector()
     {
-        ((TextView) findViewById(R.id.print_node1)).setOnClickListener(new OnClickListener()
+        View.OnClickListener listener = new OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
+                final TextView textView = (TextView) view;
                 final WireManager wireManager = getCircuitDesigner().getWireManager();
+
                 NodeSelector nodeSelector = new NodeSelector((TextView) view, wireManager.getSegments());
                 nodeSelector.setOnSelectListener(new IElementSelector.OnSelectListener<WireSegment>()
                 {
@@ -120,11 +268,14 @@ public class AnalysisMenu extends RelativeLayout
                         NetlistGenerator generator = new NetlistGenerator();
                         NetlistGenerator.NetlistNode node = generator.mapSegmentToNode(selectedSegment, wireManager);
                         if (node != null)
-                            ((TextView) findViewById(R.id.print_node1)).setText(node.toString());
+                            textView.setText(node.toString());
                     }
                 });
                 getCircuitDesigner().setCursorToSelectingElement(nodeSelector);
             }
-        });
+        };
+
+        findViewById(R.id.print_node1).setOnClickListener(listener);
+        findViewById(R.id.print_node2).setOnClickListener(listener);
     }
 }

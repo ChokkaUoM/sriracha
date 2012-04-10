@@ -208,6 +208,11 @@ public class VoltageSource extends TwoPortElement
     @Override
     public String toNetlistString(String[] nodes)
     {
-        return super.toNetlistString(nodes) + String.format("DC %f AC %f %f", dcVoltage, amplitude, phase);
+        return super.toNetlistString(nodes)
+                + String.format("DC %f%s AC %f%s %f",
+                dcVoltage, ScalarProperty.translateUnit(dcVoltageUnit),
+                amplitude, ScalarProperty.translateUnit(amplitudeUnit),
+                phase);
+
     }
 }

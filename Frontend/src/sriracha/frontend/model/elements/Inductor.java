@@ -66,6 +66,6 @@ public class Inductor extends TwoPortElement
     @Override
     public String toNetlistString(String[] nodes)
     {
-        return super.toNetlistString(nodes) + inductance + "u";
+        return super.toNetlistString(nodes) + inductance + ScalarProperty.translateUnit(unit);
     }
 }
