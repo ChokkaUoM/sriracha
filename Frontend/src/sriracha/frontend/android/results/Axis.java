@@ -42,10 +42,12 @@ class Axis extends LinearLayout
 
     /**
      * Logarithmic Decade Space
-     * space in pixels between each decade notch for
+     * space in pixels between each label for
      * log scale Axis - dependent on range
      */
     protected int logDS = 150;
+
+    protected int decadesPerLabel = 1;
 
     //number of pixels available along the orientation
     private float pixelRange;
@@ -278,19 +280,30 @@ class Axis extends LinearLayout
     {
         if (scaleType != LOGSCALE) return;
         int count = 0;
-        for (double notch = minValue; notch <= maxValue; notch *= logBase)
+
+        int artificialBase = (int) Math.pow(logBase, decadesPerLabel);
+
+        for (double notch = minValue; notch <= maxValue; notch *= artificialBase)
         {
             count++;
         }
 
-        double endDecPercent = log(maxValue / (Math.pow(logBase, count - 1) * minValue), logBase);
+        double endDecPercent = log(maxValue / (Math.pow(artificialBase, count - 1) * minValue), artificialBase);
 
         logDS = (int) (pixelRange / (count - 1 + endDecPercent));
 
-        if (logDS == 0)
+        int logthresh = (getOrientation() == VERTICAL ? linVNS : linHNS);
+
+        while (logDS < logthresh)
         {
-            int kk = 23;
-            kk++;
+            logDS *= 2;
+            decadesPerLabel *= 2;
+        }
+
+        while (logDS > 2 * logthresh && decadesPerLabel > 1)
+        {
+            logDS /= 2;
+            decadesPerLabel /= 2;
         }
 
     }
@@ -408,8 +421,19 @@ class Axis extends LinearLayout
 
     public void setRange(double minValue, double maxValue)
     {
+        //one of the values is NAN do nothing.
+        if (minValue == Double.NaN || maxValue == Double.NaN) return;
+
         //cant have such values on a log scale
         if (scaleType == LOGSCALE && minValue <= 0) minValue = 1;
+
+
+        double maxmax = Math.pow(10, 50);
+        double minmin = scaleType == LOGSCALE ? Math.pow(10, -50) : -maxmax;
+
+        maxValue = Math.min(maxValue, maxmax);
+        minValue = Math.max(minValue, minmin);
+
 
         if (minValue != this.minValue || maxValue != this.maxValue)
         {
@@ -426,21 +450,21 @@ class Axis extends LinearLayout
 
     private void updateLabelContents()
     {
-        if (scaleType == LINEARSCALE)
+//        if (scaleType == LINEARSCALE)
+//        {
+        int i = 0;
+        for (float mid : getNotchPositions())
         {
-            int i = 0;
-            for (float mid : getNotchPositions())
-            {
-                getLabel(i++).setText(axisNumFormat(coordinateFromPixel(mid)));
-            }
-
-        } else
-        {
-            for (int i = 0; i < getChildCount(); i++)
-            {
-                getLabel(i).setText(axisNumFormat(minValue * Math.pow(logBase, i)));
-            }
+            getLabel(i++).setText(axisNumFormat(coordinateFromPixel(mid)));
         }
+
+//        } else
+//        {
+//            for (int i = 0; i < getChildCount(); i++)
+//            {
+//                getLabel(i).setText(axisNumFormat(minValue * Math.pow(logBase, i)));
+//            }
+//        }
     }
 
     private void inflateLabel()
@@ -541,8 +565,9 @@ class Axis extends LinearLayout
         if (scaleType == LOGSCALE)
         {
             if (axisValue <= 0) return getOrientation() == HORIZONTAL ? -1 : pixelRange + 1;//log(x) > 0
+            int fakeBase = (int) Math.pow(logBase, decadesPerLabel);
 
-            double offset = logDS * log(axisValue / minValue, logBase);
+            double offset = logDS * log(axisValue / minValue, fakeBase);
 
             return (float) (getOrientation() == HORIZONTAL ? offset : pixelRange - offset);
 
@@ -570,7 +595,10 @@ class Axis extends LinearLayout
         {
             double offset = getOrientation() == HORIZONTAL ? pixelValue : pixelRange - pixelValue;
 
-            return Math.pow(logBase, (offset / logDS)) * minValue;
+            int fakeBase = (int) Math.pow(logBase, decadesPerLabel);
+
+            return Math.pow(fakeBase, offset / logDS) * minValue;
+
         } else
         {
             double range = maxValue - minValue;
