@@ -71,8 +71,8 @@
     <style name="AxisController">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginBottom">6dip</item>
-        <item name="android:layout_marginTop">6dip</item>
+        <item name="android:layout_marginBottom">4dip</item>
+        <item name="android:layout_marginTop">4dip</item>
 
     </style>
 

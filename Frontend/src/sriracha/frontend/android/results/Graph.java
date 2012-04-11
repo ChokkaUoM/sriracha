@@ -130,12 +130,12 @@ public class Graph extends FrameLayout
         }
 
 
-        //create internal size specs for plot children and axes with correct x and y ranges
+        //create internal size specs for plot children and axes with correct x and y getRange
         int internalWidthSpec = MeasureSpec.makeMeasureSpec(xrange, MeasureSpec.AT_MOST);
         int internalHeightSpec = MeasureSpec.makeMeasureSpec(yrange, MeasureSpec.AT_MOST);
 
         //measure all children with internal spec including axes since they their pixel 
-        // ranges might have changed as a result of snapping
+        // getRange might have changed as a result of snapping
         for (int i = 0; i < getChildCount(); i++)
         {
             getChildAt(i).measure(internalWidthSpec, internalHeightSpec);
@@ -568,6 +568,42 @@ public class Graph extends FrameLayout
             invalidate();
         }
 
+    }
+
+    public void autoScale()
+    {
+        double[] range = new double[4];
+        range[0] = range[2] = Double.POSITIVE_INFINITY;
+        range[1] = range[3] = Double.NEGATIVE_INFINITY;
+
+        for (PlotView p : plots)
+        {
+            double[] r = p.getRange();
+
+            if (r[0] < range[0])
+            {
+                range[0] = r[0];
+            }
+
+            if (r[2] < range[2])
+            {
+                range[2] = r[2];
+            }
+
+            if (r[1] > range[1])
+            {
+                range[1] = r[1];
+            }
+
+            if (r[3] > range[3])
+            {
+                range[3] = r[3];
+            }
+
+        }
+
+        setXRange(range[0], range[1]);
+        setYRange(range[2], range[3]);
     }
 
     public void setXRange(double min, double max)

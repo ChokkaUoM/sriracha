@@ -2,16 +2,20 @@ package sriracha.frontend.android.results;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import sriracha.frontend.R;
 
-public class GraphController extends FrameLayout
+public class GraphController extends FrameLayout implements View.OnClickListener
 {
     private AxisController yController;
 
     private AxisController xController;
 
     private Graph graph;
+
+    Button autoScale;
 
 
     public GraphController(Context context)
@@ -44,7 +48,8 @@ public class GraphController extends FrameLayout
         inflate(getContext(), R.layout.results_graph_controller, this);
         yController = (AxisController) findViewById(R.id.yAxisCtl);
         xController = (AxisController) findViewById(R.id.xAxisCtl);
-
+        autoScale = (Button) findViewById(R.id.auto_scale_btn);
+        autoScale.setOnClickListener(this);
         xController.setTitle("X Axis");
         yController.setTitle("Y Axis");
 
@@ -56,10 +61,17 @@ public class GraphController extends FrameLayout
         return graph;
     }
 
+
     public void setGraph(Graph graph)
     {
         this.graph = graph;
         yController.setAxis(graph.yAxis);
         xController.setAxis(graph.xAxis);
+    }
+
+    @Override
+    public void onClick(View view)
+    {
+        graph.autoScale();
     }
 }
