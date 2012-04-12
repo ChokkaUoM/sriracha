@@ -5,7 +5,7 @@
               android:layout_height="wrap_content"
               android:orientation="vertical"
               android:layout_gravity="top"
-              android:padding="4">
+              android:padding="4dip">
 
     <sriracha.frontend.android.results.AxisController
             android:id="@+id/yAxisCtl"
@@ -16,16 +16,13 @@
             android:id="@+id/xAxisCtl"
             style="@style/AxisController"/>
 
-    <Button android:background="@color/MenuLight"
+    <Button style="@style/ButtonStyle"
             android:id="@+id/auto_scale_btn"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_margin_top="8dip"
-            android:layout_margin_bottom="4dip"
-            android:padding="2dip"
+            android:layout_marginTop="8dip"
+            android:layout_marginBottom="4dip"
             android:text="Auto Scale"
-            android:textSize="30dip"
-            android:textColor="#FFF"
             />
 
 

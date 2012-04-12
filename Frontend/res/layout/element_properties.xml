@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <sriracha.frontend.android.ElementPropertiesView xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="wrap_content" android:layout_height="fill_parent"
-              android:layout_centerHorizontal="true"
-              android:orientation="vertical">
+                                                 android:layout_width="wrap_content" android:layout_height="fill_parent"
+                                                 android:layout_centerHorizontal="true"
+                                                 android:orientation="vertical">
     <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
         <ImageView style="@style/CircuitMenuItemImage.Element"
                    android:layout_centerInParent="true"
@@ -12,7 +12,7 @@
     </RelativeLayout>
 
     <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
-        <TextView style="@style/CircuitMenuItemImage.Element"
+        <TextView style="@style/MenuTitle"
                   android:id="@+id/properties_type"/>
     </RelativeLayout>
     <RelativeLayout style="@style/CircuitMenuItem.SubMenu" android:layout_width="fill_parent">
@@ -29,16 +29,25 @@
             android:orientation="vertical"
             />
 
-    <RelativeLayout style="@style/CircuitMenuItem.SubMenu"
-                    android:onClick="deleteOnClick"
+    <LinearLayout android:layout_width="fill_parent"
+                  android:layout_height="0dp"
+                  android:layout_weight="1"
+                  android:orientation="horizontal"
             >
-        <TextView style="@style/CircuitMenuItemImage.Element"
-                  android:layout_alignParentLeft="true"
-                  android:text="Copy"
+        <Button style="@style/ButtonStyle"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_alignParentLeft="true"
+                android:text="Copy"
                 />
-        <TextView style="@style/CircuitMenuItemImage.Element"
-                  android:layout_alignParentRight="true"
-                  android:text="Delete"
+        <Button style="@style/ButtonStyle"
+                android:layout_alignParentRight="true"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="Delete"
+                android:onClick="deleteOnClick"
                 />
-    </RelativeLayout>
+    </LinearLayout>
 </sriracha.frontend.android.ElementPropertiesView>

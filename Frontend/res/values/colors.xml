@@ -1,6 +1,8 @@
 <resources>
     <color name="MenuBackground">#000033</color>
     <color name="MenuLight">#00004B</color>
+    <color name="ButtonBack">#1B1080</color>
+    <color name="ButtonText">#FFF</color>
     <color name="SnappyGrey">#FF646464</color>
     <color name="GoGreen">#FF14A414</color>
     <color name="CancelRed">#FFA41414</color>

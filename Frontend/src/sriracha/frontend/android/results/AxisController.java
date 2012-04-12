@@ -26,19 +26,16 @@ public class AxisController extends FrameLayout implements AdapterView.OnItemSel
     public AxisController(Context context)
     {
         super(context);
-//        init();
     }
 
     public AxisController(Context context, AttributeSet attrs)
     {
         super(context, attrs);
-//        init();
     }
 
     public AxisController(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
-//        init();
     }
 
 
