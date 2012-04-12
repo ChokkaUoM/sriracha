@@ -78,7 +78,7 @@
 
     <style name="ButtonStyle">
         <item name="android:padding">2dip</item>
-        <item name="android:textSize">30dip</item>
+        <item name="android:textSize">22dip</item>
         <item name="android:background">@color/ButtonBack</item>
         <item name="android:textColor">@color/ButtonText</item>
     </style>
