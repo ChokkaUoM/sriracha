@@ -1,11 +1,11 @@
 <resources>
 
-    <color name="MenuBackground">#333763</color>
-    <color name="MenuLight">#50548A</color>
-    <color name="ButtonBack">#5E733B</color>
-    <color name="ButtonBackPressed">#F0F</color>
+    <color name="MenuBackground">#A66A00</color>
+    <color name="MenuLight">#BF8B30</color>
+    <color name="ButtonBack">#FFA200</color>
+    <color name="ButtonBackPressed">#FFBA40</color>
     <color name="ButtonText">#FFF</color>
-    <color name="SnappyGrey">#323557</color>
+    <color name="SnappyGrey">#9F9583</color>
     <color name="GoGreen">#41810C</color>
     <color name="CancelRed">#810C2F</color>
     <color name="CanvasBack">#DDD</color>
