@@ -24,6 +24,8 @@ public class MainActivity extends Activity
 
     private AsyncSimulator simulator;
 
+    private String currentFileName;
+
     /**
      * Called when the activity is first created.
      */
@@ -188,9 +190,7 @@ public class MainActivity extends Activity
         }
         catch (Exception e)
         {
-            Toast toast = Toast.makeText(this, "Something seems to have gone slightly awry.", Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER, 0, 0);
-            toast.show();
+            showToast("Something seems to have gone slightly awry.");
         }
     }
 
@@ -233,12 +233,19 @@ public class MainActivity extends Activity
                 {
                     case 0: // New
                         resetCircuitDesigner();
+                        currentFileName = null;
                         break;
                     case 1: // Load
                         showDialog(LoadDialogFragment.newInstance());
                         break;
                     case 2: // Save
-                        break;
+                        if (currentFileName != null)
+                        {
+                            if (saveCircuit(currentFileName))
+                                showToast("Saved");
+                            break;
+                        }
+                        // fallthrough!
                     case 3: // Save As...
                         showDialog(SaveDialogFragment.newInstance());
                         break;
@@ -255,6 +262,7 @@ public class MainActivity extends Activity
             resetCircuitDesigner();
             Serialization serialization = new Serialization(circuitDesigner);
             new Storage(this).load(fileName, serialization);
+            currentFileName = fileName;
             return true;
         }
         catch (IOException e) { showToast(e.getMessage()); }
@@ -273,6 +281,7 @@ public class MainActivity extends Activity
         {
             Serialization serialization = new Serialization(circuitDesigner);
             new Storage(this).save(fileName, serialization);
+            currentFileName = fileName;
             return true;
         }
         catch (IOException e) { showToast(e.getMessage()); }

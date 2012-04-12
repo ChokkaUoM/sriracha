@@ -50,14 +50,15 @@
                       android:text="Number of steps"/>
 
             <EditText style="@style/HorizontalFull.AnalysisEditText"
-                      android:id="@+id/ac_analysis_num"/>
+                      android:id="@+id/ac_analysis_num"
+                      android:inputType="number"/>
 
             <!-- Frequency Scale -->
             <TextView style="@style/HorizontalFull"
                       android:text="Frequency Scale"/>
 
             <Spinner style="@style/HorizontalFull.AnalysisEditText"
-                      android:id="@+id/ac_frequency_scale"/>
+                     android:id="@+id/ac_frequency_scale"/>
 
 
         </LinearLayout>
@@ -103,7 +104,8 @@
             <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
                       android:text="Increment"/>
             <EditText style="@style/HorizontalFull.AnalysisEditText"
-                      android:id="@+id/dc_analysis_incr"/>
+                      android:id="@+id/dc_analysis_incr"
+                      android:inputType="numberDecimal"/>
 
         </LinearLayout>
 

@@ -16,7 +16,7 @@
                   android:id="@+id/properties_type"/>
     </RelativeLayout>
 
-    <TextView style="@style/VerticalWeight" android:layout_width="fill_parent"
+    <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
               android:text="Element Name"/>
     <RelativeLayout style="@style/VerticalWeight" android:layout_width="fill_parent">
         <EditText style="@style/CircuitMenuItemImage" android:layout_width="fill_parent"

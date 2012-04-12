@@ -74,12 +74,14 @@ public class WireManager
         {
             // If we're adding an intermediate section from a port, we want to extend
             // the wire in the same direction that the port's element goes.
+            // Unless, of course, this will cause the wire to go through the element.
             boolean extendVertically;
             if (from instanceof CircuitElementPortView)
             {
                 CircuitElementPortView port = (CircuitElementPortView) from;
                 extendVertically = port.getElement().getOrientation() % 180 == 0;
-            } else
+            }
+            else
             {
                 WireIntersection intersection = (WireIntersection) from;
                 if (intersection.getSegments().size() == 1)
@@ -220,7 +222,8 @@ public class WireManager
                 {
                     // Case 2.
                     newIntersection = port;
-                } else
+                }
+                else
                 {
                     // Case 3. Create a new intersection to replace all the old ones.
                     newIntersection = new WireIntersection(intersectionList.get(0).getX(), intersectionList.get(0).getY());
@@ -240,7 +243,8 @@ public class WireManager
                             segment.getStart().removeSegment(segment);
                             segment.getEnd().removeSegment(segment);
                             removeSegment(segment);
-                        } else
+                        }
+                        else
                         {
                             // When consolidating intersections, each affected segment must have the
                             // relevant intersection replaced.
@@ -281,7 +285,8 @@ public class WireManager
                     {
                         direction1 = seg1.otherEnd(intersection).getY() - intersection.getY();
                         direction2 = seg2.otherEnd(intersection).getY() - intersection.getY();
-                    } else
+                    }
+                    else
                     {
                         direction1 = seg1.otherEnd(intersection).getX() - intersection.getX();
                         direction2 = seg2.otherEnd(intersection).getX() - intersection.getX();
@@ -297,14 +302,16 @@ public class WireManager
                         longerSegment.replaceIntersection(intersection, midIntersection);
                         midIntersection.addSegment(longerSegment);
                         intersection.removeSegment(longerSegment);
-                    } else if (intersection instanceof WireIntersection && intersection.getSegments().size() == 2)
+                    }
+                    else if (intersection instanceof WireIntersection && intersection.getSegments().size() == 2)
                     {
                         // Segments are going off in opposite directions from the intersection.
                         if (seg2.getStart() == intersection)
                         {
                             seg2.getEnd().replaceSegment(seg2, seg1);
                             seg1.replaceIntersection(intersection, seg2.getEnd());
-                        } else
+                        }
+                        else
                         {
                             seg2.getStart().replaceSegment(seg2, seg1);
                             seg1.replaceIntersection(intersection, seg2.getStart());

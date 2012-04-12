@@ -69,59 +69,65 @@ public class AnalysisMenu extends LinearLayout
         else if (analysisType.equals("AC"))
             analysis = getAcAnalysis();
 
-        if (analysis != null)
+        if (analysis == null)
+            return;
+
+        final ArrayList<String> prints = getPrints();
+        if (prints.isEmpty())
         {
-            showCancelButton();
-
-            System.out.println(analysis);
-            simulator.requestAnalysisAsync(analysis, new AsyncSimulator.OnSimulatorAnalysisDoneListener()
-            {
-                @Override
-                public void OnSimulatorAnalysisDone()
-                {
-                    MainActivity mainActivity = (MainActivity) getContext();
-                    MainLayout mainLayout = (MainLayout) mainActivity.findViewById(R.id.main);
-                    Graph graph = (Graph) mainActivity.findViewById(R.id.graph);
-                    graph.clearPlots();
-                    switch (getFreqScaleType())
-                    {
-                        case 0:
-                            graph.setXLogScale(false);
-                            break;
-                        case 1:
-                            graph.setXLogScale(true);
-                            graph.setXLogBase(10);
-                            break;
-                        case 2:
-                            graph.setXLogScale(true);
-                            graph.setXLogBase(8);
-                    }
-
-                    ArrayList<String> prints = getPrints();
-                    for (int i = 0; i < prints.size(); i++)
-                    {
-                        System.out.println(prints.get(i));
-                        IPrintData result = simulator.requestResults(prints.get(i));
-                        ResultsParser parser = new ResultsParser();
-                        List<Plot> plots = parser.getPlots(result);
-
-                        graph.addPlot(plots.get(0), Colors.get(i));
-                    }
-
-                    showAnalyseButton();
-                    int lmode = mainLayout.getLayoutMode();
-                    if (lmode == 1) mainLayout.shiftRight();
-
-                    graph.autoScale();
-                }
-
-                @Override
-                public void OnSimulatorAnalysisCancelled()
-                {
-                    showAnalyseButton();
-                }
-            });
+            showToast("You haven't requested any plots");
+            return;
         }
+
+        showCancelButton();
+
+        System.out.println(analysis);
+        simulator.requestAnalysisAsync(analysis, new AsyncSimulator.OnSimulatorAnalysisDoneListener()
+        {
+            @Override
+            public void OnSimulatorAnalysisDone()
+            {
+                MainActivity mainActivity = (MainActivity) getContext();
+                MainLayout mainLayout = (MainLayout) mainActivity.findViewById(R.id.main);
+                Graph graph = (Graph) mainActivity.findViewById(R.id.graph);
+                graph.clearPlots();
+                switch (getFreqScaleType())
+                {
+                    case 0:
+                        graph.setXLogScale(false);
+                        break;
+                    case 1:
+                        graph.setXLogScale(true);
+                        graph.setXLogBase(10);
+                        break;
+                    case 2:
+                        graph.setXLogScale(true);
+                        graph.setXLogBase(8);
+                }
+
+                for (int i = 0; i < prints.size(); i++)
+                {
+                    System.out.println(prints.get(i));
+                    IPrintData result = simulator.requestResults(prints.get(i));
+                    ResultsParser parser = new ResultsParser();
+                    List<Plot> plots = parser.getPlots(result);
+
+                    graph.addPlot(plots.get(0), Colors.get(i));
+                }
+
+                showAnalyseButton();
+                int lmode = mainLayout.getLayoutMode();
+                if (lmode == 1) mainLayout.shiftRight();
+
+                graph.autoScale();
+            }
+
+            @Override
+            public void OnSimulatorAnalysisCancelled()
+            {
+                showAnalyseButton();
+            }
+        });
     }
 
     private ArrayList<String> getPrints()
@@ -149,28 +155,48 @@ public class AnalysisMenu extends LinearLayout
     {
         String elementName = ((TextView) findViewById(R.id.dc_analysis_element)).getText().toString();
         CircuitElement element = getCircuitDesigner().getElementByName(elementName);
-        float startV = Float.parseFloat(((TextView) findViewById(R.id.dc_analysis_startv)).getText().toString());
-        float stopV = Float.parseFloat(((TextView) findViewById(R.id.dc_analysis_stopv)).getText().toString());
-        float incr = Float.parseFloat(((TextView) findViewById(R.id.dc_analysis_incr)).getText().toString());
+
+        float startV, stopV, incr;
+
+        try
+        {
+            startV = Float.parseFloat(((TextView) findViewById(R.id.dc_analysis_startv)).getText().toString());
+            stopV = Float.parseFloat(((TextView) findViewById(R.id.dc_analysis_stopv)).getText().toString());
+            incr = Float.parseFloat(((TextView) findViewById(R.id.dc_analysis_incr)).getText().toString());
+        }
+        catch (NumberFormatException e)
+        {
+            showToast("You must specify a valid number for start, stop and increment voltages.");
+            return null;
+        }
 
         if (element != null)
         {
             String analysis = String.format(".DC %s %f %f %f", element.getName(), startV, stopV, incr);
             return analysis;
-        } else
+        }
+        else
         {
-            Toast toast = Toast.makeText(getContext(), "You must choose an element to sweep", Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER, 0, 0);
-            toast.show();
+            showToast("You must choose an element to sweep");
         }
         return null;
     }
 
     private String getAcAnalysis()
     {
-        int num = Integer.parseInt(((TextView) findViewById(R.id.ac_analysis_num)).getText().toString());
-        float startF = Float.parseFloat(((TextView) findViewById(R.id.ac_analysis_startf)).getText().toString());
-        float stopF = Float.parseFloat(((TextView) findViewById(R.id.ac_analysis_stopf)).getText().toString());
+        int num;
+        float startF, stopF;
+        try
+        {
+            num = Integer.parseInt(((TextView) findViewById(R.id.ac_analysis_num)).getText().toString());
+            startF = Float.parseFloat(((TextView) findViewById(R.id.ac_analysis_startf)).getText().toString());
+            stopF = Float.parseFloat(((TextView) findViewById(R.id.ac_analysis_stopf)).getText().toString());
+        }
+        catch (NumberFormatException e)
+        {
+            showToast("You must specify a valid number for number of steps, and start and stop frequencies.");
+            return null;
+        }
 
         String freqScale = new String[]{"LIN", "DEC", "OCT"}[getFreqScaleType()];
 
@@ -203,11 +229,10 @@ public class AnalysisMenu extends LinearLayout
         if (node1 != null && node2 != null)
         {
             return String.format("%s(%s,%s)", printType, node1, node2);
-        } else
+        }
+        else
         {
-            Toast toast = Toast.makeText(getContext(), "You must choose a node to measure voltage", Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER, 0, 0);
-            toast.show();
+            showToast("You must choose a node to measure voltage");
         }
         return null;
     }
@@ -220,11 +245,10 @@ public class AnalysisMenu extends LinearLayout
         if (element != null)
         {
             return String.format("%s(%s)", printType, element.getName());
-        } else
+        }
+        else
         {
-            Toast toast = Toast.makeText(getContext(), "You must choose an element to measure current", Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER, 0, 0);
-            toast.show();
+            showToast("You must choose an element to measure current");
         }
 
         return null;
@@ -439,5 +463,12 @@ public class AnalysisMenu extends LinearLayout
         scaleSelector.setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item,
                 new String[]{"LIN", "LOG10", "LOG8"}));
         ((ArrayAdapter<String>) scaleSelector.getAdapter()).setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    }
+
+    private void showToast(String message)
+    {
+        Toast toast = Toast.makeText(getContext(), message, Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
     }
 }
