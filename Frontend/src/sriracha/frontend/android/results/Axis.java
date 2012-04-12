@@ -421,8 +421,16 @@ class Axis extends LinearLayout
 
     public void setRange(double minValue, double maxValue)
     {
+        double minDiff = 0.00001;
+
         //one of the values is NAN do nothing.
         if (minValue == Double.NaN || maxValue == Double.NaN) return;
+
+        if (maxValue - minValue < minDiff)
+        {
+            maxValue = (maxValue + minValue + minDiff) / 2;
+            minValue = (maxValue + minValue - minDiff) / 2;
+        }
 
         //cant have such values on a log scale
         if (scaleType == LOGSCALE && minValue <= 0) minValue = 1;

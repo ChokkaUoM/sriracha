@@ -3,7 +3,8 @@ package sriracha.frontend.android.designer;
 import android.content.Context;
 import android.graphics.Point;
 import android.view.ViewGroup;
-import sriracha.frontend.*;
+import sriracha.frontend.NetlistNode;
+import sriracha.frontend.NodeCrawler;
 import sriracha.frontend.android.model.CircuitElementPortView;
 import sriracha.frontend.android.model.CircuitElementView;
 
@@ -78,8 +79,7 @@ public class WireManager
             {
                 CircuitElementPortView port = (CircuitElementPortView) from;
                 extendVertically = port.getElement().getOrientation() % 180 == 0;
-            }
-            else
+            } else
             {
                 WireIntersection intersection = (WireIntersection) from;
                 if (intersection.getSegments().size() == 1)
@@ -220,8 +220,7 @@ public class WireManager
                 {
                     // Case 2.
                     newIntersection = port;
-                }
-                else
+                } else
                 {
                     // Case 3. Create a new intersection to replace all the old ones.
                     newIntersection = new WireIntersection(intersectionList.get(0).getX(), intersectionList.get(0).getY());
@@ -241,8 +240,7 @@ public class WireManager
                             segment.getStart().removeSegment(segment);
                             segment.getEnd().removeSegment(segment);
                             removeSegment(segment);
-                        }
-                        else
+                        } else
                         {
                             // When consolidating intersections, each affected segment must have the
                             // relevant intersection replaced.
@@ -272,7 +270,7 @@ public class WireManager
         ArrayList<IWireIntersection> toRemove = new ArrayList<IWireIntersection>();
         for (IWireIntersection intersection : intersections)
         {
-            if (intersection instanceof WireIntersection && intersection.getSegments().size() == 2)
+            if (intersection.getSegments().size() >= 2)
             {
                 WireSegment seg1 = intersection.getSegments().get(0);
                 WireSegment seg2 = intersection.getSegments().get(1);
@@ -283,8 +281,7 @@ public class WireManager
                     {
                         direction1 = seg1.otherEnd(intersection).getY() - intersection.getY();
                         direction2 = seg2.otherEnd(intersection).getY() - intersection.getY();
-                    }
-                    else
+                    } else
                     {
                         direction1 = seg1.otherEnd(intersection).getX() - intersection.getX();
                         direction2 = seg2.otherEnd(intersection).getX() - intersection.getX();
@@ -295,21 +292,19 @@ public class WireManager
                         // Segments are going off in the same direction from the intersection.
                         WireSegment longerSegment = seg1.getLength() > seg2.getLength() ? seg1 : seg2;
                         WireSegment shorterSegment = longerSegment == seg1 ? seg2 : seg1;
-                        IWireIntersection otherIntersection = shorterSegment.otherEnd(intersection);
+                        IWireIntersection midIntersection = shorterSegment.otherEnd(intersection);
 
-                        longerSegment.replaceIntersection(intersection, otherIntersection);
-                        otherIntersection.addSegment(longerSegment);
+                        longerSegment.replaceIntersection(intersection, midIntersection);
+                        midIntersection.addSegment(longerSegment);
                         intersection.removeSegment(longerSegment);
-                    }
-                    else
+                    } else if (intersection instanceof WireIntersection && intersection.getSegments().size() == 2)
                     {
                         // Segments are going off in opposite directions from the intersection.
                         if (seg2.getStart() == intersection)
                         {
                             seg2.getEnd().replaceSegment(seg2, seg1);
                             seg1.replaceIntersection(intersection, seg2.getEnd());
-                        }
-                        else
+                        } else
                         {
                             seg2.getStart().replaceSegment(seg2, seg1);
                             seg1.replaceIntersection(intersection, seg2.getStart());
