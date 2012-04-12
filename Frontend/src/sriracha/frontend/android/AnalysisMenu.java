@@ -1,21 +1,26 @@
 package sriracha.frontend.android;
 
-import android.app.*;
-import android.content.*;
-import android.util.*;
-import android.view.*;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.util.AttributeSet;
+import android.view.Gravity;
+import android.view.View;
 import android.widget.*;
 import sriracha.frontend.*;
-import sriracha.frontend.R;
-import sriracha.frontend.android.designer.*;
-import sriracha.frontend.android.model.*;
-import sriracha.frontend.android.model.elements.sources.*;
-import sriracha.frontend.android.results.*;
-import sriracha.frontend.model.*;
-import sriracha.frontend.resultdata.*;
-import sriracha.simulator.*;
+import sriracha.frontend.android.designer.CircuitDesigner;
+import sriracha.frontend.android.designer.WireManager;
+import sriracha.frontend.android.designer.WireSegment;
+import sriracha.frontend.android.model.CircuitElementView;
+import sriracha.frontend.android.model.elements.sources.VoltageSourceView;
+import sriracha.frontend.android.results.Graph;
+import sriracha.frontend.android.results.IElementSelector;
+import sriracha.frontend.model.CircuitElement;
+import sriracha.frontend.resultdata.Plot;
+import sriracha.simulator.IPrintData;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AnalysisMenu extends LinearLayout
 {
@@ -25,10 +30,12 @@ public class AnalysisMenu extends LinearLayout
     {
         super(context);
     }
+
     public AnalysisMenu(Context context, AttributeSet attrs)
     {
         super(context, attrs);
     }
+
     public AnalysisMenu(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
@@ -50,6 +57,7 @@ public class AnalysisMenu extends LinearLayout
     {
         return ((MainActivity) getContext()).getCircuitDesigner();
     }
+
 
     public void requestAnalyses(final AsyncSimulator simulator)
     {
@@ -75,6 +83,19 @@ public class AnalysisMenu extends LinearLayout
                     MainLayout mainLayout = (MainLayout) mainActivity.findViewById(R.id.main);
                     Graph graph = (Graph) mainActivity.findViewById(R.id.graph);
                     graph.clearPlots();
+                    switch (getFreqScaleType())
+                    {
+                        case 0:
+                            graph.setXLogScale(false);
+                            break;
+                        case 1:
+                            graph.setXLogScale(true);
+                            graph.setXLogBase(10);
+                            break;
+                        case 2:
+                            graph.setXLogScale(true);
+                            graph.setXLogBase(8);
+                    }
 
                     ArrayList<String> prints = getPrints();
                     for (int i = 0; i < prints.size(); i++)
@@ -88,8 +109,12 @@ public class AnalysisMenu extends LinearLayout
                     }
 
                     showAnalyseButton();
-                    mainLayout.shiftRight();
+                    int lmode = mainLayout.getLayoutMode();
+                    if (lmode == 1) mainLayout.shiftRight();
+
+                    graph.autoScale();
                 }
+
                 @Override
                 public void OnSimulatorAnalysisCancelled()
                 {
@@ -132,8 +157,7 @@ public class AnalysisMenu extends LinearLayout
         {
             String analysis = String.format(".DC %s %f %f %f", element.getName(), startV, stopV, incr);
             return analysis;
-        }
-        else
+        } else
         {
             Toast toast = Toast.makeText(getContext(), "You must choose an element to sweep", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER, 0, 0);
@@ -148,11 +172,15 @@ public class AnalysisMenu extends LinearLayout
         float startF = Float.parseFloat(((TextView) findViewById(R.id.ac_analysis_startf)).getText().toString());
         float stopF = Float.parseFloat(((TextView) findViewById(R.id.ac_analysis_stopf)).getText().toString());
 
-        int freqScaleIndex = ((Spinner) findViewById(R.id.ac_frequency_scale)).getSelectedItemPosition();
-        String freqScale = new String[]{"LIN", "DEC", "OCT"}[freqScaleIndex];
+        String freqScale = new String[]{"LIN", "DEC", "OCT"}[getFreqScaleType()];
 
         String analysis = String.format(".AC %s %d %f %f", freqScale, num, startF, stopF);
         return analysis;
+    }
+
+    private int getFreqScaleType()
+    {
+        return ((Spinner) findViewById(R.id.ac_frequency_scale)).getSelectedItemPosition();
     }
 
     private String getPrint()
@@ -175,8 +203,7 @@ public class AnalysisMenu extends LinearLayout
         if (node1 != null && node2 != null)
         {
             return String.format("%s(%s,%s)", printType, node1, node2);
-        }
-        else
+        } else
         {
             Toast toast = Toast.makeText(getContext(), "You must choose a node to measure voltage", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER, 0, 0);
@@ -193,8 +220,7 @@ public class AnalysisMenu extends LinearLayout
         if (element != null)
         {
             return String.format("%s(%s)", printType, element.getName());
-        }
-        else
+        } else
         {
             Toast toast = Toast.makeText(getContext(), "You must choose an element to measure current", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER, 0, 0);
@@ -228,6 +254,7 @@ public class AnalysisMenu extends LinearLayout
                 else
                     throw new RuntimeException("Invalid analysis type");
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> adapterView)
             {
@@ -259,6 +286,7 @@ public class AnalysisMenu extends LinearLayout
                 else
                     throw new RuntimeException("Invalid plot type");
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> adapterView)
             {

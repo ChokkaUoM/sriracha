@@ -34,6 +34,21 @@ public class MainLayout extends LinearLayout
         super(context);
     }
 
+
+    public int getLayoutMode()
+    {
+        int[] offsets = getOffsets();
+
+        for (int i = 0; i < offsets.length; i++)
+        {
+            if (Math.abs(layoutOffset - offsets[i]) < 2)
+                return i;
+        }
+
+        return -1;
+
+    }
+
     public MainLayout(Context context, AttributeSet attrs)
     {
         super(context, attrs);
@@ -111,6 +126,24 @@ public class MainLayout extends LinearLayout
 
     }
 
+
+    private int[] getOffsets()
+    {
+        View c0 = getChildAt(0);
+        View c1 = getChildAt(1);
+        View c2 = getChildAt(2);
+        View c3 = getChildAt(3);
+        View c4 = getChildAt(4);
+
+        int offset0 = c0.getMeasuredWidth();
+        int offset1 = offset0 + c1.getMeasuredWidth();
+        int offset2 = offset1 + c2.getMeasuredWidth();
+        int offset3 = offset2 + c3.getMeasuredWidth();
+        int offset4 = offset3 + c4.getMeasuredWidth();
+
+        return new int[]{offset0, offset1, offset2, offset3, offset4};
+
+    }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom)

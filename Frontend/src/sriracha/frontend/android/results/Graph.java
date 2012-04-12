@@ -620,6 +620,17 @@ public class Graph extends FrameLayout
 
     }
 
+    public void setXLogBase(int base)
+    {
+        xAxis.setLogBase(base);
+    }
+
+    public void setYLogBase(int base)
+    {
+        yAxis.setLogBase(base);
+    }
+
+
     public double getYmin()
     {
         return yAxis.getMinValue();
