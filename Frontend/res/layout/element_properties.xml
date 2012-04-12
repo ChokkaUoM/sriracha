@@ -40,12 +40,14 @@
                 android:layout_weight="1"
                 android:layout_alignParentLeft="true"
                 android:text="Copy"
+                android:layout_marginRight="2dp"
                 />
         <Button style="@style/ButtonStyle"
                 android:layout_alignParentRight="true"
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
                 android:layout_weight="1"
+                android:layout_marginLeft="2dp"
                 android:text="Delete"
                 android:onClick="deleteOnClick"
                 />
