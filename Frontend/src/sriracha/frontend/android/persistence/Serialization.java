@@ -1,4 +1,4 @@
-package sriracha.frontend.android;
+package sriracha.frontend.android.persistence;
 
 import org.apache.http.entity.*;
 import sriracha.frontend.*;

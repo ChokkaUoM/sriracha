@@ -1,4 +1,4 @@
-package sriracha.frontend.android;
+package sriracha.frontend.android.persistence;
 
 import android.content.*;
 import android.os.*;

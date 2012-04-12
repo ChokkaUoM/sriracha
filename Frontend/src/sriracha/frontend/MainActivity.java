@@ -8,6 +8,7 @@ import android.widget.*;
 import sriracha.frontend.android.*;
 import sriracha.frontend.android.designer.*;
 import sriracha.frontend.android.model.CircuitElementActivator;
+import sriracha.frontend.android.persistence.*;
 import sriracha.frontend.android.results.Graph;
 import sriracha.frontend.resultdata.Plot;
 import sriracha.frontend.resultdata.Point;
