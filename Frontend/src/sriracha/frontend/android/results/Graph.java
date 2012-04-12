@@ -572,6 +572,9 @@ public class Graph extends FrameLayout
 
     public void autoScale()
     {
+        if (plots.size() == 0)
+            return;
+
         double[] range = new double[4];
         range[0] = range[2] = Double.POSITIVE_INFINITY;
         range[1] = range[3] = Double.NEGATIVE_INFINITY;

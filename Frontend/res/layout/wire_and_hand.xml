@@ -2,6 +2,7 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="fill_parent" android:layout_height="wrap_content"
+                android:layout_marginBottom="20dip"
                 android:layout_alignParentBottom="true">
     <ImageView style="@style/CircuitMenuItemImage"
                android:layout_marginTop="20dip"
@@ -14,7 +15,6 @@
     <ImageView style="@style/CircuitMenuItemImage"
                android:layout_below="@id/wire"
                android:layout_marginTop="20dip"
-               android:layout_marginBottom="20dip"
                android:src="@drawable/circuitmenu_hand"
                android:id="@+id/hand"
                android:onClick="handOnClick"

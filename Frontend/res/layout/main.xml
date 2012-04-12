@@ -5,7 +5,7 @@
                                       android:orientation="horizontal"
                                       android:id="@+id/main">
     <RelativeLayout android:layout_width="0dp" android:layout_height="fill_parent"
-                    android:layout_weight="20"
+                    android:layout_weight="15"
                     android:id="@+id/circuit_menu_container"
                     android:background="@color/MenuBackground"
                     android:padding="5dp">

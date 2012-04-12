@@ -3,7 +3,7 @@
     <color name="MenuBackground">#272761</color>
     <color name="MenuLight">#777795</color>
     <color name="ButtonBack">#ABABCA</color>
-    <color name="ButtonBackPressed">#B3B3CA</color>
+    <color name="ButtonBackPressed">#9393BA</color>
     <color name="ButtonText">#FFF</color>
     <color name="SnappyGrey">#5F5F70</color>
     <color name="GoGreen">#41810C</color>
@@ -12,6 +12,5 @@
     <color name="CanvasLines">#CCC</color>
     <color name="ElementDragFocus">#5F5F70</color>
     <color name="ElementSelectFocus">#777795</color>
-
 
 </resources>

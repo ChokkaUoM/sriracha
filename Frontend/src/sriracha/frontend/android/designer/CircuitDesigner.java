@@ -19,8 +19,8 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
-        implements View.OnTouchListener, CircuitElementView.OnElementClickListener, CircuitElementView.OnInvalidateListener
-        , CircuitElementView.OnDropListener
+        implements View.OnTouchListener, CircuitElementView.OnElementClickListener, CircuitElementView.OnInvalidateListener,
+        CircuitElementView.OnDropListener, CircuitElementView.OnMoveListener
 {
     public static final int GRID_SIZE = 40;
 
@@ -288,6 +288,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         elementView.setOnElementClickListener(this);
         elementView.setOnInvalidateListener(this);
         elementView.setOnDropListener(this);
+        elementView.setOnMoveListener(this);
         elementView.updatePosition();
     }
 
@@ -432,6 +433,13 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                 }
             }
         }
+    }
+
+    @Override
+    public void onMove(CircuitElementView elementView)
+    {
+        if (getCursor() == CursorState.WIRE)
+            setCursorToHand();
     }
 
     public String generateNetlist()

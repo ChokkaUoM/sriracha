@@ -231,10 +231,12 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
                 refreshDrawableState();
 
                 if (hasMoved)
+                {
                     wireManager.consolidateIntersections();
 
-                if (onMoveListener != null)
-                    onMoveListener.onMove(this);
+                    if (onMoveListener != null)
+                        onMoveListener.onMove(this);
+                }
 
                 break;
             }
