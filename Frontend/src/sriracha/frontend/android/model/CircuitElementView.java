@@ -225,14 +225,15 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
                     }
                 }
 
-                positionX = newPositionX;
-                positionY = newPositionY;
-                updatePosition();
-                refreshDrawableState();
-
-                if (hasMoved)
+                if (positionX != newPositionX || positionY != newPositionY)
                 {
-                    wireManager.consolidateIntersections();
+                    positionX = newPositionX;
+                    positionY = newPositionY;
+                    updatePosition();
+                    refreshDrawableState();
+
+                    if (hasMoved)
+                        wireManager.consolidateIntersections();
 
                     if (onMoveListener != null)
                         onMoveListener.onMove(this);
