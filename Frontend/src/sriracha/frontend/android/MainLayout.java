@@ -39,10 +39,12 @@ public class MainLayout extends LinearLayout
     {
         int[] offsets = getOffsets();
 
+        if(layoutOffset == 0) return 0;
+
         for (int i = 0; i < offsets.length; i++)
         {
             if (Math.abs(layoutOffset - offsets[i]) < 2)
-                return i;
+                return i+1;
         }
 
         return -1;
