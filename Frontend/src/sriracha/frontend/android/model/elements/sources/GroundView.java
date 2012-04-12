@@ -2,10 +2,13 @@ package sriracha.frontend.android.model.elements.sources;
 
 import android.content.Context;
 import sriracha.frontend.R;
+import sriracha.frontend.android.*;
 import sriracha.frontend.android.designer.WireManager;
 import sriracha.frontend.android.model.CircuitElementPortView;
 import sriracha.frontend.android.model.CircuitElementView;
 import sriracha.frontend.model.CircuitElement;
+
+import java.util.*;
 
 public class GroundView extends CircuitElementView
 {
@@ -32,5 +35,11 @@ public class GroundView extends CircuitElementView
             };
         }
         return ports;
+    }
+
+    @Override
+    public UUID getTypeUUID()
+    {
+        return ElementTypeUUID.GROUND;
     }
 }

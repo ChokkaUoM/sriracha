@@ -191,7 +191,7 @@ public class VoltageSource extends TwoPortElement implements Serializable
                 }
             };
 
-            properties = new Property[]{dcProp, acProp, freqProp, phaseProp};
+            properties = new Property[]{dcProp, acProp, /*freqProp, */phaseProp};
         }
         return properties;
     }

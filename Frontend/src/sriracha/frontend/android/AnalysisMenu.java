@@ -42,6 +42,7 @@ public class AnalysisMenu extends LinearLayout
         setNodeSelector();
         setPlotTypeItems();
         setPrintAddButton();
+        setFrequencyScale();
         super.onFinishInflate();
     }
 
@@ -64,6 +65,7 @@ public class AnalysisMenu extends LinearLayout
         {
             showCancelButton();
 
+            System.out.println(analysis);
             simulator.requestAnalysisAsync(analysis, new AsyncSimulator.OnSimulatorAnalysisDoneListener()
             {
                 @Override
@@ -77,6 +79,7 @@ public class AnalysisMenu extends LinearLayout
                     ArrayList<String> prints = getPrints();
                     for (int i = 0; i < prints.size(); i++)
                     {
+                        System.out.println(prints.get(i));
                         IPrintData result = simulator.requestResults(prints.get(i));
                         ResultsParser parser = new ResultsParser();
                         List<Plot> plots = parser.getPlots(result);
@@ -141,11 +144,14 @@ public class AnalysisMenu extends LinearLayout
 
     private String getAcAnalysis()
     {
-        float num = Float.parseFloat(((TextView) findViewById(R.id.ac_analysis_num)).getText().toString());
+        int num = Integer.parseInt(((TextView) findViewById(R.id.ac_analysis_num)).getText().toString());
         float startF = Float.parseFloat(((TextView) findViewById(R.id.ac_analysis_startf)).getText().toString());
         float stopF = Float.parseFloat(((TextView) findViewById(R.id.ac_analysis_stopf)).getText().toString());
 
-        String analysis = String.format(".AC LIN %f %f %f");
+        int freqScaleIndex = ((Spinner) findViewById(R.id.ac_frequency_scale)).getSelectedItemPosition();
+        String freqScale = new String[]{"LIN", "DEC", "OCT"}[freqScaleIndex];
+
+        String analysis = String.format(".AC %s %d %f %f", freqScale, num, startF, stopF);
         return analysis;
     }
 
@@ -396,5 +402,14 @@ public class AnalysisMenu extends LinearLayout
                 adapter.add(getPrint());
             }
         });
+    }
+
+    private void setFrequencyScale()
+    {
+        Spinner scaleSelector = (Spinner) findViewById(R.id.ac_frequency_scale);
+
+        scaleSelector.setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item,
+                new String[]{"LIN", "LOG10", "LOG8"}));
+        ((ArrayAdapter<String>) scaleSelector.getAdapter()).setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     }
 }

@@ -16,7 +16,8 @@ import sriracha.frontend.model.CircuitElement;
 import sriracha.frontend.model.CircuitElementManager;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.lang.reflect.*;
+import java.util.*;
 
 public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         implements View.OnTouchListener, CircuitElementView.OnElementClickListener, CircuitElementView.OnInvalidateListener,
@@ -137,6 +138,11 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         return selectedItemId;
     }
 
+    public CircuitElementManager getElementManager()
+    {
+        return elementManager;
+    }
+
     /**
      * Set a circuit element as selected so that tapping on the canvas instantiates it.
      * Do not set cursor to ELEMENT anywhere else.
@@ -179,7 +185,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         {
             // Possibilities: clicked near a port (but not on the element itself), clicked on empty space,
             // clicked on existing node, or clicked on existing wire segment.
-            CircuitElementPortView port = getPortAt(snappedX, snappedY);
+            CircuitElementPortView port = getPortAt(snappedX, snappedY, null);
             if (port != null)
             {
                 // Case 1: clicked a port
@@ -342,6 +348,11 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         return activator.instantiateElement(elementId, 0, 0, elementManager, wireManager);
     }
 
+    public CircuitElementView instantiateElement(UUID elementUUID) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException
+    {
+        return activator.instantiateElement(elementUUID, 0, 0, elementManager, wireManager);
+    }
+
     public void rotateSelectedElement(boolean cw)
     {
         if (selectedElement != null)
@@ -440,8 +451,8 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         {
             if (port.getSegments().isEmpty())
             {
-                CircuitElementPortView portIntersection = getPortAt(port.getX(), port.getY());
-                if (portIntersection != null && portIntersection != port)
+                CircuitElementPortView portIntersection = getPortAt(port.getX(), port.getY(), port.getElement());
+                if (portIntersection != null)
                 {
                     wireManager.addIntersection(port);
                     wireManager.connectNewIntersection(port, portIntersection);
@@ -450,10 +461,13 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         }
     }
 
-    private CircuitElementPortView getPortAt(int x, int y)
+    private CircuitElementPortView getPortAt(int x, int y, CircuitElementView not)
     {
         for (CircuitElementView element : elements)
         {
+            if (element == not)
+                continue;
+
             for (CircuitElementPortView port : element.getElementPorts())
             {
                 if (x == port.getX() && y == port.getY())
@@ -469,9 +483,12 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     {
         if (lastInsertedIntersection instanceof CircuitElementPortView)
         {
-            CircuitElementView elementView = ((CircuitElementPortView) lastInsertedIntersection).getElement();
-            lastInsertedIntersection = elementView.getClosestPort(x, y, false);
-            wireManager.addIntersection(lastInsertedIntersection);
+            CircuitElementPortView port = (CircuitElementPortView) lastInsertedIntersection;
+            if (port.getElement().getAttachedSegmentCount() == 0)
+            {
+                lastInsertedIntersection = port.getElement().getClosestPort(x, y, false);
+                wireManager.addIntersection(lastInsertedIntersection);
+            }
         }
     }
 

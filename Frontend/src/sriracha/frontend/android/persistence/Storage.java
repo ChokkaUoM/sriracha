@@ -4,6 +4,7 @@ import android.content.*;
 import android.os.*;
 
 import java.io.*;
+import java.lang.reflect.*;
 
 public class Storage
 {
@@ -23,7 +24,7 @@ public class Storage
         return files;
     }
 
-    public void load(String fileName, Serialization serialization) throws IOException, ClassNotFoundException
+    public void load(String fileName, Serialization serialization) throws IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException
     {
         ensureCanRead();
 

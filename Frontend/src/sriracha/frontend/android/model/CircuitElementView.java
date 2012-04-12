@@ -54,6 +54,8 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
 
     abstract public CircuitElementPortView[] getElementPorts();
 
+    abstract public UUID getTypeUUID();
+
     public CircuitElementView(Context context, CircuitElement element, float positionX, float positionY, WireManager wireManager)
     {
         super(context);
@@ -143,6 +145,16 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
             }
         }
         return closestPort;
+    }
+
+    public int getAttachedSegmentCount()
+    {
+        int count = 0;
+        for (CircuitElementPortView port : ports)
+        {
+            count += port.getSegments().size();
+        }
+        return count;
     }
 
     public boolean isElementSelected()

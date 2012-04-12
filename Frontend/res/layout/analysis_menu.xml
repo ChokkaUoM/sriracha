@@ -52,6 +52,13 @@
             <EditText style="@style/HorizontalFull.AnalysisEditText"
                       android:id="@+id/ac_analysis_num"/>
 
+            <!-- Frequency Scale -->
+            <TextView style="@style/HorizontalFull"
+                      android:text="Frequency Scale"/>
+
+            <Spinner style="@style/HorizontalFull.AnalysisEditText"
+                      android:id="@+id/ac_frequency_scale"/>
+
 
         </LinearLayout>
 

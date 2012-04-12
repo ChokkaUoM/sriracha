@@ -2,6 +2,7 @@ package sriracha.frontend.android.model;
 
 import android.content.Context;
 import sriracha.frontend.R;
+import sriracha.frontend.android.*;
 import sriracha.frontend.android.designer.WireManager;
 import sriracha.frontend.android.model.elements.CapacitorView;
 import sriracha.frontend.android.model.elements.InductorView;
@@ -12,7 +13,7 @@ import sriracha.frontend.android.model.elements.sources.CurrentSourceView;
 import sriracha.frontend.android.model.elements.sources.GroundView;
 import sriracha.frontend.android.model.elements.sources.VCCView;
 import sriracha.frontend.android.model.elements.sources.VoltageSourceView;
-import sriracha.frontend.model.CircuitElementManager;
+import sriracha.frontend.model.*;
 import sriracha.frontend.model.elements.Capacitor;
 import sriracha.frontend.model.elements.Inductor;
 import sriracha.frontend.model.elements.Resistor;
@@ -23,7 +24,8 @@ import sriracha.frontend.model.elements.sources.Ground;
 import sriracha.frontend.model.elements.sources.VCC;
 import sriracha.frontend.model.elements.sources.VoltageSource;
 
-import java.io.*;
+import java.lang.reflect.*;
+import java.util.*;
 
 public class CircuitElementActivator
 {
@@ -32,6 +34,28 @@ public class CircuitElementActivator
     public CircuitElementActivator(Context context)
     {
         this.context = context;
+    }
+
+    public CircuitElementView instantiateElement(UUID elementUUID, float positionX, float positionY, CircuitElementManager elementManager, WireManager wireManager)
+            throws InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException
+    {
+        Class<? extends CircuitElementView> viewType = ElementTypeUUID.VIEW_MAP.get(elementUUID);
+        if (viewType == null)
+            throw new IllegalArgumentException("Missing element view UUID");
+
+        Class<? extends CircuitElement> elementType = ElementTypeUUID.ELEMENT_MAP.get(elementUUID);
+        if (elementType == null)
+            throw new IllegalArgumentException("Missing element type UUID");
+
+        Constructor<? extends CircuitElementView> viewConstructor;
+        viewConstructor = viewType.getConstructor(Context.class, CircuitElement.class, float.class, float.class, WireManager.class);
+
+        Constructor<? extends CircuitElement> elementConstructor;
+        elementConstructor = elementType.getConstructor(CircuitElementManager.class);
+
+        CircuitElement element = elementConstructor.newInstance(elementManager);
+
+        return viewConstructor.newInstance(context, element, 0, 0, wireManager);
     }
 
     public CircuitElementView instantiateElement(int elementId, float positionX, float positionY, CircuitElementManager elementManager, WireManager wireManager)

@@ -71,7 +71,31 @@ public class WireManager
         // Add intermediate intersection to keep everything orthogonal
         if (from.getX() != to.getX() && from.getY() != to.getY())
         {
-            WireIntersection intermediate = new WireIntersection(from.getX(), to.getY());
+            // If we're adding an intermediate section from a port, we want to extend
+            // the wire in the same direction that the port's element goes.
+            boolean extendVertically;
+            if (from instanceof CircuitElementPortView)
+            {
+                CircuitElementPortView port = (CircuitElementPortView) from;
+                extendVertically = port.getElement().getOrientation() % 180 == 0;
+            }
+            else
+            {
+                WireIntersection intersection = (WireIntersection) from;
+                if (intersection.getSegments().size() == 1)
+                    throw new RuntimeException("Wut?");
+
+                WireSegment segment = intersection.getSegments().get(0);
+                extendVertically = segment.isVertical();
+            }
+
+            WireIntersection intermediate;
+
+            if (extendVertically)
+                intermediate = new WireIntersection(from.getX(), to.getY());
+            else
+                intermediate = new WireIntersection(to.getX(), from.getY());
+
             connectNewIntersection(from, intermediate);
             from = intermediate;
         }

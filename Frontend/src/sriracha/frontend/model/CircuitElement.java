@@ -25,6 +25,11 @@ abstract public class CircuitElement implements Serializable
 
     public CircuitElement(CircuitElementManager elementManager)
     {
+        init(elementManager);
+    }
+
+    public void init(CircuitElementManager elementManager)
+    {
         this.elementManager = elementManager;
         ports = new CircuitElementPort[getPortCount()];
 
@@ -34,8 +39,8 @@ abstract public class CircuitElement implements Serializable
             index = elementCount.containsKey(getClass()) ? elementCount.get(getClass()) + 1 : 1;
             elementCount.put(getClass(), Integer.valueOf(index));
             generatedName = String.format(getNameTemplate(), index);
-            setName(generatedName);
         } while (elementManager.getElementByName(generatedName) != null); // Ensure unique names
+        setName(generatedName);
     }
 
     public String getName() { return name; }

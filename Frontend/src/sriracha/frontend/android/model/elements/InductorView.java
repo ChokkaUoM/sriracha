@@ -2,10 +2,13 @@ package sriracha.frontend.android.model.elements;
 
 import android.content.Context;
 import sriracha.frontend.R;
+import sriracha.frontend.android.*;
 import sriracha.frontend.android.designer.WireManager;
 import sriracha.frontend.android.model.CircuitElementPortView;
 import sriracha.frontend.android.model.CircuitElementView;
 import sriracha.frontend.model.CircuitElement;
+
+import java.util.*;
 
 public class InductorView extends CircuitElementView
 {
@@ -33,5 +36,11 @@ public class InductorView extends CircuitElementView
             };
         }
         return ports;
+    }
+
+    @Override
+    public UUID getTypeUUID()
+    {
+        return ElementTypeUUID.INDUCTOR;
     }
 }

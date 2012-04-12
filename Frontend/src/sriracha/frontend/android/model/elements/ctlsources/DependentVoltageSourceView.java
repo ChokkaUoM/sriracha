@@ -7,6 +7,8 @@ import sriracha.frontend.android.model.CircuitElementPortView;
 import sriracha.frontend.android.model.CircuitElementView;
 import sriracha.frontend.model.CircuitElement;
 
+import java.util.*;
+
 public class DependentVoltageSourceView extends CircuitElementView
 {
     CircuitElementPortView ports[];
@@ -33,5 +35,11 @@ public class DependentVoltageSourceView extends CircuitElementView
             };
         }
         return ports;
+    }
+
+    @Override
+    public UUID getTypeUUID()
+    {
+        return UUID.fromString("cd36e545-67d6-4ff1-86ab-7dbd5dd4aefa");
     }
 }

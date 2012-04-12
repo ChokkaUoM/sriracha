@@ -15,6 +15,7 @@ import sriracha.frontend.resultdata.Point;
 import sriracha.simulator.IPrintData;
 
 import java.io.*;
+import java.lang.reflect.*;
 
 public class MainActivity extends Activity
 {
@@ -256,14 +257,12 @@ public class MainActivity extends Activity
             new Storage(this).load(fileName, serialization);
             return true;
         }
-        catch (IOException e)
-        {
-            showToast(e.getMessage());
-        }
-        catch (ClassNotFoundException e)
-        {
-            showToast(e.getMessage());
-        }
+        catch (IOException e) { showToast(e.getMessage()); }
+        catch (ClassNotFoundException e) { showToast(e.getMessage()); }
+        catch (NoSuchMethodException e) { showToast(e.getMessage()); }
+        catch (InstantiationException e) { showToast(e.getMessage()); }
+        catch (IllegalAccessException e) { showToast(e.getMessage()); }
+        catch (InvocationTargetException e) { showToast(e.getMessage()); }
 
         return false;
     }

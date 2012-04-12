@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <sriracha.frontend.android.ElementPropertiesView xmlns:android="http://schemas.android.com/apk/res/android"
-                                                 android:layout_width="wrap_content" android:layout_height="fill_parent"
+                                                 android:layout_width="fill_parent" android:layout_height="fill_parent"
                                                  android:layout_centerHorizontal="true"
                                                  android:orientation="vertical">
     <RelativeLayout style="@style/VerticalWeight" android:layout_width="fill_parent">
@@ -15,6 +15,9 @@
         <TextView style="@style/MenuTitle"
                   android:id="@+id/properties_type"/>
     </RelativeLayout>
+
+    <TextView style="@style/VerticalWeight" android:layout_width="fill_parent"
+              android:text="Element Name"/>
     <RelativeLayout style="@style/VerticalWeight" android:layout_width="fill_parent">
         <EditText style="@style/CircuitMenuItemImage" android:layout_width="fill_parent"
                   android:id="@+id/properties_name"

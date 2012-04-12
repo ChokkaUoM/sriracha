@@ -9,6 +9,7 @@ import sriracha.frontend.android.model.elements.ctlsources.*;
 import sriracha.frontend.android.model.elements.sources.*;
 
 import java.io.*;
+import java.lang.reflect.*;
 import java.util.*;
 
 public class Serialization
@@ -39,13 +40,14 @@ public class Serialization
         }
     }
 
-    public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException
+    public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, InstantiationException
     {
         int numElements = in.readInt();
         HashMap<UUID, CircuitElementView> uuidElementMap = new HashMap<UUID, CircuitElementView>(numElements);
         for (int i = 0; i < numElements; i++)
         {
-            CircuitElementView element = circuitDesigner.instantiateElement(in.readInt());
+            UUID elementUUID = (UUID) in.readObject();
+            CircuitElementView element = circuitDesigner.instantiateElement(elementUUID);
             if (element != null)
             {
                 element.deserialize(in);
@@ -77,6 +79,7 @@ public class Serialization
                 if (element == null)
                     throw new InvalidObjectException("Element not found by UUID");
 
+                element.getElement().init(circuitDesigner.getElementManager());
                 port.setElement(element);
                 for (int i = 0; i < element.getPortUUIDs().length; i++)
                 {
@@ -92,39 +95,7 @@ public class Serialization
 
     private void serializeElement(CircuitElementView elementView, ObjectOutputStream out) throws IOException
     {
-        out.writeInt(getElementViewId(elementView));
+        out.writeObject(elementView.getTypeUUID());
         elementView.serialize(out);
-    }
-
-    private int getElementViewId(CircuitElementView elementView)
-    {
-        if (elementView instanceof VoltageSourceView)
-            return R.id.sources_voltage;
-
-        if (elementView instanceof CurrentSourceView)
-            return R.id.sources_current;
-
-        if (elementView instanceof DependentVoltageSourceView)
-            return R.id.sources_dependent_voltage;
-
-        if (elementView instanceof DependentCurrentSourceView)
-            return R.id.sources_dependent_current;
-
-        if (elementView instanceof VCCView)
-            return R.id.sources_vcc;
-
-        if (elementView instanceof GroundView)
-            return R.id.sources_ground;
-
-        if (elementView instanceof ResistorView)
-            return R.id.rlc_resistor;
-
-        if (elementView instanceof CapacitorView)
-            return R.id.rlc_capacitor;
-
-        if (elementView instanceof InductorView)
-            return R.id.rlc_inductor;
-
-        return -1;
     }
 }
