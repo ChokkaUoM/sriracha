@@ -42,6 +42,7 @@
                 android:text="Copy"
                 android:layout_marginRight="2dp"
                 />
+
         <Button style="@style/ButtonStyle"
                 android:layout_alignParentRight="true"
                 android:layout_height="wrap_content"
@@ -51,5 +52,6 @@
                 android:text="Delete"
                 android:onClick="deleteOnClick"
                 />
+
     </LinearLayout>
 </sriracha.frontend.android.ElementPropertiesView>

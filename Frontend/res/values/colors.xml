@@ -1,9 +1,9 @@
 <resources>
-    <color name="MenuBackground">#000033</color>
-    <color name="MenuLight">#262699</color>
-    <color name="ButtonBack">#0A0A26</color>
+    <color name="MenuBackground">#333763</color>
+    <color name="MenuLight">#50548A</color>
+    <color name="ButtonBack">#5E733B</color>
     <color name="ButtonText">#FFF</color>
-    <color name="SnappyGrey">#494974</color>
+    <color name="SnappyGrey">#323557</color>
     <color name="GoGreen">#41810C</color>
     <color name="CancelRed">#810C2F</color>
 </resources>
