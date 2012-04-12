@@ -9,11 +9,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import sriracha.frontend.R;
+import sriracha.frontend.*;
 import sriracha.frontend.android.designer.CircuitDesigner;
 import sriracha.frontend.android.designer.WireManager;
 import sriracha.frontend.android.designer.WireSegment;
 import sriracha.frontend.model.CircuitElement;
+
+import java.io.*;
+import java.util.*;
 
 abstract public class CircuitElementView extends ImageView implements View.OnTouchListener
 {
@@ -22,28 +25,30 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
 
     private static final int INVALID_POINTER_ID = -1;
 
+    private UUID uuid;
+    private UUID[] portUUIDs;
     private CircuitElement element;
     private CircuitElementPortView ports[];
-    private WireManager wireManager;
+    private transient WireManager wireManager;
 
-    private boolean isElementSelected;
+    private transient boolean isElementSelected;
 
-    private OnElementClickListener onElementClickListener;
-    private OnInvalidateListener onInvalidateListener;
-    private OnMoveListener onMoveListener;
-    private OnDropListener onDropListener;
+    private transient OnElementClickListener onElementClickListener;
+    private transient OnInvalidateListener onInvalidateListener;
+    private transient OnMoveListener onMoveListener;
+    private transient OnDropListener onDropListener;
 
     private float positionX;
     private float positionY;
     private float orientation;
 
-    private float touchDownDeltaX;
-    private float touchDownDeltaY;
-    private float touchDownRawX;
-    private float touchDownRawY;
+    private transient float touchDownDeltaX;
+    private transient float touchDownDeltaY;
+    private transient float touchDownRawX;
+    private transient float touchDownRawY;
 
-    private int activePointerId = INVALID_POINTER_ID;
-    private int possibleClickPointerId = INVALID_POINTER_ID;
+    private transient int activePointerId = INVALID_POINTER_ID;
+    private transient int possibleClickPointerId = INVALID_POINTER_ID;
 
     abstract public int getDrawableId();
 
@@ -64,11 +69,28 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         this.wireManager = wireManager;
 
         setOnTouchListener(this);
+
+        uuid = UUID.randomUUID();
+        portUUIDs = new UUID[ports.length];
+        for (int i = 0; i < ports.length; i++)
+        {
+            portUUIDs[i] = ports[i].getUUID();
+        }
     }
 
     public CircuitElement getElement()
     {
         return element;
+    }
+
+    public UUID getUUID()
+    {
+        return uuid;
+    }
+
+    public UUID[] getPortUUIDs()
+    {
+        return portUUIDs;
     }
 
     public float getPositionX()
@@ -92,6 +114,11 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         invalidate();
         if (onInvalidateListener != null)
             onInvalidateListener.onInvalidate();
+    }
+
+    public void setPort(int index, CircuitElementPortView port)
+    {
+        ports[index] = port;
     }
 
     public void rotate(int degrees)
@@ -216,7 +243,8 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
                 {
                     possibleClickPointerId = INVALID_POINTER_ID;
                     onClick(motionEvent.getX(), motionEvent.getY());
-                } else
+                }
+                else
                 {
                     if (onDropListener != null)
                         onDropListener.onDrop(this);
@@ -291,5 +319,25 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
     public interface OnDropListener
     {
         public void onDrop(CircuitElementView elementView);
+    }
+
+    public void serialize(ObjectOutputStream out) throws IOException
+    {
+        out.writeObject(uuid);
+        out.writeObject(portUUIDs);
+        out.writeObject(element);
+        out.writeFloat(positionX);
+        out.writeFloat(positionY);
+        out.writeFloat(orientation);
+    }
+
+    public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        uuid = (UUID) in.readObject();
+        portUUIDs = (UUID[]) in.readObject();
+        element = (CircuitElement) in.readObject();
+        positionX = in.readFloat();
+        positionY = in.readFloat();
+        orientation = in.readFloat();
     }
 }

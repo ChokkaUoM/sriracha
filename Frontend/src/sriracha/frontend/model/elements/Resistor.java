@@ -2,9 +2,11 @@ package sriracha.frontend.model.elements;
 
 import sriracha.frontend.model.*;
 
-public class Resistor extends TwoPortElement
+import java.io.*;
+
+public class Resistor extends TwoPortElement implements Serializable
 {
-    private Property[] properties;
+    private transient Property[] properties;
 
     private float resistance = 1;
     private String unit = "kΩ";

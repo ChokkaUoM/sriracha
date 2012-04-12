@@ -15,6 +15,7 @@ import sriracha.frontend.android.results.IElementSelector;
 import sriracha.frontend.model.CircuitElement;
 import sriracha.frontend.model.CircuitElementManager;
 
+import java.io.*;
 import java.util.ArrayList;
 
 public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
@@ -43,7 +44,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     private CircuitElementActivator activator;
     private CircuitElementManager elementManager;
 
-    private GestureDetector gestureDetector;
+    private transient GestureDetector gestureDetector;
     private EpicTouchListener epicTouchListener;
     private CircuitDesignerCanvas canvasView;
 
@@ -106,12 +107,14 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         {
             case ELEMENT:
                 itemId = selectedItemId;
+                canvasState = CanvasState.IDLE;
                 break;
             case WIRE:
                 itemId = R.id.wire;
                 break;
             case HAND:
                 itemId = R.id.hand;
+                canvasState = CanvasState.IDLE;
                 break;
         }
 
@@ -232,14 +235,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         CircuitElementView elementView = instantiateElement(snappedX, snappedY);
         if (elementView != null)
         {
-            elementManager.addElement(elementView.getElement());
-            elements.add(elementView);
-            canvasView.addView(elementView);
-
-            elementView.setOnElementClickListener(this);
-            elementView.setOnInvalidateListener(this);
-            elementView.setOnDropListener(this);
-            elementView.updatePosition();
+            addElement(elementView);
         }
         return true;
     }
@@ -283,6 +279,18 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         }
     }
 
+    public void addElement(CircuitElementView elementView)
+    {
+        elementManager.addElement(elementView.getElement());
+        elements.add(elementView);
+        canvasView.addView(elementView);
+
+        elementView.setOnElementClickListener(this);
+        elementView.setOnInvalidateListener(this);
+        elementView.setOnDropListener(this);
+        elementView.updatePosition();
+    }
+
     private void deselectElements(View exceptFor)
     {
         for (CircuitElementView element : elements)
@@ -306,6 +314,11 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     public CircuitElementView instantiateElement(float positionX, float positionY)
     {
         return activator.instantiateElement(getSelectedItemId(), positionX, positionY, elementManager, wireManager);
+    }
+
+    public CircuitElementView instantiateElement(int elementId)
+    {
+        return activator.instantiateElement(elementId, 0, 0, elementManager, wireManager);
     }
 
     public void rotateSelectedElement(boolean cw)
@@ -441,6 +454,11 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     public WireManager getWireManager()
     {
         return wireManager;
+    }
+
+    public void setWireManager(WireManager wireManager)
+    {
+        this.wireManager = wireManager;
     }
 
     public static int snap(float coord)

@@ -1,10 +1,11 @@
 package sriracha.frontend.android.designer;
 
+import java.io.*;
 import java.util.ArrayList;
 
-public class WireIntersection implements IWireIntersection
+public class WireIntersection implements IWireIntersection, Serializable
 {
-    private ArrayList<WireSegment> segments = new ArrayList<WireSegment>(4); // Sticking to a 90deg grid.
+    private transient ArrayList<WireSegment> segments = new ArrayList<WireSegment>(4); // Sticking to a 90deg grid.
 
     public int x;
     public int y;
@@ -18,7 +19,11 @@ public class WireIntersection implements IWireIntersection
     @Override
     public void addSegment(WireSegment segment)
     {
-        segments.add(segment);
+        if (segments == null)
+            segments = new ArrayList<WireSegment>(4);
+
+        if (!segments.contains(segment)) // TODO: Needed?
+            segments.add(segment);
     }
 
     @Override

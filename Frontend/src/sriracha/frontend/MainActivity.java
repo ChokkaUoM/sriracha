@@ -1,25 +1,19 @@
 package sriracha.frontend;
 
-import android.app.Activity;
+import android.app.*;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Toast;
-import sriracha.frontend.android.AnalysisMenu;
-import sriracha.frontend.android.AsyncSimulator;
-import sriracha.frontend.android.MainLayout;
-import sriracha.frontend.android.designer.CircuitDesigner;
-import sriracha.frontend.android.designer.CircuitDesignerMenu;
+import android.view.*;
+import android.widget.*;
+import sriracha.frontend.android.*;
+import sriracha.frontend.android.designer.*;
 import sriracha.frontend.android.model.CircuitElementActivator;
 import sriracha.frontend.android.results.Graph;
 import sriracha.frontend.resultdata.Plot;
 import sriracha.frontend.resultdata.Point;
 import sriracha.simulator.IPrintData;
 
-import java.util.List;
+import java.io.*;
 
 public class MainActivity extends Activity
 {
@@ -40,7 +34,7 @@ public class MainActivity extends Activity
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.main);
-
+        setWrenchMenuItems();
 
         circuitDesignerMenu = new CircuitDesignerMenu((MainActivity) this);
         circuitDesigner = new CircuitDesigner(findViewById(R.id.circuit_design_canvas), circuitDesignerMenu, new CircuitElementActivator(this));
@@ -52,9 +46,29 @@ public class MainActivity extends Activity
 //        testGraph();
     }
 
+    @Override
+    protected Dialog onCreateDialog(int id)
+    {
+        return super.onCreateDialog(id);
+    }
+
     public CircuitDesigner getCircuitDesigner()
     {
         return circuitDesigner;
+    }
+
+    private void resetCircuitDesigner()
+    {
+        ViewGroup circuitDesignCanvas = (ViewGroup) findViewById(R.id.circuit_design_canvas);
+        View[] toKeep = new View[]{
+                circuitDesignCanvas.findViewById(R.id.elementmenu_container),
+                circuitDesignCanvas.findViewById(R.id.wrenchmenu_icon),
+                circuitDesignCanvas.findViewById(R.id.wrenchmenu_items),
+        };
+        circuitDesignCanvas.removeAllViews();
+        for (View view : toKeep)
+            circuitDesignCanvas.addView(view);
+        circuitDesigner = new CircuitDesigner(circuitDesignCanvas, circuitDesignerMenu, new CircuitElementActivator(this));
     }
 
     private void testGraph()
@@ -143,6 +157,8 @@ public class MainActivity extends Activity
 
     public void wrenchMenuOnClick(View view)
     {
+        ListView menu = (ListView) findViewById(R.id.wrenchmenu_items);
+        menu.setVisibility(menu.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
     }
 
     public void goButtonOnClick(View view)
@@ -167,7 +183,8 @@ public class MainActivity extends Activity
                     analysisMenu.showAnalyseButton();
                 }
             });
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Toast toast = Toast.makeText(this, "Something seems to have gone slightly awry.", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER, 0, 0);
@@ -196,5 +213,90 @@ public class MainActivity extends Activity
     public void rotateCWOnClick(View view)
     {
         circuitDesigner.rotateSelectedElement(true);
+    }
+
+    private void setWrenchMenuItems()
+    {
+        final ListView menu = (ListView) findViewById(R.id.wrenchmenu_items);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,
+                new String[]{"New", "Load", "Save", "Save As..."});
+        menu.setAdapter(adapter);
+
+        menu.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
+            {
+                switch (position)
+                {
+                    case 0: // New
+                        resetCircuitDesigner();
+                        break;
+                    case 1: // Load
+                        showDialog(LoadDialogFragment.newInstance());
+                        break;
+                    case 2: // Save
+                        break;
+                    case 3: // Save As...
+                        showDialog(SaveDialogFragment.newInstance());
+                        break;
+                }
+                menu.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    public boolean loadCircuit(String fileName)
+    {
+        try
+        {
+            resetCircuitDesigner();
+            Serialization serialization = new Serialization(circuitDesigner);
+            new Storage(this).load(fileName, serialization);
+            return true;
+        }
+        catch (IOException e)
+        {
+            showToast(e.getMessage());
+        }
+        catch (ClassNotFoundException e)
+        {
+            showToast(e.getMessage());
+        }
+
+        return false;
+    }
+
+    public boolean saveCircuit(String fileName)
+    {
+        try
+        {
+            Serialization serialization = new Serialization(circuitDesigner);
+            new Storage(this).save(fileName, serialization);
+            return true;
+        }
+        catch (IOException e) { showToast(e.getMessage()); }
+
+        return false;
+    }
+
+    public void showDialog(DialogFragment fragment)
+    {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+        if (prev != null)
+        {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        fragment.show(ft, "dialog");
+    }
+
+    public void showToast(String message)
+    {
+        Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
     }
 }

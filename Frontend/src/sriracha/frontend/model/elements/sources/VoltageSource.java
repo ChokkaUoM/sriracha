@@ -1,11 +1,14 @@
 package sriracha.frontend.model.elements.sources;
 
+import sriracha.frontend.android.*;
 import sriracha.frontend.model.*;
 import sriracha.frontend.model.elements.*;
 
-public class VoltageSource extends TwoPortElement
+import java.io.*;
+
+public class VoltageSource extends TwoPortElement implements Serializable
 {
-    private Property[] properties;
+    private transient Property[] properties;
 
     private float dcVoltage;
     private String dcVoltageUnit;

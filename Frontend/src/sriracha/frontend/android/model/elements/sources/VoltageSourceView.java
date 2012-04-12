@@ -12,7 +12,7 @@ import sriracha.frontend.model.elements.sources.VoltageSource;
 
 public class VoltageSourceView extends CircuitElementView implements Property.OnPropertyValueChangedListener
 {
-    CircuitElementPortView ports[];
+    private CircuitElementPortView ports[];
 
     public VoltageSourceView(Context context, CircuitElement element, float positionX, float positionY, WireManager wireManager)
     {

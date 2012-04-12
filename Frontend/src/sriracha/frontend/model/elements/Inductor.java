@@ -2,9 +2,11 @@ package sriracha.frontend.model.elements;
 
 import sriracha.frontend.model.*;
 
-public class Inductor extends TwoPortElement
+import java.io.*;
+
+public class Inductor extends TwoPortElement implements Serializable
 {
-    private Property[] properties;
+    private transient Property[] properties;
 
     private float inductance = 1;
     private String unit = "μH";

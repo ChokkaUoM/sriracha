@@ -23,6 +23,8 @@ import sriracha.frontend.model.elements.sources.Ground;
 import sriracha.frontend.model.elements.sources.VCC;
 import sriracha.frontend.model.elements.sources.VoltageSource;
 
+import java.io.*;
+
 public class CircuitElementActivator
 {
     Context context;

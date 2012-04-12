@@ -1,8 +1,9 @@
 package sriracha.frontend.model;
 
+import java.io.*;
 import java.util.*;
 
-abstract public class CircuitElement
+abstract public class CircuitElement implements Serializable
 {
     abstract public Property[] getProperties();
 
@@ -14,7 +15,7 @@ abstract public class CircuitElement
     
     abstract public String toNetlistString(String[] nodes);
 
-    protected CircuitElementManager elementManager;
+    protected transient CircuitElementManager elementManager;
 
     protected String name;
     protected int index;

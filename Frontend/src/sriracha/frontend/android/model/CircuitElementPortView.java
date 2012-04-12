@@ -6,18 +6,23 @@ import sriracha.frontend.android.designer.WireIntersection;
 import sriracha.frontend.android.designer.WireManager;
 import sriracha.frontend.android.designer.WireSegment;
 
-import java.util.ArrayList;
+import java.io.*;
+import java.util.*;
 
-public class CircuitElementPortView implements IWireIntersection
+public class CircuitElementPortView implements IWireIntersection, Serializable
 {
-    private CircuitElementView element;
-    private ArrayList<WireSegment> segments = new ArrayList<WireSegment>(4);
+    private UUID uuid;
+    private transient CircuitElementView element;
+    private transient UUID elementUUID;
+
+    private transient ArrayList<WireSegment> segments = new ArrayList<WireSegment>(4);
 
     private float positionX;
     private float positionY;
 
     public CircuitElementPortView(CircuitElementView element, float positionX, float positionY)
     {
+        uuid = UUID.randomUUID();
         this.element = element;
         this.positionX = positionX;
         this.positionY = positionY;
@@ -26,6 +31,22 @@ public class CircuitElementPortView implements IWireIntersection
     public CircuitElementView getElement()
     {
         return element;
+    }
+
+    public void setElement(CircuitElementView element)
+    {
+        this.element = element;
+        elementUUID = element.getUUID();
+    }
+
+    public UUID getUUID()
+    {
+        return uuid;
+    }
+
+    public UUID getElementUUID()
+    {
+        return elementUUID;
     }
 
     public float getUntransformedPositionX()
@@ -77,7 +98,11 @@ public class CircuitElementPortView implements IWireIntersection
     @Override
     public void addSegment(WireSegment segment)
     {
-        segments.add(segment);
+        if (segments == null)
+            segments = new ArrayList<WireSegment>(4);
+
+        if (!segments.contains(segment)) // TODO: Needed?
+            segments.add(segment);
     }
 
     @Override
@@ -131,4 +156,16 @@ public class CircuitElementPortView implements IWireIntersection
     {
         return String.format("Port(%d, %d)", getX(), getY());
     }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException
+    {
+        out.defaultWriteObject();
+        out.writeObject(element.getUUID());
+    }
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        in.defaultReadObject();
+        elementUUID = (UUID) in.readObject();
+    }
+
 }

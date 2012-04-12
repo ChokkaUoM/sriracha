@@ -7,14 +7,11 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.view.View;
 
+import java.io.*;
+
 public class WireSegment extends View
 {
     private static final int BOUNDS_PADDING = 20;
-
-    public static final int UP = 0;
-    public static final int DOWN = 1;
-    public static final int LEFT = 2;
-    public static final int RIGHT = 3;
 
     private IWireIntersection start;
     private IWireIntersection end;
@@ -209,5 +206,19 @@ public class WireSegment extends View
     public String toString()
     {
         return start.toString() + " - " + end.toString();
+    }
+
+    public void serialize(ObjectOutputStream out) throws IOException
+    {
+        out.writeObject(start);
+        out.writeObject(end);
+    }
+
+    public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        start = (IWireIntersection) in.readObject();
+        end = (IWireIntersection) in.readObject();
+        start.addSegment(this);
+        end.addSegment(this);
     }
 }

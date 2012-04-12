@@ -4,11 +4,12 @@ import sriracha.frontend.model.*;
 import sriracha.frontend.model.elements.*;
 import sriracha.frontend.model.elements.sources.*;
 
+import java.io.*;
 import java.util.*;
 
-public class DependentVoltageSource extends TwoPortElement
+public class DependentVoltageSource extends TwoPortElement implements Serializable
 {
-    private Property[] properties;
+    private transient Property[] properties;
 
     private CircuitElement dependsOn;
     private float gain;

@@ -8,36 +8,27 @@ import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 import sriracha.frontend.android.results.IElementSelector;
 
+import java.io.*;
+
 public class CircuitDesignerCanvas extends RelativeLayout
 {
     private boolean showGrid = true;
-    private Paint paint;
 
     private IElementSelector elementSelector;
 
     public CircuitDesignerCanvas(Context context)
     {
         super(context);
-        initPaint();
     }
 
     public CircuitDesignerCanvas(Context context, AttributeSet attrs)
     {
         super(context, attrs);
-        initPaint();
     }
 
     public CircuitDesignerCanvas(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
-        initPaint();
-    }
-
-    private void initPaint()
-    {
-        paint = new Paint();
-        paint.setColor(Color.LTGRAY);
-        paint.setStrokeWidth(1);
     }
 
     public boolean isShowGrid()
@@ -60,6 +51,11 @@ public class CircuitDesignerCanvas extends RelativeLayout
     protected void onDraw(Canvas canvas)
     {
         super.onDraw(canvas);
+
+        Paint paint = new Paint();
+        paint.setColor(Color.LTGRAY);
+        paint.setStrokeWidth(1);
+
         if (showGrid)
         {
             for (int i = 0; i < getWidth(); i += CircuitDesigner.GRID_SIZE)

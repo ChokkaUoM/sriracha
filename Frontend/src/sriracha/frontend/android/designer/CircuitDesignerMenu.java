@@ -7,6 +7,7 @@ import sriracha.frontend.R;
 import sriracha.frontend.android.ElementPropertiesView;
 import sriracha.frontend.android.model.CircuitElementView;
 
+import java.io.*;
 import java.util.ArrayList;
 
 public class CircuitDesignerMenu

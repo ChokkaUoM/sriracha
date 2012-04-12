@@ -3,9 +3,11 @@ package sriracha.frontend.model.elements.sources;
 import sriracha.frontend.model.*;
 import sriracha.frontend.model.elements.*;
 
-public class CurrentSource extends TwoPortElement
+import java.io.*;
+
+public class CurrentSource extends TwoPortElement implements Serializable
 {
-    private Property[] properties;
+    private transient Property[] properties;
 
     private float dcCurrent;
     private String dcCurrentUnit;

@@ -24,21 +24,21 @@
         <RelativeLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
                         android:id="@+id/elementmenu_container">
-<!--
-            <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                       android:layout_marginRight="30dip"
-                       android:src="@drawable/elementmenu_flip_horizontal"
-                       android:id="@+id/elementmenu_flip_horizontal"
-                       android:onClick="flipHorizontalOnClick"
-                    />
-            <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                       android:layout_marginRight="30dip"
-                       android:layout_toRightOf="@id/elementmenu_flip_horizontal"
-                       android:src="@drawable/elementmenu_flip_vertical"
-                       android:id="@+id/elementmenu_flip_vertical"
-                       android:onClick="flipVerticalOnClick"
-                    />
--->
+            <!--
+                        <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                   android:layout_marginRight="30dip"
+                                   android:src="@drawable/elementmenu_flip_horizontal"
+                                   android:id="@+id/elementmenu_flip_horizontal"
+                                   android:onClick="flipHorizontalOnClick"
+                                />
+                        <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                   android:layout_marginRight="30dip"
+                                   android:layout_toRightOf="@id/elementmenu_flip_horizontal"
+                                   android:src="@drawable/elementmenu_flip_vertical"
+                                   android:id="@+id/elementmenu_flip_vertical"
+                                   android:onClick="flipVerticalOnClick"
+                                />
+            -->
             <!--(goes in rotate ccw) android:layout_toRightOf="@id/elementmenu_flip_vertical"-->
             <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
                        android:layout_marginRight="30dip"
@@ -57,8 +57,16 @@
         <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
                    android:layout_alignParentRight="true"
                    android:layout_alignParentTop="true"
+                   android:id="@+id/wrenchmenu_icon"
                    android:src="@drawable/wrenchmenu_icon"
                    android:onClick="wrenchMenuOnClick"
+                />
+        <ListView android:layout_width="200dip" android:layout_height="wrap_content"
+                  android:id="@+id/wrenchmenu_items"
+                  android:layout_below="@id/wrenchmenu_icon"
+                  android:layout_alignRight="@id/wrenchmenu_icon"
+                  android:background="#000"
+                  android:visibility="gone"
                 />
     </sriracha.frontend.android.designer.CircuitDesignerCanvas>
 
