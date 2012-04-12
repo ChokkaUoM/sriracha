@@ -127,14 +127,14 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         setOrientation((orientation + degrees) % 360);
     }
 
-    public CircuitElementPortView getClosestPort(float x, float y)
+    public CircuitElementPortView getClosestPort(float x, float y, boolean useRelative)
     {
         CircuitElementPortView closestPort = null;
         float closestDistance = 0;
         for (CircuitElementPortView port : ports)
         {
-            float portX = port.getRelativeX();
-            float portY = port.getRelativeY();
+            float portX = useRelative ? port.getRelativeX() : port.getX();
+            float portY = useRelative ? port.getRelativeY() : port.getY();
             float distance = new PointF(portX - x, portY - y).length();
             if (closestPort == null || distance < closestDistance)
             {

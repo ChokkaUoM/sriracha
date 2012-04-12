@@ -193,6 +193,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                     // Case 2: empty space.
                     // Add new node
                     WireIntersection newIntersection = new WireIntersection(snappedX, snappedY);
+                    replaceLastInsertedIntersection(snappedX, snappedY);
                     wireManager.connectNewIntersection(lastInsertedIntersection, newIntersection);
                     lastInsertedIntersection = newIntersection;
                 }
@@ -202,6 +203,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                     // Add a new node. If we clicked on a node instead of a segment, we let
                     // the node consolidator take care of it later.
                     WireIntersection newIntersection = wireManager.splitSegment(segment, snappedX, snappedY);
+                    replaceLastInsertedIntersection(snappedX, snappedY);
                     wireManager.connectNewIntersection(lastInsertedIntersection, newIntersection);
                     // TODO: consolidate nodes now
 
@@ -264,14 +266,15 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
             // The first endpoint of a wire
             if (getCanvasState() == CanvasState.IDLE)
             {
-                lastInsertedIntersection = ((CircuitElementView) view).getClosestPort(x, y);
+                lastInsertedIntersection = ((CircuitElementView) view).getClosestPort(x, y, true);
                 wireManager.addIntersection(lastInsertedIntersection);
                 setCanvasState(CanvasState.DRAWING_WIRE);
             }
             else if (getCanvasState() == CanvasState.DRAWING_WIRE)
             {
                 // Create new node, and end the wire at the new element
-                CircuitElementPortView port = ((CircuitElementView) view).getClosestPort(x, y);
+                CircuitElementPortView port = ((CircuitElementView) view).getClosestPort(lastInsertedIntersection.getX(), lastInsertedIntersection.getY(), false);
+                replaceLastInsertedIntersection(port.getX(), port.getY());
                 wireManager.connectNewIntersection(lastInsertedIntersection, port);
 
                 deselectElements(null);
@@ -460,6 +463,16 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
             }
         }
         return null;
+    }
+
+    private void replaceLastInsertedIntersection(int x, int y)
+    {
+        if (lastInsertedIntersection instanceof CircuitElementPortView)
+        {
+            CircuitElementView elementView = ((CircuitElementPortView) lastInsertedIntersection).getElement();
+            lastInsertedIntersection = elementView.getClosestPort(x, y, false);
+            wireManager.addIntersection(lastInsertedIntersection);
+        }
     }
 
     @Override
