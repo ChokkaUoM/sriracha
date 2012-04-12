@@ -3,6 +3,7 @@
     <color name="MenuBackground">#333763</color>
     <color name="MenuLight">#50548A</color>
     <color name="ButtonBack">#5E733B</color>
+    <color name="ButtonBackPressed">#F0F</color>
     <color name="ButtonText">#FFF</color>
     <color name="SnappyGrey">#323557</color>
     <color name="GoGreen">#41810C</color>

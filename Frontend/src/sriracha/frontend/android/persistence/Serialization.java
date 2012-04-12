@@ -52,6 +52,8 @@ public class Serialization
                 uuidElementMap.put(element.getUUID(), element);
                 circuitDesigner.addElement(element);
             }
+            else
+                throw new InvalidObjectException("Element not found by ID");
         }
 
         WireManager wireManager = circuitDesigner.getWireManager();
@@ -73,7 +75,7 @@ public class Serialization
                 CircuitElementPortView port = (CircuitElementPortView) intersection;
                 CircuitElementView element = uuidElementMap.get(port.getElementUUID());
                 if (element == null)
-                    throw new InvalidObjectException("Element not found");
+                    throw new InvalidObjectException("Element not found by UUID");
 
                 port.setElement(element);
                 for (int i = 0; i < element.getPortUUIDs().length; i++)
