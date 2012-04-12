@@ -2,13 +2,11 @@ package sriracha.frontend.android.designer;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
+import sriracha.frontend.R;
 import sriracha.frontend.android.results.IElementSelector;
-
-import java.io.*;
 
 public class CircuitDesignerCanvas extends RelativeLayout
 {
@@ -53,7 +51,7 @@ public class CircuitDesignerCanvas extends RelativeLayout
         super.onDraw(canvas);
 
         Paint paint = new Paint();
-        paint.setColor(Color.LTGRAY);
+        paint.setColor(getResources().getColor(R.color.CanvasLines));
         paint.setStrokeWidth(1);
 
         if (showGrid)

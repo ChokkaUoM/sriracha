@@ -7,7 +7,7 @@
     <RelativeLayout android:layout_width="0dp" android:layout_height="fill_parent"
                     android:layout_weight="15"
                     android:id="@+id/circuit_menu_container"
-                    android:background="#003"
+                    android:background="@color/MenuBackground"
                     android:padding="10dp">
         <include android:id="@+id/circuit_menu" layout="@layout/circuit_menu"/>
         <include android:id="@+id/sources_and_ground" layout="@layout/sources_and_ground"/>
