@@ -1,38 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="CircuitMenuItem">
-        <item name="android:layout_width">fill_parent</item>
-        <item name="android:layout_height">0dp</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:paddingLeft">5dp</item>
-        <item name="android:layout_marginTop">10dp</item>
-        <item name="android:background">@drawable/circuitmenu_border</item>
+    <style name="CircuitMenuRow">
+        <item name="android:layout_marginTop">20dip</item>
+        <item name="android:layout_marginBottom">20dip</item>
+        <item name="android:paddingTop">5dip</item>
+        <item name="android:paddingBottom">5dip</item>
     </style>
-    <style name="CircuitMenuItemImage">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_alignParentRight">true</item>
-        <item name="android:layout_centerVertical">true</item>
-    </style>
-    <style name="CircuitMenuItemText">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:layout_centerVertical">true</item>
+    <style name="CircuitMenuRow.Clickable">
+        <item name="android:background">@drawable/button_background</item>
     </style>
 
-    <style name="CircuitMenuItem.SubMenu">
-        <item name="android:background">#0000</item>
+    <style name="CircuitMenuItemImage">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/circuitmenu_itembackground</item>
     </style>
     <style name="CircuitMenuItemImage.Element">
-        <item name="android:background">@drawable/circuitmenu_itembackground</item>
-        <item name="android:layout_alignParentRight">false</item>
+        <item name="android:layout_marginLeft">10dip</item>
+        <item name="android:layout_marginRight">10dip</item>
+    </style>
+
+    <style name="CircuitMenuItemText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_marginRight">2dip</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">16dip</item>
+        <item name="android:textColor">#FFF</item>
     </style>
 
     <style name="HorizontalWeight">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="VerticalWeight">
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_width">wrap_content</item>
     </style>
 
     <style name="HorizontalWeight.AnalysisEditText">
@@ -43,6 +48,10 @@
     <style name="HorizontalFull">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="VerticalFull">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">fill_parent</item>
     </style>
 
     <style name="HorizontalFull.AnalysisEditText">
@@ -90,8 +99,6 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">2dip</item>
         <item name="android:textColor">#FFF</item>
-        <item name="android:textSize">26dip</item>
+        <item name="android:textSize">18dip</item>
     </style>
-
-
 </resources>

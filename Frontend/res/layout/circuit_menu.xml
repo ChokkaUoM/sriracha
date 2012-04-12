@@ -1,73 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="wrap_content" android:layout_height="fill_parent"
-              android:orientation="vertical">
-    <RelativeLayout style="@style/CircuitMenuItem"
-                    android:onClick="sourcesAndGroundOnClick">
-        <ImageView style="@style/CircuitMenuItemImage"
-                   android:id="@+id/sources_img"
-                   android:src="@drawable/circuitmenu_sources_and_ground"
-                />
-        <TextView style="@style/CircuitMenuItemText"
-                  android:layout_toLeftOf="@id/sources_img"
-                  android:text="Sources &amp; Ground"
-                />
-    </RelativeLayout>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="fill_parent" android:layout_height="fill_parent">
+    <TableLayout android:layout_width="fill_parent" android:layout_height="wrap_content"
+                 android:shrinkColumns="0">
 
-    <RelativeLayout style="@style/CircuitMenuItem"
-                    android:onClick="rlcOnClick">
-        <ImageView style="@style/CircuitMenuItemImage"
-                   android:id="@+id/rlc_img"
-                   android:src="@drawable/circuitmenu_rlc"
-                />
-        <TextView style="@style/CircuitMenuItemText"
-                  android:layout_toLeftOf="@id/rlc_img"
-                  android:text="RLC"
-                />
-    </RelativeLayout>
+        <TableRow style="@style/CircuitMenuRow.Clickable"
+                  android:onClick="sourcesAndGroundOnClick">
+            <TextView style="@style/CircuitMenuItemText"
+                      android:text="Sources &amp; Ground"
+                    />
+            <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                       android:layout_marginRight="5dip"
+                       android:src="@drawable/circuitmenu_sources_and_ground"
+                    />
+        </TableRow>
 
-    <RelativeLayout style="@style/CircuitMenuItem">
-        <ImageView style="@style/CircuitMenuItemImage"
-                   android:id="@+id/diodes_img"
-                   android:src="@drawable/circuitmenu_diodes_and_transistors"
-                />
-        <TextView style="@style/CircuitMenuItemText"
-                  android:layout_toLeftOf="@id/diodes_img"
-                  android:text="Diodes &amp; Transistors"
-                />
-    </RelativeLayout>
+        <TableRow style="@style/CircuitMenuRow.Clickable" android:onClick="rlcOnClick">
+            <TextView style="@style/CircuitMenuItemText"
+                      android:text="RLC"
+                    />
+            <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                       android:layout_marginRight="5dip"
+                       android:src="@drawable/circuitmenu_rlc"
+                    />
+        </TableRow>
 
-    <RelativeLayout style="@style/CircuitMenuItem">
-        <ImageView style="@style/CircuitMenuItemImage"
-                   android:id="@+id/subcircuit_img"
-                   android:src="@drawable/circuitmenu_sub_circuits"
-                />
-        <TextView style="@style/CircuitMenuItemText"
-                  android:layout_toLeftOf="@id/subcircuit_img"
-                  android:text="Sub-circuits"
-                />
-    </RelativeLayout>
+        <TableRow style="@style/CircuitMenuRow.Clickable">
+            <TextView style="@style/CircuitMenuItemText"
+                      android:text="Diodes &amp; Transistors"
+                    />
+            <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                       android:layout_marginRight="5dip"
+                       android:src="@drawable/circuitmenu_diodes_and_transistors"
+                    />
+        </TableRow>
 
-    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
-        <ImageView style="@style/CircuitMenuItemImage.Element"
-                   android:layout_centerInParent="true"
-                   android:src="@drawable/circuitmenu_wire"
-                   android:id="@+id/wire"
-                   android:onClick="wireOnClick"
-                />
-    </RelativeLayout>
+        <TableRow style="@style/CircuitMenuRow.Clickable">
+            <TextView style="@style/CircuitMenuItemText"
+                      android:text="Sub-circuits"
+                    />
+            <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                       android:layout_marginRight="5dip"
+                       android:src="@drawable/circuitmenu_sub_circuits"
+                    />
+        </TableRow>
 
-    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
-        <ImageView style="@style/CircuitMenuItemImage.Element"
-                   android:layout_alignParentLeft="true"
-                   android:src="@drawable/circuitmenu_select"
-                />
-        <ImageView style="@style/CircuitMenuItemImage.Element"
-                   android:layout_alignParentRight="true"
-                   android:src="@drawable/circuitmenu_hand"
-                   android:background="@drawable/circuitmenu_itembackground"
-                   android:id="@+id/hand"
-                   android:onClick="handOnClick"
-                />
-    </RelativeLayout>
-</LinearLayout>
+    </TableLayout>
+
+    <include layout="@layout/wire_and_hand"/>
+</RelativeLayout>

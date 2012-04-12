@@ -8,7 +8,7 @@
                     android:layout_weight="20"
                     android:id="@+id/circuit_menu_container"
                     android:background="@color/MenuBackground"
-                    android:padding="10dp">
+                    android:padding="5dp">
         <include android:id="@+id/circuit_menu" layout="@layout/circuit_menu"/>
         <include android:id="@+id/sources_and_ground" layout="@layout/sources_and_ground"/>
         <include android:id="@+id/rlc" layout="@layout/rlc"/>

@@ -239,6 +239,7 @@ public class WireManager
          * Rather, we eliminate intersections that have exactly two segments, where the segments are opposite each other
          * across the intersection.
          * Removed: ---O---
+         * Merged: ----======O
          * Not removed: ---O
          *                 |
          * Also not removed: ---O---

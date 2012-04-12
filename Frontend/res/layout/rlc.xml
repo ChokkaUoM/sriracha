@@ -1,59 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="wrap_content" android:layout_height="fill_parent"
-              android:orientation="vertical">
-    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="fill_parent" android:layout_height="fill_parent">
+    <TableLayout android:layout_width="fill_parent" android:layout_height="wrap_content"
+                 android:stretchColumns="*">
+
         <ImageView style="@style/CircuitMenuItemImage.Element"
-                   android:layout_centerInParent="true"
+                   android:layout_marginTop="20dip"
+                   android:layout_marginBottom="20dip"
                    android:src="@drawable/back_button"
                    android:onClick="backButtonOnClick"
                 />
-    </RelativeLayout>
 
-    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
-        <ImageView style="@style/CircuitMenuItemImage.Element"
-                   android:layout_alignParentLeft="true"
-                   android:src="@drawable/circuitmenu_resistor"
-                   android:id="@+id/rlc_resistor"
-                   android:onClick="circuitElementOnClick"
-                />
-        <ImageView style="@style/CircuitMenuItemImage.Element"
-                   android:layout_alignParentRight="true"
-                   android:src="@drawable/circuitmenu_capacitor"
-                   android:id="@+id/rlc_capacitor"
-                   android:onClick="circuitElementOnClick"
-                />
-    </RelativeLayout>
+        <TableRow style="@style/CircuitMenuRow">
+            <ImageView style="@style/CircuitMenuItemImage.Element"
+                       android:src="@drawable/circuitmenu_resistor"
+                       android:id="@+id/rlc_resistor"
+                       android:onClick="circuitElementOnClick"
+                    />
+            <ImageView style="@style/CircuitMenuItemImage.Element"
+                       android:src="@drawable/circuitmenu_capacitor"
+                       android:id="@+id/rlc_capacitor"
+                       android:onClick="circuitElementOnClick"
+                    />
+        </TableRow>
 
-    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
-        <ImageView style="@style/CircuitMenuItemImage.Element"
-                   android:layout_alignParentLeft="true"
-                   android:src="@drawable/circuitmenu_inductor"
-                   android:id="@+id/rlc_inductor"
-                   android:onClick="circuitElementOnClick"
-                />
-    </RelativeLayout>
+        <TableRow style="@style/CircuitMenuRow">
+            <ImageView style="@style/CircuitMenuItemImage.Element"
+                       android:src="@drawable/circuitmenu_inductor"
+                       android:id="@+id/rlc_inductor"
+                       android:onClick="circuitElementOnClick"
+                    />
+        </TableRow>
 
-    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
-        <ImageView style="@style/CircuitMenuItemImage.Element"
-                   android:layout_centerInParent="true"
-                   android:src="@drawable/circuitmenu_wire"
-                   android:id="@+id/wire"
-                   android:onClick="wireOnClick"
-                />
-    </RelativeLayout>
+    </TableLayout>
 
-    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
-        <ImageView style="@style/CircuitMenuItemImage.Element"
-                   android:layout_alignParentLeft="true"
-                   android:src="@drawable/circuitmenu_select"
-                />
-        <ImageView style="@style/CircuitMenuItemImage.Element"
-                   android:layout_alignParentRight="true"
-                   android:src="@drawable/circuitmenu_hand"
-                   android:background="@drawable/circuitmenu_itembackground"
-                   android:id="@+id/hand"
-                   android:onClick="handOnClick"
-                />
-    </RelativeLayout>
-</LinearLayout>
+    <include layout="@layout/wire_and_hand"/>
+</RelativeLayout>

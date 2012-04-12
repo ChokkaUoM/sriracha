@@ -3,20 +3,20 @@
                                                  android:layout_width="wrap_content" android:layout_height="fill_parent"
                                                  android:layout_centerHorizontal="true"
                                                  android:orientation="vertical">
-    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
-        <ImageView style="@style/CircuitMenuItemImage.Element"
+    <RelativeLayout style="@style/VerticalWeight" android:layout_width="fill_parent">
+        <ImageView style="@style/CircuitMenuItemImage"
                    android:layout_centerInParent="true"
                    android:src="@drawable/back_button"
                    android:onClick="sourcesAndGroundBackButtonOnClick"
                 />
     </RelativeLayout>
 
-    <RelativeLayout style="@style/CircuitMenuItem.SubMenu">
+    <RelativeLayout style="@style/VerticalWeight" android:layout_width="fill_parent">
         <TextView style="@style/MenuTitle"
                   android:id="@+id/properties_type"/>
     </RelativeLayout>
-    <RelativeLayout style="@style/CircuitMenuItem.SubMenu" android:layout_width="fill_parent">
-        <EditText style="@style/CircuitMenuItemImage.Element" android:layout_width="fill_parent"
+    <RelativeLayout style="@style/VerticalWeight" android:layout_width="fill_parent">
+        <EditText style="@style/CircuitMenuItemImage" android:layout_width="fill_parent"
                   android:id="@+id/properties_name"
                   android:inputType="text"
                   android:imeOptions="actionDone"

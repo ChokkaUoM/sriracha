@@ -12,8 +12,8 @@ import java.util.*;
 public class CircuitElementPortView implements IWireIntersection, Serializable
 {
     private UUID uuid;
+    private UUID elementUUID;
     private transient CircuitElementView element;
-    private transient UUID elementUUID;
 
     private transient ArrayList<WireSegment> segments = new ArrayList<WireSegment>(4);
 
@@ -24,6 +24,7 @@ public class CircuitElementPortView implements IWireIntersection, Serializable
     {
         uuid = UUID.randomUUID();
         this.element = element;
+        elementUUID = element.getUUID();
         this.positionX = positionX;
         this.positionY = positionY;
     }
@@ -156,16 +157,4 @@ public class CircuitElementPortView implements IWireIntersection, Serializable
     {
         return String.format("Port(%d, %d)", getX(), getY());
     }
-
-    private void writeObject(java.io.ObjectOutputStream out) throws IOException
-    {
-        out.defaultWriteObject();
-        out.writeObject(element.getUUID());
-    }
-    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
-    {
-        in.defaultReadObject();
-        elementUUID = (UUID) in.readObject();
-    }
-
 }

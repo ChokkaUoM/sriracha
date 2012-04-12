@@ -58,6 +58,8 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
     {
         super(context);
 
+        uuid = UUID.randomUUID();
+
         setBackgroundResource(R.drawable.circuitelement_background);
         setImageResource(getDrawableId());
 
@@ -70,7 +72,6 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
 
         setOnTouchListener(this);
 
-        uuid = UUID.randomUUID();
         portUUIDs = new UUID[ports.length];
         for (int i = 0; i < ports.length; i++)
         {
