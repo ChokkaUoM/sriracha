@@ -62,9 +62,11 @@ public class Console
             } else
             {
                 //default is filename, load circuit
-                FileReader r = new FileReader(args[0]);
-                String netlist = r.getContents();
-                simulator.setNetlist(netlist);
+
+                runAndPrint(args[0]);
+                // FileReader r = new FileReader(args[0]);
+                // String netlist = r.getContents();
+                // simulator.setNetlist(netlist);
             }
 
 

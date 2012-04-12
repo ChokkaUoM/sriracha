@@ -232,11 +232,30 @@ public class CircuitBuilder
 
         DCSweep sweep1 = new DCSweep(s1, parseDouble(params[2]), parseDouble(params[3]), parseDouble(params[4]));
 
+        if (sweep1.getStep() == 0)
+        {
+            throw new ParseException("Step size must be larger than 0 for DC analysis");
+        }
+        if (sweep1.getEndValue() <= sweep1.getStartValue())
+        {
+            throw new ParseException("End Sweep value must be larger than Start Sweep value");
+        }
+
         DCSweep sweep2 = null;
         if (params.length == 9)
         {
             sweep2 = new DCSweep((Source) circuit.getElement(params[5]), parseDouble(params[6]), parseDouble(params[7]),
                     Integer.parseInt(params[8]));
+
+            if (sweep2.getStep() == 0)
+            {
+                throw new ParseException("Step size must be larger than 0 for DC analysis");
+            }
+
+            if (sweep2.getEndValue() <= sweep2.getStartValue())
+            {
+                throw new ParseException("End Sweep value must be larger than Start Sweep value");
+            }
         }
 
         return new DCAnalysis(sweep1, sweep2);
@@ -263,6 +282,11 @@ public class CircuitBuilder
         int numPoints = Integer.parseInt(params[2]);
         double rangeStart = parseDouble(params[3]);
         double rangeStop = parseDouble(params[4]);
+
+        if (numPoints == 0)
+        {
+            throw new ParseException("Must request more than 0 points for AC analysis");
+        }
 
         return new ACAnalysis(subType, rangeStart, rangeStop, numPoints);
     }
