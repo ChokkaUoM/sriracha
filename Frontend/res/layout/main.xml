@@ -5,7 +5,7 @@
                                       android:orientation="horizontal"
                                       android:id="@+id/main">
     <RelativeLayout android:layout_width="0dp" android:layout_height="fill_parent"
-                    android:layout_weight="15"
+                    android:layout_weight="20"
                     android:id="@+id/circuit_menu_container"
                     android:background="@color/MenuBackground"
                     android:padding="10dp">
@@ -69,40 +69,6 @@
                   android:visibility="gone"
                 />
     </sriracha.frontend.android.designer.CircuitDesignerCanvas>
-
-    <!--TabHost android:id="@+id/tab_host"
-             android:layout_width="0dip"
-             android:layout_weight="15"
-             android:layout_height="fill_parent">
-        <LinearLayout android:layout_width="fill_parent"
-                      android:layout_height="fill_parent"
-                      android:orientation="vertical">
-
-
-            <FrameLayout android:id="@android:id/tabcontent"
-                         android:layout_width="fill_parent"
-                         android:layout_height="wrap_content"
-                         android:layout_weight="1">
-
-                <include android:id="@+id/tab_analysis" layout="@layout/analysis_menu"/>
-
-                <sriracha.frontend.android.results.GraphController android:id="@+id/tab_graph"
-                                                                   android:layout_width="fill_parent"
-                                                                   android:layout_height="fill_parent"
-                                                                   android:background="@color/MenuBackground"
-                                                                   android:padding="4dp"/>
-
-            </FrameLayout>
-
-            <TabWidget android:id="@android:id/tabs"
-                       android:layout_width="fill_parent"
-                       android:layout_height="wrap_content"
-                       android:layout_weight="0"
-                       android:layout_marginBottom="-4dip"/>
-
-
-        </LinearLayout>
-    </TabHost-->
 
     <include android:id="@+id/tab_analysis" layout="@layout/analysis_menu"/>
 
