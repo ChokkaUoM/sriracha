@@ -70,8 +70,10 @@ public class Console
 
         } else
         {
+
+
             //no args, running from IDE insert quick test stuff here ...
-            runAndPrint("out/artifacts/TestConsole/circuits/transmission-line");
+            runAndPrint("C:\\Users\\antoine\\Dev\\Sriracha\\bnetlist.txt");
 
         }
 
