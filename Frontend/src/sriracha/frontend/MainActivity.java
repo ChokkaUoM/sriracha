@@ -163,6 +163,8 @@ public class MainActivity extends Activity
     {
         ListView menu = (ListView) findViewById(R.id.wrenchmenu_items);
         menu.setVisibility(menu.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+        if (menu.getVisibility() == View.VISIBLE)
+            menu.bringToFront();
     }
 
     public void goButtonOnClick(View view)

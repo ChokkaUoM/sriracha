@@ -74,23 +74,19 @@ public class Storage
         }
     }
 
-    public void save(String fileName, Object data) throws IOException
+    public void save(String fileName, String data) throws IOException
     {
         ensureCanWrite();
 
         FileOutputStream fileOutputStream = null;
-        ObjectOutputStream out = null;
         try
         {
             File file = new File(context.getExternalFilesDir(null), fileName);
             fileOutputStream = new FileOutputStream(file);
-            out = new ObjectOutputStream(fileOutputStream);
-            out.writeObject(data);
+            fileOutputStream.write(data.getBytes(), 0, data.length());
         }
         finally
         {
-            if (out != null)
-                out.close();
             if (fileOutputStream != null)
                 fileOutputStream.close();
         }
