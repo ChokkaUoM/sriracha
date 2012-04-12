@@ -15,12 +15,18 @@ public class Storage
         this.context = context;
     }
 
-    public String[] list() throws IOException
+    public String[] list(final String extensionFilter) throws IOException
     {
         ensureCanRead();
 
         File file = context.getExternalFilesDir(null);
-        String[] files = file.list();
+        String[] files = file.list(new FilenameFilter() {
+            @Override
+            public boolean accept(File file, String name)
+            {
+                return name.endsWith(extensionFilter);
+            }
+        });
         return files;
     }
 
@@ -58,6 +64,28 @@ public class Storage
             fileOutputStream = new FileOutputStream(file);
             out = new ObjectOutputStream(fileOutputStream);
             serialization.serialize(out);
+        }
+        finally
+        {
+            if (out != null)
+                out.close();
+            if (fileOutputStream != null)
+                fileOutputStream.close();
+        }
+    }
+
+    public void save(String fileName, Object data) throws IOException
+    {
+        ensureCanWrite();
+
+        FileOutputStream fileOutputStream = null;
+        ObjectOutputStream out = null;
+        try
+        {
+            File file = new File(context.getExternalFilesDir(null), fileName);
+            fileOutputStream = new FileOutputStream(file);
+            out = new ObjectOutputStream(fileOutputStream);
+            out.writeObject(data);
         }
         finally
         {

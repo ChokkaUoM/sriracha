@@ -8,22 +8,29 @@ import sriracha.frontend.*;
 
 public class SaveDialogFragment extends DialogFragment
 {
-    public static SaveDialogFragment newInstance()
+    public final static int SAVE_CIRCUIT = 0;
+    public final static int SAVE_NETLIST = 1;
+
+    private int dialogId;
+
+    public SaveDialogFragment(int dialogId)
     {
-        return new SaveDialogFragment();
+        this.dialogId = dialogId;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        getDialog().setTitle("Save Circuit");
+        super.onCreate(savedInstanceState);
+
+        getDialog().setTitle("Save As...");
         View view = inflater.inflate(R.layout.save_file_dialog, container, false);
 
         view.findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
-                saveCircuit();
+                save();
             }
         });
         view.findViewById(R.id.cancel_button).setOnClickListener(new View.OnClickListener() {
@@ -37,7 +44,7 @@ public class SaveDialogFragment extends DialogFragment
         return view;
     }
 
-    private void saveCircuit()
+    private void save()
     {
         String fileName = ((TextView)getDialog().findViewById(R.id.save_file_name)).getText().toString();
         if (fileName.isEmpty())
@@ -46,7 +53,7 @@ public class SaveDialogFragment extends DialogFragment
             return;
         }
 
-        if (((MainActivity)getActivity()).saveCircuit(fileName))
+        if (((MainActivity)getActivity()).save(fileName, dialogId))
         {
             dismiss();
             ((MainActivity)getActivity()).showToast("Saved");

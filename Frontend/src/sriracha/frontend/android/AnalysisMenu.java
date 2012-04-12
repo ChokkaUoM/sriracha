@@ -58,19 +58,48 @@ public class AnalysisMenu extends LinearLayout
         return ((MainActivity) getContext()).getCircuitDesigner();
     }
 
+    public String getAnalysisAndPrints()
+    {
+        String analysis = null;
+        try
+        {
+            String analysisType = getAnalysisType();
+            if (analysisType.equals("DC"))
+                analysis = getDcAnalysis();
+            else if (analysisType.equals("AC"))
+                analysis = getAcAnalysis();
+        }
+        catch (NumberFormatException e)
+        {
+            analysis = "";
+        }
+
+        ArrayList<String> prints = getPrints();
+
+        String out = analysis;
+        for (String print : prints)
+            out += "\n" + print;
+
+        return out;
+    }
 
     public void requestAnalyses(final AsyncSimulator simulator)
     {
         String analysis = null;
 
-        String analysisType = getAnalysisType();
-        if (analysisType.equals("DC"))
-            analysis = getDcAnalysis();
-        else if (analysisType.equals("AC"))
-            analysis = getAcAnalysis();
-
-        if (analysis == null)
+        try
+        {
+            String analysisType = getAnalysisType();
+            if (analysisType.equals("DC"))
+                analysis = getDcAnalysis();
+            else if (analysisType.equals("AC"))
+                analysis = getAcAnalysis();
+        }
+        catch (NumberFormatException e)
+        {
+            showToast(e.getMessage());
             return;
+        }
 
         final ArrayList<String> prints = getPrints();
         if (prints.isEmpty())
@@ -166,8 +195,7 @@ public class AnalysisMenu extends LinearLayout
         }
         catch (NumberFormatException e)
         {
-            showToast("You must specify a valid number for start, stop and increment voltages.");
-            return null;
+            throw new NumberFormatException("You must specify a valid number for start, stop and increment voltages.");
         }
 
         if (element != null)
@@ -177,9 +205,8 @@ public class AnalysisMenu extends LinearLayout
         }
         else
         {
-            showToast("You must choose an element to sweep");
+            throw new RuntimeException("You must choose an element to sweep");
         }
-        return null;
     }
 
     private String getAcAnalysis()
@@ -194,8 +221,7 @@ public class AnalysisMenu extends LinearLayout
         }
         catch (NumberFormatException e)
         {
-            showToast("You must specify a valid number for number of steps, and start and stop frequencies.");
-            return null;
+            throw new NumberFormatException("You must specify a valid number for number of steps, and start and stop frequencies.");
         }
 
         String freqScale = new String[]{"LIN", "DEC", "OCT"}[getFreqScaleType()];

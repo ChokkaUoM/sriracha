@@ -61,7 +61,7 @@
                    android:src="@drawable/wrenchmenu_icon"
                    android:onClick="wrenchMenuOnClick"
                 />
-        <ListView android:layout_width="200dip" android:layout_height="wrap_content"
+        <ListView android:layout_width="250dip" android:layout_height="wrap_content"
                   android:id="@+id/wrenchmenu_items"
                   android:layout_below="@id/wrenchmenu_icon"
                   android:layout_alignRight="@id/wrenchmenu_icon"

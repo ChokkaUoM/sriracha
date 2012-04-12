@@ -221,7 +221,7 @@ public class MainActivity extends Activity
     {
         final ListView menu = (ListView) findViewById(R.id.wrenchmenu_items);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,
-                new String[]{"New", "Load", "Save", "Save As..."});
+                new String[]{"New", "Load", "Save", "Save As...", "Export Netlist..."});
         menu.setAdapter(adapter);
 
         menu.setOnItemClickListener(new AdapterView.OnItemClickListener()
@@ -247,7 +247,10 @@ public class MainActivity extends Activity
                         }
                         // fallthrough!
                     case 3: // Save As...
-                        showDialog(SaveDialogFragment.newInstance());
+                        showDialog(new SaveDialogFragment(SaveDialogFragment.SAVE_CIRCUIT));
+                        break;
+                    case 4: // Export Netlist...
+                        showDialog(new SaveDialogFragment(SaveDialogFragment.SAVE_NETLIST));
                         break;
                 }
                 menu.setVisibility(View.GONE);
@@ -275,16 +278,56 @@ public class MainActivity extends Activity
         return false;
     }
 
-    public boolean saveCircuit(String fileName)
+    public boolean save(String fileName, int dialogId)
+    {
+        switch (dialogId)
+        {
+            case SaveDialogFragment.SAVE_CIRCUIT:
+                return saveCircuit(fileName);
+            case SaveDialogFragment.SAVE_NETLIST:
+                return saveNetlist(fileName);
+        }
+        throw new IllegalArgumentException("Invalid dialog type id");
+    }
+
+    private boolean saveCircuit(String fileName)
     {
         try
         {
+            if (!fileName.endsWith(".occ"))
+                fileName += ".occ";
+
             Serialization serialization = new Serialization(circuitDesigner);
             new Storage(this).save(fileName, serialization);
             currentFileName = fileName;
             return true;
         }
         catch (IOException e) { showToast(e.getMessage()); }
+
+        return false;
+    }
+
+    private boolean saveNetlist(String fileName)
+    {
+        try
+        {
+            if (circuitDesigner.getElements().isEmpty())
+            {
+                showToast("Circuit is empty.");
+                return true;
+            }
+
+            AnalysisMenu analysisMenu = (AnalysisMenu) findViewById(R.id.tab_analysis);
+            String netlist = circuitDesigner.generateNetlist();
+            netlist += analysisMenu.getAnalysisAndPrints();
+
+            if (!fileName.endsWith(".txt"))
+                fileName += ".txt";
+            new Storage(this).save(fileName, netlist);
+            return true;
+        }
+        catch (IOException e) { showToast(e.getMessage()); }
+        catch (Exception e) { showToast("Something seems to have gone slightly awry."); }
 
         return false;
     }

@@ -24,7 +24,7 @@ public class LoadDialogFragment extends DialogFragment
 
         try
         {
-            String[] files = new Storage(getActivity()).list();
+            String[] files = new Storage(getActivity()).list(".occ");
             final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, files);
 
             ListView filesList = (ListView) view.findViewById(R.id.load_file_list);
