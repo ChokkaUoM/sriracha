@@ -79,7 +79,22 @@ public class WireManager
             if (from instanceof CircuitElementPortView)
             {
                 CircuitElementPortView port = (CircuitElementPortView) from;
-                extendVertically = port.getElement().getOrientation() % 180 == 0;
+                float orientation = port.getElement().getOrientation();
+                extendVertically = orientation % 180 == 0;
+
+                boolean passingThroughElement = false;
+                if (extendVertically)
+                {
+                    passingThroughElement |= orientation == 0 && port.getTransformedPosition()[1] < 0 && to.getY() > from.getY();
+                    passingThroughElement |= orientation == 180 && port.getTransformedPosition()[1] > 0 && to.getY() < from.getY();
+                }
+                else
+                {
+                    passingThroughElement |= orientation == 90 && port.getTransformedPosition()[0] < 0 && to.getX() > from.getX();
+                    passingThroughElement |= orientation == 270 && port.getTransformedPosition()[0] > 0 && to.getX() < from.getX();
+                }
+                if (passingThroughElement)
+                    extendVertically = !extendVertically;
             }
             else
             {
