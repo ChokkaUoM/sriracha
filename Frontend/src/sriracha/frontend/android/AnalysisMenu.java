@@ -25,6 +25,8 @@ import java.util.List;
 public class AnalysisMenu extends LinearLayout
 {
     private ColoredStringAdapter adapter;
+    private boolean node1IsValid = false;
+    private boolean voltageSourceIsValid = false;
 
     public AnalysisMenu(Context context)
     {
@@ -142,6 +144,8 @@ public class AnalysisMenu extends LinearLayout
                     List<Plot> plots = parser.getPlots(result);
 
                     graph.addPlot(plots.get(0), Colors.get(i));
+                    if (plots.size() > 1)
+                        graph.addPlot(plots.get(1), Colors.getSecondary(i));
                 }
 
                 showAnalyseButton();
@@ -335,6 +339,7 @@ public class AnalysisMenu extends LinearLayout
                     showCurrentPrintMenu();
                 else
                     throw new RuntimeException("Invalid plot type");
+                setAddPrintButtonEnabled();
             }
 
             @Override
@@ -397,6 +402,14 @@ public class AnalysisMenu extends LinearLayout
                 }
 
                 ElementSelector elementSelector = new ElementSelector((TextView) view, elementViews);
+                elementSelector.setOnSelectListener(new IElementSelector.OnSelectListener() {
+                    @Override
+                    public void onSelect(Object selectedElement)
+                    {
+                        voltageSourceIsValid = true;
+                        setAddPrintButtonEnabled();
+                    }
+                });
                 getCircuitDesigner().setCursorToSelectingElement(elementSelector);
             }
         };
@@ -410,8 +423,6 @@ public class AnalysisMenu extends LinearLayout
 
     private void setNodeSelector()
     {
-
-
         View.OnClickListener listener = new OnClickListener()
         {
             @Override
@@ -430,7 +441,12 @@ public class AnalysisMenu extends LinearLayout
                     {
                         NetlistNode node = crawler.nodeFromSegment(selectedSegment);
                         if (node != null)
+                        {
                             textView.setText(node.toString());
+                            if (textView == findViewById(R.id.print_node1))
+                                node1IsValid = true;
+                            setAddPrintButtonEnabled();
+                        }
                     }
                 });
                 getCircuitDesigner().setCursorToSelectingElement(nodeSelector);
@@ -475,7 +491,8 @@ public class AnalysisMenu extends LinearLayout
             }
         });
 
-        findViewById(R.id.print_add).setOnClickListener(new OnClickListener()
+        getAddPrintButton().setEnabled(false);
+        getAddPrintButton().setOnClickListener(new OnClickListener()
         {
             @Override
             public void onClick(View view)
@@ -492,6 +509,22 @@ public class AnalysisMenu extends LinearLayout
         scaleSelector.setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item,
                 new String[]{"LIN", "LOG10", "LOG8"}));
         ((ArrayAdapter<String>) scaleSelector.getAdapter()).setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    }
+
+    private Button getAddPrintButton()
+    {
+        return (Button) findViewById(R.id.print_add);
+    }
+
+    private void setAddPrintButtonEnabled()
+    {
+        Spinner spinner = (Spinner) findViewById(R.id.print_type);
+        if (spinner.getSelectedItem().toString().startsWith("V"))
+            getAddPrintButton().setEnabled(node1IsValid);
+        else if (spinner.getSelectedItem().toString().startsWith("I"))
+            getAddPrintButton().setEnabled(voltageSourceIsValid);
+        else
+            throw new RuntimeException("Invalid Print Type");
     }
 
     private void showToast(String message)

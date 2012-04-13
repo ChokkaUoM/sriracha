@@ -16,7 +16,6 @@ public class ResultsParser {
             plots.add(new Plot());
         }
 
-
         for(IDataPoint dp : printData.getData()){
             double x = dp.getXValue();
             double [][]vector = dp.getVector();
