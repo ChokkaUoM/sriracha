@@ -19,6 +19,9 @@ import sriracha.frontend.model.CircuitElement;
 import sriracha.frontend.resultdata.Plot;
 import sriracha.simulator.IPrintData;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +30,22 @@ public class AnalysisMenu extends LinearLayout
     private ColoredStringAdapter adapter;
     private boolean node1IsValid = false;
     private boolean voltageSourceIsValid = false;
+
+    private Spinner analysisType;
+    private TextView dcElement;
+    private TextView dcStart;
+    private TextView dcStop;
+    private TextView dcStep;
+    private TextView acNum;
+    private TextView acStart;
+    private TextView acStop;
+    private Spinner acScale;
+    private Spinner printType;
+    private TextView printN1;
+    private TextView printN2;
+    private TextView printNodeCurrent;
+    private ListView printStatements;
+    private Button addPrint;
 
     public AnalysisMenu(Context context)
     {
@@ -46,6 +65,7 @@ public class AnalysisMenu extends LinearLayout
     @Override
     protected void onFinishInflate()
     {
+        setInnerControls();
         setAnalysisTypeItems();
         setElementSelector();
         setNodeSelector();
@@ -53,6 +73,27 @@ public class AnalysisMenu extends LinearLayout
         setPrintAddButton();
         setFrequencyScale();
         super.onFinishInflate();
+    }
+
+    private void setInnerControls()
+    {
+        analysisType = (Spinner) findViewById(R.id.analysis_type);
+        dcElement = (TextView) findViewById(R.id.dc_analysis_element);
+        dcStart = (TextView) findViewById(R.id.dc_analysis_startv);
+        dcStop = (TextView) findViewById(R.id.dc_analysis_stopv);
+        dcStep = (TextView) findViewById(R.id.dc_analysis_incr);
+        acNum = (TextView) findViewById(R.id.ac_analysis_num);
+        acStart = (TextView) findViewById(R.id.ac_analysis_startf);
+        acStop = (TextView) findViewById(R.id.ac_analysis_stopf);
+        acScale = (Spinner) findViewById(R.id.ac_frequency_scale);
+        printType = (Spinner) findViewById(R.id.print_type);
+        printN1 = (TextView) findViewById(R.id.print_node1);
+        printN2 = (TextView) findViewById(R.id.print_node2);
+        printNodeCurrent = (TextView) findViewById(R.id.print_node_current);
+        printStatements = (ListView) findViewById(R.id.print_statements);
+        addPrint = (Button) findViewById(R.id.print_add);
+
+
     }
 
     private CircuitDesigner getCircuitDesigner()
@@ -70,8 +111,7 @@ public class AnalysisMenu extends LinearLayout
                 analysis = getDcAnalysis();
             else if (analysisType.equals("AC"))
                 analysis = getAcAnalysis();
-        }
-        catch (NumberFormatException e)
+        } catch (NumberFormatException e)
         {
             analysis = "";
         }
@@ -96,8 +136,7 @@ public class AnalysisMenu extends LinearLayout
                 analysis = getDcAnalysis();
             else if (analysisType.equals("AC"))
                 analysis = getAcAnalysis();
-        }
-        catch (NumberFormatException e)
+        } catch (NumberFormatException e)
         {
             showToast(e.getMessage());
             return;
@@ -175,7 +214,7 @@ public class AnalysisMenu extends LinearLayout
 
     private String getAnalysisType()
     {
-        String analysisType = ((TextView) ((Spinner) findViewById(R.id.analysis_type)).getSelectedView()).getText().toString();
+        String analysisType = ((TextView) (this.analysisType).getSelectedView()).getText().toString();
         if (analysisType.equals("DC Sweep"))
             return "DC";
         else if (analysisType.equals("Frequency"))
@@ -184,20 +223,70 @@ public class AnalysisMenu extends LinearLayout
             throw new RuntimeException("Invalid analysis type: " + analysisType);
     }
 
+    public void serialize(ObjectOutputStream out) throws IOException
+    {
+        out.writeBoolean(node1IsValid);
+        out.writeBoolean(voltageSourceIsValid);
+        out.writeInt(analysisType.getSelectedItemPosition());
+        out.writeInt(acScale.getSelectedItemPosition());
+        out.writeObject(acNum.getText());
+        out.writeObject(acStart.getText());
+        out.writeObject(acStop.getText());
+        out.writeObject(dcStep.getText());
+        out.writeObject(dcStart.getText());
+        out.writeObject(dcStop.getText());
+        out.writeObject(dcElement.getText());
+        out.writeInt(printType.getSelectedItemPosition());
+        out.writeObject(printN1.getText());
+        out.writeObject(printN2.getText());
+        int count = printStatements.getAdapter().getCount();
+        out.writeInt(count);
+        for (int i = 0; i < count; i++)
+        {
+            out.writeObject(printStatements.getAdapter().getItem(i));
+        }
+
+    }
+
+    public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        node1IsValid = in.readBoolean();
+        voltageSourceIsValid = in.readBoolean();
+        analysisType.setSelection(in.readInt());
+        acScale.setSelection(in.readInt());
+        acNum.setText((CharSequence) in.readObject());
+        acStart.setText((CharSequence) in.readObject());
+        acStop.setText((CharSequence) in.readObject());
+        dcStep.setText((CharSequence) in.readObject());
+        dcStart.setText((CharSequence) in.readObject());
+        dcStop.setText((CharSequence) in.readObject());
+        dcElement.setText((CharSequence) in.readObject());
+        printType.setSelection(in.readInt());
+        printN1.setText((CharSequence) in.readObject());
+        printN2.setText((CharSequence) in.readObject());
+        int count = in.readInt();
+        ArrayAdapter<String> adapter = (ArrayAdapter<String>) printStatements.getAdapter();
+        for (int i = 0; i < count; i++)
+        {
+            adapter.add((String) in.readObject());
+        }
+
+    }
+
+
     private String getDcAnalysis()
     {
-        String elementName = ((TextView) findViewById(R.id.dc_analysis_element)).getText().toString();
+        String elementName = dcElement.getText().toString();
         CircuitElement element = getCircuitDesigner().getElementByName(elementName);
 
         float startV, stopV, incr;
 
         try
         {
-            startV = Float.parseFloat(((TextView) findViewById(R.id.dc_analysis_startv)).getText().toString());
-            stopV = Float.parseFloat(((TextView) findViewById(R.id.dc_analysis_stopv)).getText().toString());
-            incr = Float.parseFloat(((TextView) findViewById(R.id.dc_analysis_incr)).getText().toString());
-        }
-        catch (NumberFormatException e)
+            startV = Float.parseFloat(dcStart.getText().toString());
+            stopV = Float.parseFloat(dcStop.getText().toString());
+            incr = Float.parseFloat(dcStep.getText().toString());
+        } catch (NumberFormatException e)
         {
             throw new NumberFormatException("You must specify a valid number for start, stop and increment voltages.");
         }
@@ -206,8 +295,7 @@ public class AnalysisMenu extends LinearLayout
         {
             String analysis = String.format(".DC %s %f %f %f", element.getName(), startV, stopV, incr);
             return analysis;
-        }
-        else
+        } else
         {
             throw new RuntimeException("You must choose an element to sweep");
         }
@@ -219,11 +307,10 @@ public class AnalysisMenu extends LinearLayout
         float startF, stopF;
         try
         {
-            num = Integer.parseInt(((TextView) findViewById(R.id.ac_analysis_num)).getText().toString());
-            startF = Float.parseFloat(((TextView) findViewById(R.id.ac_analysis_startf)).getText().toString());
-            stopF = Float.parseFloat(((TextView) findViewById(R.id.ac_analysis_stopf)).getText().toString());
-        }
-        catch (NumberFormatException e)
+            num = Integer.parseInt(acNum.getText().toString());
+            startF = Float.parseFloat(acStart.getText().toString());
+            stopF = Float.parseFloat(acStop.getText().toString());
+        } catch (NumberFormatException e)
         {
             throw new NumberFormatException("You must specify a valid number for number of steps, and start and stop frequencies.");
         }
@@ -236,12 +323,12 @@ public class AnalysisMenu extends LinearLayout
 
     private int getFreqScaleType()
     {
-        return ((Spinner) findViewById(R.id.ac_frequency_scale)).getSelectedItemPosition();
+        return acScale.getSelectedItemPosition();
     }
 
     private String getPrint()
     {
-        String printTypeLong = ((TextView) ((Spinner) findViewById(R.id.print_type)).getSelectedView()).getText().toString();
+        String printTypeLong = ((TextView) printType.getSelectedView()).getText().toString();
         String printType = printTypeLong.split(" ")[0];
         if (printType.startsWith("V"))
             return getVoltagePrint(printType);
@@ -253,14 +340,13 @@ public class AnalysisMenu extends LinearLayout
 
     private String getVoltagePrint(String printType)
     {
-        String node1 = ((TextView) findViewById(R.id.print_node1)).getText().toString();
-        String node2 = ((TextView) findViewById(R.id.print_node2)).getText().toString();
+        String node1 = printN1.getText().toString();
+        String node2 = printN2.getText().toString();
 
         if (node1 != null && node2 != null)
         {
             return String.format("%s(%s,%s)", printType, node1, node2);
-        }
-        else
+        } else
         {
             showToast("You must choose a node to measure voltage");
         }
@@ -269,14 +355,13 @@ public class AnalysisMenu extends LinearLayout
 
     private String getCurrentPrint(String printType)
     {
-        String elementName = ((TextView) findViewById(R.id.print_node_current)).getText().toString();
+        String elementName = printNodeCurrent.getText().toString();
         CircuitElement element = getCircuitDesigner().getElementByName(elementName);
 
         if (element != null)
         {
             return String.format("%s(%s)", printType, element.getName());
-        }
-        else
+        } else
         {
             showToast("You must choose an element to measure current");
         }
@@ -286,17 +371,16 @@ public class AnalysisMenu extends LinearLayout
 
     private void setAnalysisTypeItems()
     {
-        Spinner spinner = (Spinner) findViewById(R.id.analysis_type);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, new String[]{
                 "DC Sweep",
                 "Frequency"
         });
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        analysisType.setAdapter(adapter);
 
         showDcMenu();
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        analysisType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
@@ -318,17 +402,16 @@ public class AnalysisMenu extends LinearLayout
 
     private void setPlotTypeItems()
     {
-        Spinner spinner = (Spinner) findViewById(R.id.print_type);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, new String[]{
                 "V (real and complex)", "VR (real)", "VI (complex)", "VM (magnitude)", "VDB (magnitude in dB)", "VP (phase)",
                 "I (real and complex)", "IR (real)", "II (complex)", "IM (magnitude)", "IDB (magnitude in dB)", "IP (phase)",
         });
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        printType.setAdapter(adapter);
 
         showVoltagePrintMenu();
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        printType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
@@ -402,7 +485,8 @@ public class AnalysisMenu extends LinearLayout
                 }
 
                 ElementSelector elementSelector = new ElementSelector((TextView) view, elementViews);
-                elementSelector.setOnSelectListener(new IElementSelector.OnSelectListener() {
+                elementSelector.setOnSelectListener(new IElementSelector.OnSelectListener()
+                {
                     @Override
                     public void onSelect(Object selectedElement)
                     {
@@ -415,10 +499,10 @@ public class AnalysisMenu extends LinearLayout
         };
 
         // Choose element to sweep
-        findViewById(R.id.dc_analysis_element).setOnClickListener(listener);
+        dcElement.setOnClickListener(listener);
 
         // Choose element for printing current through (in future, will not be only voltage sources)
-        findViewById(R.id.print_node_current).setOnClickListener(listener);
+        printNodeCurrent.setOnClickListener(listener);
     }
 
     private void setNodeSelector()
@@ -443,7 +527,7 @@ public class AnalysisMenu extends LinearLayout
                         if (node != null)
                         {
                             textView.setText(node.toString());
-                            if (textView == findViewById(R.id.print_node1))
+                            if (textView == printN1)
                                 node1IsValid = true;
                             setAddPrintButtonEnabled();
                         }
@@ -453,17 +537,16 @@ public class AnalysisMenu extends LinearLayout
             }
         };
 
-        findViewById(R.id.print_node1).setOnClickListener(listener);
-        findViewById(R.id.print_node2).setOnClickListener(listener);
+        printN1.setOnClickListener(listener);
+        printN2.setOnClickListener(listener);
     }
 
     private void setPrintAddButton()
     {
         adapter = new ColoredStringAdapter(getContext(), android.R.layout.simple_list_item_1);
 
-        ListView listView = (ListView) findViewById(R.id.print_statements);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        printStatements.setAdapter(adapter);
+        printStatements.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
             public void onItemClick(final AdapterView<?> adapterView, final View view, final int position, long id)
@@ -491,8 +574,8 @@ public class AnalysisMenu extends LinearLayout
             }
         });
 
-        getAddPrintButton().setEnabled(false);
-        getAddPrintButton().setOnClickListener(new OnClickListener()
+        addPrint.setEnabled(false);
+        addPrint.setOnClickListener(new OnClickListener()
         {
             @Override
             public void onClick(View view)
@@ -504,25 +587,19 @@ public class AnalysisMenu extends LinearLayout
 
     private void setFrequencyScale()
     {
-        Spinner scaleSelector = (Spinner) findViewById(R.id.ac_frequency_scale);
 
-        scaleSelector.setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item,
+        acScale.setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item,
                 new String[]{"LIN", "LOG10", "LOG8"}));
-        ((ArrayAdapter<String>) scaleSelector.getAdapter()).setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ((ArrayAdapter<String>) acScale.getAdapter()).setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     }
 
-    private Button getAddPrintButton()
-    {
-        return (Button) findViewById(R.id.print_add);
-    }
 
     private void setAddPrintButtonEnabled()
     {
-        Spinner spinner = (Spinner) findViewById(R.id.print_type);
-        if (spinner.getSelectedItem().toString().startsWith("V"))
-            getAddPrintButton().setEnabled(node1IsValid);
-        else if (spinner.getSelectedItem().toString().startsWith("I"))
-            getAddPrintButton().setEnabled(voltageSourceIsValid);
+        if (printType.getSelectedItem().toString().startsWith("V"))
+            addPrint.setEnabled(node1IsValid);
+        else if (printType.getSelectedItem().toString().startsWith("I"))
+            addPrint.setEnabled(voltageSourceIsValid);
         else
             throw new RuntimeException("Invalid Print Type");
     }

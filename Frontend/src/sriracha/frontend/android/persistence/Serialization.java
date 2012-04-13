@@ -1,24 +1,31 @@
 package sriracha.frontend.android.persistence;
 
-import org.apache.http.entity.*;
-import sriracha.frontend.*;
-import sriracha.frontend.android.designer.*;
-import sriracha.frontend.android.model.*;
-import sriracha.frontend.android.model.elements.*;
-import sriracha.frontend.android.model.elements.ctlsources.*;
-import sriracha.frontend.android.model.elements.sources.*;
+import sriracha.frontend.android.AnalysisMenu;
+import sriracha.frontend.android.designer.CircuitDesigner;
+import sriracha.frontend.android.designer.IWireIntersection;
+import sriracha.frontend.android.designer.WireManager;
+import sriracha.frontend.android.designer.WireSegment;
+import sriracha.frontend.android.model.CircuitElementPortView;
+import sriracha.frontend.android.model.CircuitElementView;
 
-import java.io.*;
-import java.lang.reflect.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class Serialization
 {
     private CircuitDesigner circuitDesigner;
+    private AnalysisMenu analysisMenu;
 
-    public Serialization(CircuitDesigner circuitDesigner)
+    public Serialization(CircuitDesigner circuitDesigner, AnalysisMenu analysisMenu)
     {
         this.circuitDesigner = circuitDesigner;
+        this.analysisMenu = analysisMenu;
     }
 
     public void serialize(ObjectOutputStream out) throws IOException
@@ -38,6 +45,9 @@ public class Serialization
         {
             segment.serialize(out);
         }
+
+        //serialize analysis menu
+        analysisMenu.serialize(out);
     }
 
     public void deserialize(ObjectInputStream in) throws IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, InstantiationException
@@ -53,8 +63,7 @@ public class Serialization
                 element.deserialize(in);
                 uuidElementMap.put(element.getUUID(), element);
                 circuitDesigner.addElement(element);
-            }
-            else
+            } else
                 throw new InvalidObjectException("Element not found by ID");
         }
 
@@ -91,6 +100,8 @@ public class Serialization
                 }
             }
         }
+
+        analysisMenu.deserialize(in);
     }
 
     private void serializeElement(CircuitElementView elementView, ObjectOutputStream out) throws IOException
