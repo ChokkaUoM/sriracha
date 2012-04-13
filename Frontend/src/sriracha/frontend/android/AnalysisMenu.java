@@ -223,6 +223,12 @@ public class AnalysisMenu extends LinearLayout
             {
                 showAnalyseButton();
             }
+            @Override
+            public void OnSimulatorError(Exception e)
+            {
+                showAnalyseButton();
+                showToast(e.getMessage());
+            }
         });
     }
 

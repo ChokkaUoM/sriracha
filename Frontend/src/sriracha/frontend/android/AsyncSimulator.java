@@ -28,33 +28,28 @@ public class AsyncSimulator
         {
             public void run()
             {
-                final boolean success;
+                boolean success = false;
+                ReadyCallback callback;
 
                 synchronized (simLock)
                 {
                     busy = true;
-                    success = simulator.setNetlist(netlist);
-                    busy = false;
+                    try
+                    {
+                        success = simulator.setNetlist(netlist);
+                        callback = new ReadyCallback(callbackHandler, success);
+                    }
+                    catch (Exception e)
+                    {
+                        callback = new ReadyCallback(callbackHandler, e);
+                    }
+                    finally
+                    {
+                        busy = false;
+                    }
                 }
 
-                Thread callback = new Thread()
-                {
-                    public void run()
-                    {
-                        if (success)
-                        {
-                            callbackHandler.OnSimulatorReady();
-                        } else
-                        {
-                            callbackHandler.OnSimulatorSetupCancelled();
-                        }
-
-                    }
-
-                };
-
                 mainActivity.runOnUiThread(callback);
-
             }
         }.start();
     }
@@ -66,33 +61,28 @@ public class AsyncSimulator
         {
             public void run()
             {
-                final boolean success;
+                boolean success = false;
+                DoneCallback callback;
 
                 synchronized (simLock)
                 {
                     busy = true;
-                    success = simulator.addAnalysis(analysis);
-                    busy = false;
+                    try
+                    {
+                        success = simulator.addAnalysis(analysis);
+                        callback = new DoneCallback(callbackHandler, success);
+                    }
+                    catch (Exception e)
+                    {
+                        callback = new DoneCallback(callbackHandler, e);
+                    }
+                    finally
+                    {
+                        busy = false;
+                    }
                 }
 
-                Thread callback = new Thread()
-                {
-                    public void run()
-                    {
-                        if (success)
-                        {
-                            callbackHandler.OnSimulatorAnalysisDone();
-                        } else
-                        {
-                            callbackHandler.OnSimulatorAnalysisCancelled();
-                        }
-                    }
-
-                };
-
                 mainActivity.runOnUiThread(callback);
-
-
             }
         }.start();
     }
@@ -132,6 +122,11 @@ public class AsyncSimulator
          * netlist
          */
         public void OnSimulatorSetupCancelled();
+
+        /**
+         * called if bad things happened
+         */
+        public void OnSimulatorError(Exception e);
     }
 
     public interface OnSimulatorAnalysisDoneListener
@@ -145,5 +140,82 @@ public class AsyncSimulator
          * called if analysis was finished early
          */
         public void OnSimulatorAnalysisCancelled();
+
+        /**
+         * called if bad things happened
+         */
+        public void OnSimulatorError(Exception e);
+    }
+
+    private static class ReadyCallback extends Thread
+    {
+        private OnSimulatorReadyListener callbackHandler;
+        private boolean success;
+        private Exception e;
+
+        private ReadyCallback(OnSimulatorReadyListener callbackHandler, boolean success)
+        {
+            this.callbackHandler = callbackHandler;
+            this.success = success;
+        }
+
+        private ReadyCallback(OnSimulatorReadyListener callbackHandler, Exception e)
+        {
+            this.callbackHandler = callbackHandler;
+            this.e = e;
+        }
+
+        @Override
+        public void run()
+        {
+            if (e != null)
+            {
+                callbackHandler.OnSimulatorError(e);
+            }
+            else if (success)
+            {
+                callbackHandler.OnSimulatorReady();
+            }
+            else
+            {
+                callbackHandler.OnSimulatorSetupCancelled();
+            }
+        }
+    }
+
+    private static class DoneCallback extends Thread
+    {
+        private OnSimulatorAnalysisDoneListener callbackHandler;
+        private boolean success;
+        private Exception e;
+
+        private DoneCallback(OnSimulatorAnalysisDoneListener callbackHandler, boolean success)
+        {
+            this.callbackHandler = callbackHandler;
+            this.success = success;
+        }
+
+        private DoneCallback(OnSimulatorAnalysisDoneListener callbackHandler, Exception e)
+        {
+            this.callbackHandler = callbackHandler;
+            this.e = e;
+        }
+
+        @Override
+        public void run()
+        {
+            if (e != null)
+            {
+                callbackHandler.OnSimulatorError(e);
+            }
+            else if (success)
+            {
+                callbackHandler.OnSimulatorAnalysisDone();
+            }
+            else
+            {
+                callbackHandler.OnSimulatorAnalysisCancelled();
+            }
+        }
     }
 }

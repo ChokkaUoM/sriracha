@@ -197,6 +197,12 @@ public class MainActivity extends Activity
                 {
                     analysisMenu.showAnalyseButton();
                 }
+                @Override
+                public void OnSimulatorError(Exception e)
+                {
+                    analysisMenu.showAnalyseButton();
+                    showToast(e.getMessage());
+                }
             });
         }
         catch (Exception e)
