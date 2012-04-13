@@ -126,7 +126,7 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
 
     public void rotate(int degrees)
     {
-        setOrientation((orientation + degrees) % 360);
+        setOrientation((orientation + degrees + 360) % 360);
     }
 
     public CircuitElementPortView getClosestPort(float x, float y, boolean useRelative)

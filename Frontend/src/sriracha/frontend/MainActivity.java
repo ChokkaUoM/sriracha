@@ -272,7 +272,7 @@ public class MainActivity extends Activity
     {
         try
         {
-            AnalysisMenu analysisMenu = (AnalysisMenu) findViewById(R.id.analysis_menu);
+            AnalysisMenu analysisMenu = (AnalysisMenu) findViewById(R.id.tab_analysis);
             resetCircuitDesigner();
             Serialization serialization = new Serialization(circuitDesigner, analysisMenu);
             new Storage(this).load(fileName, serialization);
@@ -319,7 +319,7 @@ public class MainActivity extends Activity
         {
             if (!fileName.endsWith(".occ"))
                 fileName += ".occ";
-            AnalysisMenu analysisMenu = (AnalysisMenu) findViewById(R.id.analysis_menu);
+            AnalysisMenu analysisMenu = (AnalysisMenu) findViewById(R.id.tab_analysis);
 
             Serialization serialization = new Serialization(circuitDesigner, analysisMenu);
             new Storage(this).save(fileName, serialization);

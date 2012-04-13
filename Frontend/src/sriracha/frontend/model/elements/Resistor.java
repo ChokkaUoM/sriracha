@@ -1,5 +1,6 @@
 package sriracha.frontend.model.elements;
 
+import sriracha.frontend.*;
 import sriracha.frontend.model.*;
 
 import java.io.*;
@@ -65,8 +66,8 @@ public class Resistor extends TwoPortElement implements Serializable
     }
 
     @Override
-    public String toNetlistString(String[] nodes)
+    public String toNetlistString(String[] nodes, NodeCrawler crawler)
     {
-        return super.toNetlistString(nodes) + resistance + ScalarProperty.translateUnit(unit);
+        return super.toNetlistString(nodes, crawler) + resistance + ScalarProperty.translateUnit(unit);
     }
 }

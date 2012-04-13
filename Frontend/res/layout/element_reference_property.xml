@@ -1,16 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="fill_parent" android:layout_height="wrap_content">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent" android:layout_height="wrap_content"
+              android:orientation="vertical">
+
     <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
-              android:text="Depends on:"
+              android:text="Source:"
             />
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-              android:id="@+id/property_value"
-              android:layout_marginTop="20dip"
-              android:layout_marginLeft="20dip"
-              android:layout_marginRight="20dip"
-              android:textSize="32dip"
-              android:text="Select One..."
+    <Spinner android:layout_width="fill_parent" android:layout_height="wrap_content"
+             android:id="@+id/property_source"
+             android:layout_marginBottom="20dip"
             />
-</RelativeLayout>
+
+    <RelativeLayout android:layout_width="fill_parent" android:layout_height="wrap_content"
+                    android:id="@+id/current_controlled">
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+                  android:text="Depends on:"
+                />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                  android:id="@+id/source_element"
+                  android:layout_marginTop="20dip"
+                  android:layout_marginLeft="20dip"
+                  android:layout_marginRight="20dip"
+                  android:textSize="32dip"
+                  android:text="Select One..."
+                />
+    </RelativeLayout>
+
+    <TableLayout android:layout_width="fill_parent" android:layout_height="wrap_content"
+                 android:id="@+id/voltage_controlled"
+                 android:layout_marginTop="20dip">
+        <TableRow>
+            <TextView style="@style/HorizontalWeight"
+                      android:text="V+"/>
+
+            <TextView style="@style/HorizontalWeight"
+                      android:text="V-"/>
+        </TableRow>
+
+        <!-- Selectors -->
+        <TableRow>
+            <TextView style="@style/HorizontalWeight"
+                      android:id="@+id/source_node1"
+                      android:textSize="32dip"
+                      android:text="[...]"/>
+
+            <TextView style="@style/HorizontalWeight"
+                      android:id="@+id/source_node2"
+                      android:textSize="32dip"
+                      android:text="0"/>
+        </TableRow>
+    </TableLayout>
+</LinearLayout>

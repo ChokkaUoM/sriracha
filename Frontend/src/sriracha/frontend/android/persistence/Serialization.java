@@ -88,7 +88,10 @@ public class Serialization
                 if (element == null)
                     throw new InvalidObjectException("Element not found by UUID");
 
+                String elementName = element.getElement().getName();
                 element.getElement().init(circuitDesigner.getElementManager());
+                element.getElement().setName(elementName);
+
                 port.setElement(element);
                 for (int i = 0; i < element.getPortUUIDs().length; i++)
                 {

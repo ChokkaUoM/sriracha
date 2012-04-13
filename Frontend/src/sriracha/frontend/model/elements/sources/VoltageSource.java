@@ -1,5 +1,6 @@
 package sriracha.frontend.model.elements.sources;
 
+import sriracha.frontend.*;
 import sriracha.frontend.android.*;
 import sriracha.frontend.model.*;
 import sriracha.frontend.model.elements.*;
@@ -209,9 +210,9 @@ public class VoltageSource extends TwoPortElement implements Serializable
     }
 
     @Override
-    public String toNetlistString(String[] nodes)
+    public String toNetlistString(String[] nodes, NodeCrawler crawler)
     {
-        return super.toNetlistString(nodes)
+        return super.toNetlistString(nodes, crawler)
                 + String.format("DC %f%s AC %f%s %f",
                 dcVoltage, ScalarProperty.translateUnit(dcVoltageUnit),
                 amplitude, ScalarProperty.translateUnit(amplitudeUnit),

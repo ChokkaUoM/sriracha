@@ -1,19 +1,12 @@
 package sriracha.frontend.model.elements.ctlsources;
 
+import sriracha.frontend.android.model.elements.ctlsources.*;
 import sriracha.frontend.model.*;
-import sriracha.frontend.model.elements.*;
-import sriracha.frontend.model.elements.sources.*;
 
 import java.io.*;
-import java.util.*;
 
-public class DependentVoltageSource extends TwoPortElement implements Serializable
+public class DependentVoltageSource extends DependentSource implements Serializable
 {
-    private transient Property[] properties;
-
-    private CircuitElement dependsOn;
-    private float gain;
-    
     private String type = "Dependent Voltage Source";
 
     public DependentVoltageSource(CircuitElementManager elementManager)
@@ -22,76 +15,11 @@ public class DependentVoltageSource extends TwoPortElement implements Serializab
     }
 
     @Override
-    public Property[] getProperties()
+    protected void rename()
     {
-        if (properties == null)
-        {
-            final CircuitElement self = this;
-
-            properties = new Property[]{
-                    new ReferenceProperty(elementManager)
-                    {
-                        @Override
-                        public String getValue()
-                        {
-                            return dependsOn != null ? dependsOn.getName() : "[Select...]";
-                        }
-                        @Override
-                        public void _trySetValue(String value)
-                        {
-                            for (CircuitElement element : elementManager.getElements())
-                            {
-                                if (element.getName().equals(value))
-                                {
-                                    dependsOn = element;
-                                    if (element instanceof VoltageSource || element instanceof DependentVoltageSource)
-                                        type = "VCVS";
-                                    else
-                                        type = "CCVS";
-                                    rename();
-                                    return;
-                                }
-                            }
-                        }
-                        @Override
-                        public ArrayList<CircuitElement> getElementsList()
-                        {
-                            ArrayList<CircuitElement> elements = super.getElementsList();
-                            elements.remove(self);
-                            return elements;
-                        }
-                    },
-                    new ScalarProperty("Gain", "") {
-                        @Override
-                        public String getUnit()
-                        {
-                            return "";
-                        }
-                        @Override
-                        public void setUnit(String unit)
-                        {
-                        }
-                        @Override
-                        public String getValue()
-                        {
-                            return String.valueOf(gain);
-                        }
-                        @Override
-                        public void _trySetValue(String value)
-                        {
-                            gain = Float.parseFloat(value);
-                        }
-                    }
-            };
-        }
-        return properties;
-    }
-
-    private void rename()
-    {
-        if (type.equals("VCVS") && name.equals("H"+index))
+        if (typeId == VOLTAGE_CONTROLLED && name.equals("H" + index))
             name = "E" + index;
-        else if (type.equals("CCVS") && name.equals("E"+index))
+        else if (typeId == CURRENT_CONTROLLED && name.equals("E" + index))
             name = "H" + index;
     }
 

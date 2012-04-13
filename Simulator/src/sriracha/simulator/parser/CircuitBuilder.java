@@ -48,8 +48,39 @@ public class CircuitBuilder
     {
 
         String[] lines = netlist.split("\\r?\\n");
+
+        ArrayList<String> sourceLines = new ArrayList<String>();
+        ArrayList<String> dependentSourceLines = new ArrayList<String>();
+        ArrayList<String> otherLines = new ArrayList<String>();
+
         circuit = new Circuit(lines[0]);
         for (int i = 1; i < lines.length; i++)
+        {
+            String line = lines[i];
+            String upperLine = line.toUpperCase();
+            if (upperLine.startsWith(".SUBCKT"))
+            {
+                while (i < lines.length && !lines[i].toUpperCase().startsWith(".ENDS")) { i++; }
+            }
+
+            if (upperLine.startsWith("V") || upperLine.startsWith("I"))
+                sourceLines.add(line);
+            else if (upperLine.startsWith("E") || upperLine.startsWith("F")
+                    || upperLine.startsWith("G") || upperLine.startsWith("H"))
+                dependentSourceLines.add(line);
+            else
+                otherLines.add(line);
+        }
+
+        ArrayList<String> linesList = new ArrayList<String>();
+        linesList.addAll(sourceLines);
+        linesList.addAll(dependentSourceLines);
+        linesList.addAll(otherLines);
+
+        lines = new String[linesList.size()];
+        linesList.toArray(lines);
+
+        for (int i = 0; i < lines.length; i++)
         {
             String line = lines[i];
 
@@ -77,10 +108,12 @@ public class CircuitBuilder
                     i++;
                 }
                 parseSubCircuitTemplate(subCircuitLines.toArray(new String[subCircuitLines.size()]));
-            } else if (line.startsWith(".AC") || line.startsWith(".DC"))
+            }
+            else if (line.startsWith(".AC") || line.startsWith(".DC"))
             {
                 analysisTypes.add(parseAnalysis(line));
-            } else if (line.startsWith(".PRINT"))
+            }
+            else if (line.startsWith(".PRINT"))
             {
                 outputFilters.add(parsePrint(line));
             }
@@ -128,14 +161,16 @@ public class CircuitBuilder
                         resultInfoList.add(new VoltageInfo(dataFormat, circuit.getNodeIndex(nodeList[0]), circuit.getNodeIndex(nodeList[1])));
                     else
                         throw new ParseException("Voltages can only be requested between 1 or 2 nodes: " + line);
-                } else if (firstChar == 'I')
+                }
+                else if (firstChar == 'I')
                 {
                     if (nodeList.length != 1 || Character.toUpperCase(nodeList[0].charAt(0)) != 'V')
                         throw new ParseException("Currents can only be requested at a single voltage source: " + line);
 
                     resultInfoList.add(new CurrentInfo(dataFormat, nodeList[0], circuit));
                 }
-            } else
+            }
+            else
                 throw new UnsupportedOperationException("The expression '" + params[i] + "' is not supported. Line: " + line);
         }
 
@@ -191,7 +226,8 @@ public class CircuitBuilder
                     params.add(currentParam);
 
                 currentParam = "";
-            } else
+            }
+            else
             {
                 if (line.charAt(i) == '(')
                     bracketLevel++;
@@ -433,13 +469,16 @@ public class CircuitBuilder
                     double imaginary = amplitude * Math.sin(phase);
 
                     return new SourceValue(parseDouble(params[1]), MathActivator.Activator.complex(real, imaginary));
-                } else throw new ParseException("Invalid parameters on Voltage Source " + params);
-            } else
+                }
+                else throw new ParseException("Invalid parameters on Voltage Source " + params);
+            }
+            else
             {
                 return new SourceValue(parseDouble(params[1]));
             }
 
-        } else if (params[0].equalsIgnoreCase("AC"))
+        }
+        else if (params[0].equalsIgnoreCase("AC"))
         {
             double amplitude = 1, phase = 0;
             if (params.length >= 2)
@@ -451,7 +490,8 @@ public class CircuitBuilder
             double imaginary = amplitude * Math.sin(phase);
 
             return new SourceValue(MathActivator.Activator.complex(real, imaginary));
-        } else
+        }
+        else
             throw new ParseException("Invalid source format: " + params[0]);
     }
 

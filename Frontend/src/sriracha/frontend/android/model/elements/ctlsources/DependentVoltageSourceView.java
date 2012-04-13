@@ -2,6 +2,7 @@ package sriracha.frontend.android.model.elements.ctlsources;
 
 import android.content.Context;
 import sriracha.frontend.R;
+import sriracha.frontend.android.*;
 import sriracha.frontend.android.designer.WireManager;
 import sriracha.frontend.android.model.CircuitElementPortView;
 import sriracha.frontend.android.model.CircuitElementView;
@@ -30,8 +31,8 @@ public class DependentVoltageSourceView extends CircuitElementView
         if (ports == null)
         {
             ports = new CircuitElementPortView[]{
-                    new CircuitElementPortView(this, 0, 0.5f),
                     new CircuitElementPortView(this, 0, -0.5f),
+                    new CircuitElementPortView(this, 0, 0.5f),
             };
         }
         return ports;
@@ -40,6 +41,6 @@ public class DependentVoltageSourceView extends CircuitElementView
     @Override
     public UUID getTypeUUID()
     {
-        return UUID.fromString("cd36e545-67d6-4ff1-86ab-7dbd5dd4aefa");
+        return ElementTypeUUID.DEPENDENT_VOLTAGE_SOURCE;
     }
 }

@@ -13,7 +13,7 @@ import sriracha.frontend.model.elements.sources.CurrentSource;
 
 import java.util.*;
 
-public class CurrentSourceView extends CircuitElementView implements Property.OnPropertyValueChangedListener
+public class CurrentSourceView extends CircuitElementView implements ScalarProperty.OnPropertyValueChangedListener
 {
     CircuitElementPortView ports[];
 
@@ -24,7 +24,7 @@ public class CurrentSourceView extends CircuitElementView implements Property.On
         {
             if (property instanceof ScalarProperty && ((ScalarProperty) property).getName().equalsIgnoreCase("AC Current"))
             {
-                property.setOnPropertyValueChangedListener(this);
+                ((ScalarProperty) property).setOnPropertyValueChangedListener(this);
             }
         }
     }

@@ -1,5 +1,6 @@
 package sriracha.frontend.model.elements.sources;
 
+import sriracha.frontend.*;
 import sriracha.frontend.model.*;
 
 public class VCC extends CircuitElement
@@ -30,7 +31,7 @@ public class VCC extends CircuitElement
         return "VCC%d";
     }
     @Override
-    public String toNetlistString(String[] nodes)
+    public String toNetlistString(String[] nodes, NodeCrawler crawler)
     {
         return "";
     }

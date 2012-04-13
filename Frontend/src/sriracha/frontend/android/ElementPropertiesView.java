@@ -5,9 +5,11 @@ import android.text.*;
 import android.util.AttributeSet;
 import android.view.*;
 import android.widget.*;
-import sriracha.frontend.R;
-import sriracha.frontend.android.designer.CircuitDesigner;
+import sriracha.frontend.*;
+import sriracha.frontend.android.designer.*;
 import sriracha.frontend.android.model.CircuitElementView;
+import sriracha.frontend.android.model.elements.ctlsources.*;
+import sriracha.frontend.android.results.*;
 import sriracha.frontend.model.*;
 
 import java.util.ArrayList;
@@ -53,8 +55,10 @@ public class ElementPropertiesView extends LinearLayout
                             return dest.charAt(0) + source.toString();
                         }
                         // Prevent non-alphanumeric characters
-                        for (int i = start; i < end; i++) {
-                            if (!Character.isLetterOrDigit(source.charAt(i))) {
+                        for (int i = start; i < end; i++)
+                        {
+                            if (!Character.isLetterOrDigit(source.charAt(i)))
+                            {
                                 return "";
                             }
                         }
@@ -87,7 +91,7 @@ public class ElementPropertiesView extends LinearLayout
         });
     }
 
-    public void showPropertiesFor(CircuitElementView circuitElementView, final CircuitDesigner circuitDesigner)
+    public void showPropertiesFor(final CircuitElementView circuitElementView, final CircuitDesigner circuitDesigner)
     {
         showNameAndType(circuitElementView);
 
@@ -128,7 +132,7 @@ public class ElementPropertiesView extends LinearLayout
                     }
                 });
 
-                propertyValue.setText(property.getValue());
+                propertyValue.setText(scalarProperty.getValue());
                 propertyValue.setOnEditorActionListener(new TextView.OnEditorActionListener()
                 {
                     @Override
@@ -155,18 +159,57 @@ public class ElementPropertiesView extends LinearLayout
                 final View referencePropertyView = LayoutInflater.from(getContext())
                         .inflate(R.layout.element_reference_property, this, false);
 
-                final TextView value = (TextView) referencePropertyView.findViewById(R.id.property_value);
+                final Spinner source = (Spinner) referencePropertyView.findViewById(R.id.property_source);
+                final View currentControlled = referencePropertyView.findViewById(R.id.current_controlled);
+                final View voltageControlled = referencePropertyView.findViewById(R.id.voltage_controlled);
+                final TextView sourceElement = (TextView) referencePropertyView.findViewById(R.id.source_element);
+                final TextView sourceNode1 = (TextView) referencePropertyView.findViewById(R.id.source_node1);
+                final TextView sourceNode2 = (TextView) referencePropertyView.findViewById(R.id.source_node2);
 
                 propertiesView.addView(referencePropertyView);
 
-                value.setText(referenceProperty.getValue());
-                value.setOnClickListener(new OnClickListener()
+                if (referenceProperty.getTypeId() == DependentSource.CURRENT_CONTROLLED)
+                    showCurrentControlled(currentControlled, voltageControlled);
+                else
+                    showVoltageControlled(currentControlled, voltageControlled);
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, new String[]{
+                        "Current Controlled",
+                        "Voltage Controlled"
+                });
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                source.setAdapter(adapter);
+                source.setSelection(referenceProperty.getTypeId());
+                source.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+                {
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id)
+                    {
+                        referenceProperty.setTypeId(position);
+                        if (referenceProperty.getTypeId() == DependentSource.CURRENT_CONTROLLED)
+                            showCurrentControlled(currentControlled, voltageControlled);
+                        else
+                            showVoltageControlled(currentControlled, voltageControlled);
+
+                        CircuitElement element = circuitElementView.getElement();
+                        EditText name = (EditText) findViewById(R.id.properties_name);
+                        name.setText(element.getName());
+                        circuitElementView.invalidate();
+                    }
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView)
+                    {
+                    }
+                });
+
+                sourceElement.setText(referenceProperty.getSourceElement());
+                sourceElement.setOnClickListener(new OnClickListener()
                 {
                     @Override
                     public void onClick(View view)
                     {
                         ArrayList<CircuitElementView> elementViews = new ArrayList<CircuitElementView>();
-                        ArrayList<CircuitElement> elements = referenceProperty.getElementsList();
+                        ArrayList<CircuitElement> elements = referenceProperty.getSourceElementsList();
                         for (CircuitElementView elementView : circuitDesigner.getElements())
                         {
                             if (elements.contains(elementView.getElement()))
@@ -181,13 +224,62 @@ public class ElementPropertiesView extends LinearLayout
                             @Override
                             public void onSelect(CircuitElementView selectedElement)
                             {
-                                referenceProperty._trySetValue(selectedElement.getElement().getName());
+                                referenceProperty.setSourceElement(selectedElement.getElement().getName());
                             }
                         });
                         circuitDesigner.setCursorToSelectingElement(elementSelector);
                     }
                 });
+
+                sourceNode1.setText(referenceProperty.getSourceNode1());
+                sourceNode2.setText(referenceProperty.getSourceNode2());
+
+                View.OnClickListener listener = new OnClickListener()
+                {
+                    @Override
+                    public void onClick(final View view)
+                    {
+                        final WireManager wireManager = circuitDesigner.getWireManager();
+                        final NodeCrawler crawler = new NodeCrawler(wireManager);
+                        crawler.computeMappings();
+
+                        final TextView textView = (TextView) view;
+                        NodeSelector nodeSelector = new NodeSelector((TextView) view, wireManager.getSegments());
+                        nodeSelector.setOnSelectListener(new IElementSelector.OnSelectListener<WireSegment>()
+                        {
+                            @Override
+                            public void onSelect(WireSegment selectedSegment)
+                            {
+                                NetlistNode node = crawler.nodeFromSegment(selectedSegment);
+                                if (node != null)
+                                {
+                                    textView.setText(node.toString());
+                                    if (view == sourceNode1)
+                                        referenceProperty.setSourceNode1(node.toString());
+                                    else
+                                        referenceProperty.setSourceNode2(node.toString());
+                                }
+
+                            }
+                        });
+                        circuitDesigner.setCursorToSelectingElement(nodeSelector);
+                    }
+                };
+                sourceNode1.setOnClickListener(listener);
+                sourceNode2.setOnClickListener(listener);
             }
         }
+    }
+
+    private void showCurrentControlled(View currentControlled, View voltageControlled)
+    {
+        voltageControlled.setVisibility(GONE);
+        currentControlled.setVisibility(VISIBLE);
+    }
+
+    private void showVoltageControlled(View currentControlled, View voltageControlled)
+    {
+        voltageControlled.setVisibility(VISIBLE);
+        currentControlled.setVisibility(GONE);
     }
 }

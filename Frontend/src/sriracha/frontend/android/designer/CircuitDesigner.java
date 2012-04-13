@@ -342,11 +342,6 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         return activator.instantiateElement(getSelectedItemId(), positionX, positionY, elementManager, wireManager);
     }
 
-    public CircuitElementView instantiateElement(int elementId)
-    {
-        return activator.instantiateElement(elementId, 0, 0, elementManager, wireManager);
-    }
-
     public CircuitElementView instantiateElement(UUID elementUUID) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException
     {
         return activator.instantiateElement(elementUUID, 0, 0, elementManager, wireManager);

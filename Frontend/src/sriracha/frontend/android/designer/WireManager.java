@@ -99,7 +99,7 @@ public class WireManager
             else
             {
                 WireIntersection intersection = (WireIntersection) from;
-                if (intersection.getSegments().size() == 1)
+                if (intersection.getSegments().size() != 1)
                     throw new RuntimeException("Wut?");
 
                 WireSegment segment = intersection.getSegments().get(0);
@@ -287,59 +287,62 @@ public class WireManager
          * Also not removed: ---O---
          *                      |
          */
-        ArrayList<IWireIntersection> toRemove = new ArrayList<IWireIntersection>();
-        for (IWireIntersection intersection : intersections)
+        for (int i = 0; i < 2; i++) // Let's do two passes, for the lulz.
         {
-            if (intersection.getSegments().size() >= 2)
+            ArrayList<IWireIntersection> toRemove = new ArrayList<IWireIntersection>();
+            for (IWireIntersection intersection : intersections)
             {
-                WireSegment seg1 = intersection.getSegments().get(0);
-                WireSegment seg2 = intersection.getSegments().get(1);
-                if (!(seg1.isVertical() ^ seg2.isVertical())) // Both vertical or both horizontal
+                if (intersection.getSegments().size() >= 2)
                 {
-                    int direction1 = 0, direction2 = 0;
-                    if (seg1.isVertical())
+                    WireSegment seg1 = intersection.getSegments().get(0);
+                    WireSegment seg2 = intersection.getSegments().get(1);
+                    if (!(seg1.isVertical() ^ seg2.isVertical())) // Both vertical or both horizontal
                     {
-                        direction1 = seg1.otherEnd(intersection).getY() - intersection.getY();
-                        direction2 = seg2.otherEnd(intersection).getY() - intersection.getY();
-                    }
-                    else
-                    {
-                        direction1 = seg1.otherEnd(intersection).getX() - intersection.getX();
-                        direction2 = seg2.otherEnd(intersection).getX() - intersection.getX();
-                    }
-
-                    if (Math.signum(direction1) == Math.signum(direction2))
-                    {
-                        // Segments are going off in the same direction from the intersection.
-                        WireSegment longerSegment = seg1.getLength() > seg2.getLength() ? seg1 : seg2;
-                        WireSegment shorterSegment = longerSegment == seg1 ? seg2 : seg1;
-                        IWireIntersection midIntersection = shorterSegment.otherEnd(intersection);
-
-                        longerSegment.replaceIntersection(intersection, midIntersection);
-                        midIntersection.addSegment(longerSegment);
-                        intersection.removeSegment(longerSegment);
-                    }
-                    else if (intersection instanceof WireIntersection && intersection.getSegments().size() == 2)
-                    {
-                        // Segments are going off in opposite directions from the intersection.
-                        if (seg2.getStart() == intersection)
+                        int direction1 = 0, direction2 = 0;
+                        if (seg1.isVertical())
                         {
-                            seg2.getEnd().replaceSegment(seg2, seg1);
-                            seg1.replaceIntersection(intersection, seg2.getEnd());
+                            direction1 = seg1.otherEnd(intersection).getY() - intersection.getY();
+                            direction2 = seg2.otherEnd(intersection).getY() - intersection.getY();
                         }
                         else
                         {
-                            seg2.getStart().replaceSegment(seg2, seg1);
-                            seg1.replaceIntersection(intersection, seg2.getStart());
+                            direction1 = seg1.otherEnd(intersection).getX() - intersection.getX();
+                            direction2 = seg2.otherEnd(intersection).getX() - intersection.getX();
                         }
 
-                        toRemove.add(intersection);
-                        removeSegment(seg2);
+                        if (Math.signum(direction1) == Math.signum(direction2))
+                        {
+                            // Segments are going off in the same direction from the intersection.
+                            WireSegment longerSegment = seg1.getLength() > seg2.getLength() ? seg1 : seg2;
+                            WireSegment shorterSegment = longerSegment == seg1 ? seg2 : seg1;
+                            IWireIntersection midIntersection = shorterSegment.otherEnd(intersection);
+
+                            longerSegment.replaceIntersection(intersection, midIntersection);
+                            midIntersection.addSegment(longerSegment);
+                            intersection.removeSegment(longerSegment);
+                        }
+                        else if (intersection instanceof WireIntersection && intersection.getSegments().size() == 2)
+                        {
+                            // Segments are going off in opposite directions from the intersection.
+                            if (seg2.getStart() == intersection)
+                            {
+                                seg2.getEnd().replaceSegment(seg2, seg1);
+                                seg1.replaceIntersection(intersection, seg2.getEnd());
+                            }
+                            else
+                            {
+                                seg2.getStart().replaceSegment(seg2, seg1);
+                                seg1.replaceIntersection(intersection, seg2.getStart());
+                            }
+
+                            toRemove.add(intersection);
+                            removeSegment(seg2);
+                        }
                     }
                 }
             }
+            intersections.removeAll(toRemove);
         }
-        intersections.removeAll(toRemove);
     }
 
     public void addSegment(WireSegment segment)

@@ -38,7 +38,7 @@ public class NetlistGenerator
                 nodeStrings[i] = crawler.nodeFromIntersection(ports[i]).toString();
             }
 
-            result += elementView.getElement().toNetlistString(nodeStrings) + "\n";
+            result += elementView.getElement().toNetlistString(nodeStrings, crawler) + "\n";
         }
 
         return result;

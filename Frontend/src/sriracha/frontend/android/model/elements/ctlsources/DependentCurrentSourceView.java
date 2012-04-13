@@ -2,6 +2,7 @@ package sriracha.frontend.android.model.elements.ctlsources;
 
 import android.content.Context;
 import sriracha.frontend.R;
+import sriracha.frontend.android.*;
 import sriracha.frontend.android.designer.WireManager;
 import sriracha.frontend.android.model.CircuitElementPortView;
 import sriracha.frontend.android.model.CircuitElementView;
@@ -40,6 +41,6 @@ public class DependentCurrentSourceView extends CircuitElementView
     @Override
     public UUID getTypeUUID()
     {
-        return UUID.fromString("38a63260-8841-4d67-be54-14bbb68e3eb6");
+        return ElementTypeUUID.DEPENDENT_CURRENT_SOURCE;
     }
 }

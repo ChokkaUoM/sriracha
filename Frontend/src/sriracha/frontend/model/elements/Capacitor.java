@@ -1,5 +1,6 @@
 package sriracha.frontend.model.elements;
 
+import sriracha.frontend.*;
 import sriracha.frontend.model.*;
 
 import java.io.*;
@@ -66,8 +67,8 @@ public class Capacitor extends TwoPortElement implements Serializable
     }
 
     @Override
-    public String toNetlistString(String[] nodes)
+    public String toNetlistString(String[] nodes, NodeCrawler crawler)
     {
-        return super.toNetlistString(nodes) + capacitance + ScalarProperty.translateUnit(unit);
+        return super.toNetlistString(nodes, crawler) + capacitance + ScalarProperty.translateUnit(unit);
     }
 }

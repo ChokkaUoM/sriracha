@@ -1,5 +1,7 @@
 package sriracha.frontend.model;
 
+import sriracha.frontend.*;
+
 import java.io.*;
 import java.util.*;
 
@@ -13,9 +15,9 @@ abstract public class CircuitElement implements Serializable
 
     abstract public String getNameTemplate();
 
-    public String toNetlistString(String[] nodes)
+    public String toNetlistString(String[] nodes, NodeCrawler crawler)
     {
-        String s =  String.format(getNameTemplate(), index) + " ";
+        String s = getName() + " ";
         for(String s1 : nodes)
         {
             s += s1 + " ";

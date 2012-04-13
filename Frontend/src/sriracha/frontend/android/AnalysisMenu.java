@@ -229,22 +229,22 @@ public class AnalysisMenu extends LinearLayout
         out.writeBoolean(voltageSourceIsValid);
         out.writeInt(analysisType.getSelectedItemPosition());
         out.writeInt(acScale.getSelectedItemPosition());
-        out.writeObject(acNum.getText());
-        out.writeObject(acStart.getText());
-        out.writeObject(acStop.getText());
-        out.writeObject(dcStep.getText());
-        out.writeObject(dcStart.getText());
-        out.writeObject(dcStop.getText());
-        out.writeObject(dcElement.getText());
+        out.writeObject(acNum.getText().toString());
+        out.writeObject(acStart.getText().toString());
+        out.writeObject(acStop.getText().toString());
+        out.writeObject(dcStep.getText().toString());
+        out.writeObject(dcStart.getText().toString());
+        out.writeObject(dcStop.getText().toString());
+        out.writeObject(dcElement.getText().toString());
         out.writeInt(printType.getSelectedItemPosition());
-        out.writeObject(printN1.getText());
-        out.writeObject(printN2.getText());
-        int count = printStatements.getAdapter().getCount();
-        out.writeInt(count);
-        for (int i = 0; i < count; i++)
-        {
-            out.writeObject(printStatements.getAdapter().getItem(i));
-        }
+//        out.writeObject(printN1.getText().toString());
+//        out.writeObject(printN2.getText().toString());
+//        int count = printStatements.getAdapter().getCount();
+//        out.writeInt(count);
+//        for (int i = 0; i < count; i++)
+//        {
+//            out.writeObject(printStatements.getAdapter().getItem(i));
+//        }
 
     }
 
@@ -254,22 +254,22 @@ public class AnalysisMenu extends LinearLayout
         voltageSourceIsValid = in.readBoolean();
         analysisType.setSelection(in.readInt());
         acScale.setSelection(in.readInt());
-        acNum.setText((CharSequence) in.readObject());
-        acStart.setText((CharSequence) in.readObject());
-        acStop.setText((CharSequence) in.readObject());
-        dcStep.setText((CharSequence) in.readObject());
-        dcStart.setText((CharSequence) in.readObject());
-        dcStop.setText((CharSequence) in.readObject());
-        dcElement.setText((CharSequence) in.readObject());
+        acNum.setText((String) in.readObject());
+        acStart.setText((String) in.readObject());
+        acStop.setText((String) in.readObject());
+        dcStep.setText((String) in.readObject());
+        dcStart.setText((String) in.readObject());
+        dcStop.setText((String) in.readObject());
+        dcElement.setText((String) in.readObject());
         printType.setSelection(in.readInt());
-        printN1.setText((CharSequence) in.readObject());
-        printN2.setText((CharSequence) in.readObject());
-        int count = in.readInt();
-        ArrayAdapter<String> adapter = (ArrayAdapter<String>) printStatements.getAdapter();
-        for (int i = 0; i < count; i++)
-        {
-            adapter.add((String) in.readObject());
-        }
+//        printN1.setText((String) in.readObject());
+//        printN2.setText((String) in.readObject());
+//        int count = in.readInt();
+//        ArrayAdapter<String> adapter = (ArrayAdapter<String>) printStatements.getAdapter();
+//        for (int i = 0; i < count; i++)
+//        {
+//            adapter.add((String) in.readObject());
+//        }
 
     }
 

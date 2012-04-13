@@ -1,5 +1,6 @@
 package sriracha.frontend.model.elements.sources;
 
+import sriracha.frontend.*;
 import sriracha.frontend.model.CircuitElement;
 import sriracha.frontend.model.CircuitElementManager;
 import sriracha.frontend.model.Property;
@@ -30,7 +31,7 @@ public class Ground extends CircuitElement {
     }
 
     @Override
-    public String toNetlistString(String[] nodes) {
+    public String toNetlistString(String[] nodes, NodeCrawler crawler) {
         return "";
     }
 }
