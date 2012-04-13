@@ -119,10 +119,11 @@ public class NodeCrawler
         if (intersection instanceof CircuitElementPortView)
         {
             ports.add((CircuitElementPortView) intersection);
-            return;
         }
-
-        intersections.add((WireIntersection) intersection);
+        else
+        {
+            intersections.add((WireIntersection) intersection);
+        }
 
         for (WireSegment seg : intersection.getSegments())
         {
