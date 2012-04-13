@@ -605,8 +605,8 @@ public class Graph extends FrameLayout
 
         }
 
-        setXRange(range[0], range[1]);
-        setYRange(range[2], range[3]);
+        setXRange(range[0] * (range[0] < 0 ? 1.05 : 0.95), range[1] * (range[1] > 0 ? 1.05 : 0.95));
+        setYRange(range[2] * (range[2] < 0 ? 1.05 : 0.95), range[3] * (range[3] > 0 ? 1.05 : 0.95));
     }
 
     public void setXRange(double min, double max)

@@ -198,7 +198,8 @@ public class MainActivity extends Activity
                     analysisMenu.showAnalyseButton();
                 }
             });
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             showToast("Something seems to have gone slightly awry.");
         }
@@ -243,6 +244,7 @@ public class MainActivity extends Activity
                 {
                     case 0: // New
                         resetCircuitDesigner();
+                        ((AnalysisMenu) findViewById(R.id.tab_analysis)).reset();
                         currentFileName = null;
                         break;
                     case 1: // Load
@@ -278,22 +280,28 @@ public class MainActivity extends Activity
             new Storage(this).load(fileName, serialization);
             currentFileName = fileName;
             return true;
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             showToast(e.getMessage());
-        } catch (ClassNotFoundException e)
+        }
+        catch (ClassNotFoundException e)
         {
             showToast(e.getMessage());
-        } catch (NoSuchMethodException e)
+        }
+        catch (NoSuchMethodException e)
         {
             showToast(e.getMessage());
-        } catch (InstantiationException e)
+        }
+        catch (InstantiationException e)
         {
             showToast(e.getMessage());
-        } catch (IllegalAccessException e)
+        }
+        catch (IllegalAccessException e)
         {
             showToast(e.getMessage());
-        } catch (InvocationTargetException e)
+        }
+        catch (InvocationTargetException e)
         {
             showToast(e.getMessage());
         }
@@ -325,7 +333,8 @@ public class MainActivity extends Activity
             new Storage(this).save(fileName, serialization);
             currentFileName = fileName;
             return true;
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             showToast(e.getMessage());
         }
@@ -351,10 +360,12 @@ public class MainActivity extends Activity
                 fileName += ".txt";
             new Storage(this).save(fileName, netlist);
             return true;
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             showToast(e.getMessage());
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             showToast("Something seems to have gone slightly awry.");
         }

@@ -81,10 +81,10 @@
                 <!-- Labels for Start Stop voltage -->
                 <TableRow>
                     <TextView style="@style/HorizontalWeight"
-                              android:text="Start Voltage"/>
+                              android:text="Start Value"/>
 
                     <TextView style="@style/HorizontalWeight"
-                              android:text="Stop Voltage"/>
+                              android:text="Stop Value"/>
 
                 </TableRow>
 
