@@ -48,7 +48,7 @@ public class WireManager
 
     public void removeElement(CircuitElementView element)
     {
-        for (CircuitElementPortView port : element.getElementPorts())
+        for (CircuitElementPortView port : element.getPortViews())
         {
             if (port.getSegments().size() > 0)
             {
@@ -157,8 +157,9 @@ public class WireManager
          */
         HashMap<Point, HashMap<NetlistNode, ArrayList<IWireIntersection>>> toConsolidate = new HashMap<Point, HashMap<NetlistNode, ArrayList<IWireIntersection>>>();
 
-        NodeCrawler crawler = new NodeCrawler();
-        HashMap<IWireIntersection, NetlistNode> intersectionNodeMap = crawler.getIntersectionNodeMap(this);
+        NodeCrawler crawler = new NodeCrawler(this);
+        crawler.computeMappings();
+
 
         for (int i = 0; i < intersections.size(); i++)
         {
@@ -168,7 +169,7 @@ public class WireManager
             if (!toConsolidate.containsKey(point))
                 toConsolidate.put(point, new HashMap<NetlistNode, ArrayList<IWireIntersection>>());
 
-            NetlistNode node = intersectionNodeMap.get(intersection);
+            NetlistNode node = crawler.nodeFromIntersection(intersection);
 
             if (!toConsolidate.get(point).containsKey(node))
                 toConsolidate.get(point).put(node, new ArrayList<IWireIntersection>());

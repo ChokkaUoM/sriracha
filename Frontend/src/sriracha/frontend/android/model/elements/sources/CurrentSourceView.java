@@ -41,7 +41,7 @@ public class CurrentSourceView extends CircuitElementView implements Property.On
     }
 
     @Override
-    public CircuitElementPortView[] getElementPorts()
+    public CircuitElementPortView[] getPortViews()
     {
         if (ports == null)
         {

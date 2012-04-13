@@ -15,7 +15,6 @@ import sriracha.frontend.android.results.IElementSelector;
 import sriracha.frontend.model.CircuitElement;
 import sriracha.frontend.model.CircuitElementManager;
 
-import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
 
@@ -359,7 +358,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         {
             int rotation = cw ? 90 : -90;
             float newOrientation = (selectedElement.getOrientation() + rotation) % 360;
-            for (CircuitElementPortView port : selectedElement.getElementPorts())
+            for (CircuitElementPortView port : selectedElement.getPortViews())
             {
                 for (WireSegment segment : port.getSegments())
                 {
@@ -447,7 +446,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     @Override
     public void onDrop(CircuitElementView elementView)
     {
-        for (CircuitElementPortView port : elementView.getElementPorts())
+        for (CircuitElementPortView port : elementView.getPortViews())
         {
             if (port.getSegments().isEmpty())
             {
@@ -468,7 +467,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
             if (element == not)
                 continue;
 
-            for (CircuitElementPortView port : element.getElementPorts())
+            for (CircuitElementPortView port : element.getPortViews())
             {
                 if (x == port.getX() && y == port.getY())
                 {
@@ -501,8 +500,8 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
 
     public String generateNetlist()
     {
-        NetlistGenerator generator = new NetlistGenerator();
-        String netlist = generator.generate(wireManager, elementManager);
+        NetlistGenerator generator = new NetlistGenerator(wireManager, elements);
+        String netlist = generator.generateNetlist();
         return netlist;
     }
 

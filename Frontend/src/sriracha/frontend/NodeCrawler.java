@@ -2,72 +2,92 @@ package sriracha.frontend;
 
 import sriracha.frontend.android.designer.*;
 import sriracha.frontend.android.model.*;
-import sriracha.frontend.model.*;
 
 import java.util.*;
 
+/**
+ * Responsible for traversing the segment graph and finding the
+ * individual nodes
+ */
 public class NodeCrawler
 {
-    public NetlistNode mapSegmentToNode(WireSegment segment, WireManager wireManager)
+
+    private WireManager wireManager;
+
+    private ArrayList<NetlistNode> nodes;
+
+    private HashMap<WireSegment, NetlistNode> segmentMap;
+
+    private HashMap<IWireIntersection, NetlistNode> intersectionMap;
+
+    public NodeCrawler(WireManager wireManager)
     {
-        CircuitElementPortView port = findSegmentPort(segment, new HashSet<WireSegment>());
-        if (port != null)
-        {
-            ArrayList<NetlistNode> nodes = getNodeList(wireManager);
-            for (NetlistNode node : nodes)
-            {
-                if (node.getPorts().contains(port))
-                    return node;
-            }
-        }
-        return null;
+        this.wireManager = wireManager;
+        nodes = new ArrayList<NetlistNode>();
+        segmentMap = new HashMap<WireSegment, NetlistNode>();
+        intersectionMap = new HashMap<IWireIntersection, NetlistNode>();
     }
 
-    public HashMap<IWireIntersection, NetlistNode> getIntersectionNodeMap(WireManager wireManager)
+    public NetlistNode nodeFromSegment(WireSegment segment)
     {
-        HashMap<IWireIntersection, NetlistNode> map = new HashMap<IWireIntersection, NetlistNode>();
-        ArrayList<NetlistNode> nodes = getNodeList(wireManager);
+        return segmentMap.get(segment);
+    }
+
+    public NetlistNode nodeFromIntersection(IWireIntersection intersection)
+    {
+        return intersectionMap.get(intersection);
+    }
+
+    /**
+     * does the traversal and stores the information for retrieval
+     */
+    public void computeMappings()
+    {
+        findNodes();
+        findIntersectionMap();
+        findSegmentMap();
+
+    }
+
+    private void findSegmentMap()
+    {
+        for (WireSegment segment : wireManager.getSegments())
+        {
+            segmentMap.put(segment, intersectionMap.get(segment.getStart()));
+        }
+    }
+
+    private void findIntersectionMap()
+    {
         for (NetlistNode node : nodes)
         {
             for (IWireIntersection intersection : node.getPorts())
             {
-                map.put(intersection, node);
+                intersectionMap.put(intersection, node);
             }
             for (IWireIntersection intersection : node.getIntersections())
             {
-                map.put(intersection, node);
+                intersectionMap.put(intersection, node);
             }
         }
-        return map;
     }
 
-    public int[] getNodeIndices(ArrayList<NetlistNode> nodes, CircuitElement element)
+    /**
+     * Traverses wire graph finding nodes.
+     */
+    private void findNodes()
     {
-        ArrayList<Integer> indices = new ArrayList<Integer>();
-        for (int i = 0; i < nodes.size(); i++)
-        {
-            if (nodes.get(i).connectsToElement(element))
-                indices.add(i);
-        }
-
-        int[] indicesArray = new int[indices.size()];
-        for (int i = 0; i < indicesArray.length; i++)
-            indicesArray[i] = indices.get(i);
-
-        return indicesArray;
-    }
-
-    public ArrayList<NetlistNode> getNodeList(WireManager wireManager)
-    {
+        nodes.clear();
         ArrayList<WireSegment> segments = wireManager.getSegments();
         HashSet<WireSegment> processedSegments = new HashSet<WireSegment>();
-        ArrayList<NetlistNode> nodes = new ArrayList<NetlistNode>();
         int nextNodeIndex = 1;
 
         for (WireSegment seg : segments)
         {
             if (processedSegments.contains(seg))
                 continue;
+
+            processedSegments.add(seg);
 
             ArrayList<CircuitElementPortView> ports = new ArrayList<CircuitElementPortView>();
             ArrayList<WireIntersection> intersections = new ArrayList<WireIntersection>();
@@ -77,33 +97,23 @@ public class NodeCrawler
 
             nodes.add(new NetlistNode(ports, intersections, nextNodeIndex++));
         }
+    }
 
+    public ArrayList<NetlistNode> getNodes()
+    {
         return nodes;
     }
 
-    private CircuitElementPortView findSegmentPort(WireSegment parent, HashSet<WireSegment> processedSegments)
-    {
-        if (parent.getStart() instanceof CircuitElementPortView)
-            return (CircuitElementPortView) parent.getStart();
-        if (parent.getEnd() instanceof CircuitElementPortView)
-            return (CircuitElementPortView) parent.getEnd();
-
-        processedSegments.add(parent);
-
-        ArrayList<WireSegment> toProcess = new ArrayList<WireSegment>();
-        toProcess.addAll(parent.getStart().getSegments());
-        toProcess.addAll(parent.getEnd().getSegments());
-        toProcess.removeAll(processedSegments);
-
-        for (WireSegment segment : toProcess)
-        {
-            CircuitElementPortView port = findSegmentPort(segment, processedSegments);
-            if (port != null)
-                return port;
-        }
-        return null;
-    }
-
+    /**
+     * Will follow segments through intersections until it finds all the ports and intersections
+     * associated to this node. Stores the ports in the ports list and intersections in intersections.
+     *
+     * @param intersection      current intersection in traversal
+     * @param parent            parent segment holding the current intersection
+     * @param ports             list of previously found ports during traversal
+     * @param intersections     list of previously found intersections during traversal
+     * @param processedSegments list of already processed segments.
+     */
     private void followWire(IWireIntersection intersection, WireSegment parent, ArrayList<CircuitElementPortView> ports, ArrayList<WireIntersection> intersections, HashSet<WireSegment> processedSegments)
     {
         if (intersection instanceof CircuitElementPortView)
@@ -116,10 +126,11 @@ public class NodeCrawler
 
         for (WireSegment seg : intersection.getSegments())
         {
-            processedSegments.add(seg);
 
             if (seg == parent)
                 continue;
+
+            processedSegments.add(seg);
 
             if (seg.getStart() != intersection)
                 followWire(seg.getStart(), seg, ports, intersections, processedSegments);
@@ -127,5 +138,4 @@ public class NodeCrawler
                 followWire(seg.getEnd(), seg, ports, intersections, processedSegments);
         }
     }
-
 }

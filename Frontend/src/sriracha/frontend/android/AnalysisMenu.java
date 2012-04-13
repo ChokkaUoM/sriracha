@@ -410,22 +410,25 @@ public class AnalysisMenu extends LinearLayout
 
     private void setNodeSelector()
     {
+
+
         View.OnClickListener listener = new OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
-                final TextView textView = (TextView) view;
                 final WireManager wireManager = getCircuitDesigner().getWireManager();
+                final NodeCrawler crawler = new NodeCrawler(wireManager);
+                crawler.computeMappings();
 
+                final TextView textView = (TextView) view;
                 NodeSelector nodeSelector = new NodeSelector((TextView) view, wireManager.getSegments());
                 nodeSelector.setOnSelectListener(new IElementSelector.OnSelectListener<WireSegment>()
                 {
                     @Override
                     public void onSelect(WireSegment selectedSegment)
                     {
-                        NodeCrawler crawler = new NodeCrawler();
-                        NetlistNode node = crawler.mapSegmentToNode(selectedSegment, wireManager);
+                        NetlistNode node = crawler.nodeFromSegment(selectedSegment);
                         if (node != null)
                             textView.setText(node.toString());
                     }

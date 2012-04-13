@@ -52,7 +52,7 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
 
     abstract public int getDrawableId();
 
-    abstract public CircuitElementPortView[] getElementPorts();
+    abstract public CircuitElementPortView[] getPortViews();
 
     abstract public UUID getTypeUUID();
 
@@ -68,7 +68,7 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         this.element = element;
         this.positionX = positionX;
         this.positionY = positionY;
-        ports = getElementPorts();
+        ports = getPortViews();
 
         this.wireManager = wireManager;
 

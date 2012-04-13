@@ -1,52 +1,44 @@
 package sriracha.frontend;
 
 import sriracha.frontend.android.designer.*;
-import sriracha.frontend.android.model.CircuitElementPortView;
-import sriracha.frontend.model.CircuitElement;
-import sriracha.frontend.model.CircuitElementManager;
-import sriracha.frontend.model.CircuitElementPort;
-import sriracha.frontend.model.elements.sources.Ground;
+import sriracha.frontend.android.model.*;
 
 import java.util.*;
 
 
 /**
  * Generates the netlist representation of the current circuit and analysis requests
- * Note: this could be made more efficient if needed, because we traverse the graph
- * in generate(), but also in mapSegmentToNode().
  */
 public class NetlistGenerator
 {
-    public String generate(WireManager wireManager, CircuitElementManager circuitElementManager)
+    private NodeCrawler crawler;
+    private Collection<? extends CircuitElementView> elementViews;
+
+
+    public NetlistGenerator(WireManager wireManager, Collection<? extends CircuitElementView> elementViews)
     {
-        NodeCrawler crawler = new NodeCrawler();
-        ArrayList<NetlistNode> nodes = crawler.getNodeList(wireManager);
+        this.elementViews = elementViews;
+        crawler = new NodeCrawler(wireManager);
+    }
+
+
+    public String generateNetlist()
+    {
+        crawler.computeMappings();
+
         String result = "Generated Netlist\n"; // First line is name of netlist
 
-        for (CircuitElement element : circuitElementManager.getElements())
+        for (CircuitElementView elementView : elementViews)
         {
-            int[] indices = crawler.getNodeIndices(nodes, element);
 
-            if (indices.length == 2)
+            CircuitElementPortView[] ports = elementView.getPortViews();
+            String[] nodeStrings = new String[ports.length];
+            for(int i =0; i< ports.length; i++)
             {
-                NetlistNode node1 = nodes.get(indices[0]);
-                NetlistNode node2 = nodes.get(indices[1]);
-
-                CircuitElementPort[] ports = element.getPorts();
-                if (node2.containsPort(ports[0]))
-                {
-                    // swap node1 and node2
-                    NetlistNode temp = node1;
-                    nodes.set(0, node2);
-                    nodes.set(1, temp);
-                }
+                nodeStrings[i] = crawler.nodeFromIntersection(ports[i]).toString();
             }
 
-            String[] nodeStrings = new String[indices.length];
-            for (int i = 0; i < indices.length; i++)
-                nodeStrings[i] = nodes.get(indices[i]).toString();
-
-            result += element.toNetlistString(nodeStrings) + "\n";
+            result += elementView.getElement().toNetlistString(nodeStrings) + "\n";
         }
 
         return result;

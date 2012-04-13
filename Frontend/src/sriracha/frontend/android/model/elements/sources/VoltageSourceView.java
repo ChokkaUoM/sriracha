@@ -41,13 +41,13 @@ public class VoltageSourceView extends CircuitElementView implements Property.On
     }
 
     @Override
-    public CircuitElementPortView[] getElementPorts()
+    public CircuitElementPortView[] getPortViews()
     {
         if (ports == null)
         {
             ports = new CircuitElementPortView[]{
-                    new CircuitElementPortView(this, 0, 0.5f),
                     new CircuitElementPortView(this, 0, -0.5f),
+                    new CircuitElementPortView(this, 0, 0.5f),
             };
         }
         return ports;

@@ -12,8 +12,16 @@ abstract public class CircuitElement implements Serializable
     abstract public String getType();
 
     abstract public String getNameTemplate();
-    
-    abstract public String toNetlistString(String[] nodes);
+
+    public String toNetlistString(String[] nodes)
+    {
+        String s =  String.format(getNameTemplate(), index) + " ";
+        for(String s1 : nodes)
+        {
+            s += s1 + " ";
+        }
+        return s;
+    }
 
     protected transient CircuitElementManager elementManager;
 

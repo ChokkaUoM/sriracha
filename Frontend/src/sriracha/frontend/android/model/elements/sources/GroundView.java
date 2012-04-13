@@ -26,7 +26,7 @@ public class GroundView extends CircuitElementView
     }
 
     @Override
-    public CircuitElementPortView[] getElementPorts()
+    public CircuitElementPortView[] getPortViews()
     {
         if (ports == null)
         {

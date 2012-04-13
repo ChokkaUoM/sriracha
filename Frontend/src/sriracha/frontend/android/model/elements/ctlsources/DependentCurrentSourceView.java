@@ -25,7 +25,7 @@ public class DependentCurrentSourceView extends CircuitElementView
     }
 
     @Override
-    public CircuitElementPortView[] getElementPorts()
+    public CircuitElementPortView[] getPortViews()
     {
         if (ports == null)
         {
