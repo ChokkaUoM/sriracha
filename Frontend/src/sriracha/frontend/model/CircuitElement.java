@@ -5,6 +5,13 @@ import sriracha.frontend.*;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Abstract class used to represent a circuit element for the user interface.
+ * Each subclass is responsible for defining its own properties and making them available.
+ * This class is also responsible for generating the string corresponding to the element's
+ * entry in the netlist. If a subclass has a non-trivial netlist implementation, then it must
+ * override the {@link CircuitElement#toNetlistString(java.lang.String[], NodeCrawler) toNetlistString} method.
+ */
 abstract public class CircuitElement implements Serializable
 {
     abstract public Property[] getProperties();

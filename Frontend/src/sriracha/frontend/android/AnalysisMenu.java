@@ -25,6 +25,13 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is the layout for the analysis menu. It is responsible for displaying
+ * the appropriate controls, as well as generating the appropriate analysis and
+ * .PRINT statements for the netlist. This class also communicates with the
+ * simulator, passing it the analysis and .PRINT statements, and delivering the
+ * results to the results viewer.
+ */
 public class AnalysisMenu extends LinearLayout
 {
     private ColoredStringAdapter adapter;

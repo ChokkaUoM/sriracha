@@ -8,6 +8,10 @@ import android.widget.RelativeLayout;
 import sriracha.frontend.R;
 import sriracha.frontend.android.results.IElementSelector;
 
+/**
+ * This is the layout for the circuit designer itself, the one that holds all the
+ * circuit element, the wire segment, and the intersections.
+ */
 public class CircuitDesignerCanvas extends RelativeLayout
 {
     private boolean showGrid = true;

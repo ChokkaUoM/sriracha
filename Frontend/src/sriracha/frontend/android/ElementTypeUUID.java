@@ -11,6 +11,13 @@ import sriracha.frontend.model.elements.sources.*;
 
 import java.util.*;
 
+/**
+ * Static class used to map circuit elements to their respective UUIDs.
+ * Each type of circuit element has a UUID that is used in the serialization
+ * process as a placeholder for that element, since the {@link CircuitElementView}s
+ * themselves cannot be easily serialized. Deserialization involves looking up
+ * the appropriate type based on the UUID and instantiating it reflectively.
+ */
 public class ElementTypeUUID
 {
     public static final HashMap<UUID, Class<? extends CircuitElementView>> VIEW_MAP = new HashMap<UUID, Class<? extends CircuitElementView>>();

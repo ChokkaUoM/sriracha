@@ -15,6 +15,13 @@ import sriracha.frontend.model.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * This class is the layout used to display the properties of a selected element.
+ * When an element is selected, this class queries it for its properties, 
+ * generates the appropriate views and displays them.
+ * Since this class generates all the property controls, it is also responsible
+ * for passing the values chosen for the properties to the circuit elements.
+ */
 public class ElementPropertiesView extends LinearLayout
 {
     public ElementPropertiesView(Context context)

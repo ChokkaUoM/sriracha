@@ -2,6 +2,9 @@ package sriracha.frontend.model;
 
 import java.util.*;
 
+/**
+ * Manages the collection of {@link CircuitElement}s that have been created.
+ */
 public class CircuitElementManager
 {
     private ArrayList<CircuitElement> elements;

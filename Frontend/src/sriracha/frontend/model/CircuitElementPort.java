@@ -1,5 +1,8 @@
 package sriracha.frontend.model;
 
+/**
+ * Represents a port for a particular element.
+ */
 public class CircuitElementPort
 {
     private CircuitElement element;

@@ -3,6 +3,10 @@ package sriracha.frontend.android.designer;
 import java.io.*;
 import java.util.ArrayList;
 
+/**
+ * An {@link IWireIntersection} that is nothing more that a place where wires meet
+ * (as opposed to a {@link CircuitElementPortView}).
+ */
 public class WireIntersection implements IWireIntersection, Serializable
 {
     private transient ArrayList<WireSegment> segments = new ArrayList<WireSegment>(4); // Sticking to a 90deg grid.

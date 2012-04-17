@@ -10,6 +10,15 @@ import sriracha.frontend.android.results.IElementSelector;
 
 import java.util.ArrayList;
 
+/**
+ * An IElementSelector for choosing nodes from the circuit designer.
+ * The constructor takes a list of {@link WireSegment}s
+ * and the onSelectListener is responsible for figuring out which node the selected
+ * segment belongs to.
+ * When this is the active selected in the circuit designer, the this class's
+ * {@link NodeSelector#onDraw(Canvas) onDraw} method will be called to highlight
+ * the segments appropriately.
+ */
 public class NodeSelector implements IElementSelector<WireSegment>
 {
     private TextView textView;

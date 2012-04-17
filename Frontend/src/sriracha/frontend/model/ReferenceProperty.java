@@ -4,6 +4,11 @@ import sriracha.frontend.model.elements.sources.*;
 
 import java.util.*;
 
+/**
+ * Represents a {@link Property} whose value is another element in the circuit.
+ * This is used for something like a current-controlled source, where the amplitude
+ * of the source is dependent on the current flowing through another element.
+ */
 abstract public class ReferenceProperty extends Property
 {
     abstract public int getTypeId();

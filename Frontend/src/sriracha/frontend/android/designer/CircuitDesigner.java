@@ -18,6 +18,12 @@ import sriracha.frontend.model.CircuitElementManager;
 import java.lang.reflect.*;
 import java.util.*;
 
+/**
+ * This class knows all and sees all that has to do with the circuit designer.
+ * Any gesture that is not handled at the individual element level is handled here.
+ * It creates elements, deletes elements and rotates elements. It creates segments, 
+ * moves them and deletes them.
+ */
 public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         implements View.OnTouchListener, CircuitElementView.OnElementClickListener, CircuitElementView.OnInvalidateListener,
         CircuitElementView.OnDropListener, CircuitElementView.OnMoveListener

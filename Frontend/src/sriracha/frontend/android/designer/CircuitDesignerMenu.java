@@ -10,6 +10,12 @@ import sriracha.frontend.android.model.CircuitElementView;
 import java.io.*;
 import java.util.ArrayList;
 
+/**
+ * This class is the layout for the menu that chooses between the types of elements
+ * to be added to the circuit designer.
+ * Mostly is responsible for showing the menus that should be shown, and hiding
+ * the menus that should be hidden.
+ */
 public class CircuitDesignerMenu
 {
     private MainActivity context;

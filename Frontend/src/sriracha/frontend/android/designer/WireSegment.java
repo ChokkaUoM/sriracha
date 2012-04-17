@@ -9,6 +9,13 @@ import android.view.View;
 
 import java.io.*;
 
+/**
+ * This class represents a single, straight segment of wire, connected between
+ * two intersections. 
+ * The class holds a reference to each endpoint, which must be an instance of
+ * {@link IWireIntersection}. It is also responsible for its own serialization,
+ * since the defaualt Java serialization does not work well for View subclasses.
+ */
 public class WireSegment extends View
 {
     private static final int BOUNDS_PADDING = 20;

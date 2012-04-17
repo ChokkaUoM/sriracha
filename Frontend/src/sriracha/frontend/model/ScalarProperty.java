@@ -2,6 +2,10 @@ package sriracha.frontend.model;
 
 import java.util.*;
 
+/**
+ * Represents a {@link Property} whose value is a scalar, such as resistance
+ * or capacitance.
+ */
 abstract public class ScalarProperty extends Property
 {
     abstract public String getValue();

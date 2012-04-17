@@ -6,6 +6,11 @@ import android.widget.*;
 
 import java.util.*;
 
+/**
+ * An ArrayAdapter<String> used inside a ListView to hold the list's string data.
+ * This class allows each item in the list to have a different color, based on
+ * its position, and determined by using the {@link Colors} class.
+ */
 public class ColoredStringAdapter extends ArrayAdapter<String>
 {
 

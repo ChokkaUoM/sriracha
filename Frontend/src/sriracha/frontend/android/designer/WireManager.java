@@ -11,6 +11,12 @@ import sriracha.frontend.android.model.CircuitElementView;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Manages all {@link WireSegment}s and {@link IWireIntersection}s in the circuit
+ * designer.
+ * This class houses the all-important {@link WireManager#consolidateIntersections()}
+ * method, which is responsible for all that is good and evil in the world.
+ */
 public class WireManager
 {
     private ArrayList<WireSegment> segments = new ArrayList<WireSegment>();

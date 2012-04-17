@@ -7,6 +7,14 @@ import sriracha.frontend.android.results.*;
 
 import java.util.*;
 
+/**
+ * An IElementSelector for choosing circuit elements from the circuit designer.
+ * The constructor takes a list of {@link CircuitElementView}s that are allowed
+ * to be selected.
+ * When this is the active selected in the circuit designer, the this class's
+ * {@link ElementSelector#onDraw(Canvas) onDraw} method will be called to highlight
+ * the allowed elements appropriately.
+ */
 public class ElementSelector implements IElementSelector<CircuitElementView>
 {
     private TextView textView;
