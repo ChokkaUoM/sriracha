@@ -15,13 +15,14 @@ import sriracha.frontend.android.results.IElementSelector;
 import sriracha.frontend.model.CircuitElement;
 import sriracha.frontend.model.CircuitElementManager;
 
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * This class knows all and sees all that has to do with the circuit designer.
  * Any gesture that is not handled at the individual element level is handled here.
- * It creates elements, deletes elements and rotates elements. It creates segments, 
+ * It creates elements, deletes elements and rotates elements. It creates segments,
  * moves them and deletes them.
  */
 public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
@@ -195,8 +196,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
             {
                 // Case 1: clicked a port
                 onElementClick(port.getElement(), snappedX, snappedY);
-            }
-            else
+            } else
             {
                 WireSegment segment = wireManager.getSegmentByPosition(snappedX, snappedY);
                 if (segment == null)
@@ -207,27 +207,41 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                     replaceLastInsertedIntersection(snappedX, snappedY);
                     wireManager.connectNewIntersection(lastInsertedIntersection, newIntersection);
                     lastInsertedIntersection = newIntersection;
-                }
-                else
+                } else
                 {
                     // Case 3, 4: existing segment/node.
                     // Add a new node. If we clicked on a node instead of a segment, we let
                     // the node consolidator take care of it later.
-                    WireIntersection newIntersection = wireManager.splitSegment(segment, snappedX, snappedY);
-                    replaceLastInsertedIntersection(snappedX, snappedY);
-                    wireManager.connectNewIntersection(lastInsertedIntersection, newIntersection);
-                    // TODO: consolidate nodes now
+//                    if(lastInsertedIntersection.getSegments().size() == 1)
+//                    {
+                    if (!lastInsertedIntersection.getSegments().get(0).isPointOnSegment(snappedX, snappedY))
+                    {
+                        WireIntersection newIntersection = wireManager.splitSegment(segment, snappedX, snappedY);
+                        replaceLastInsertedIntersection(snappedX, snappedY);
+                        wireManager.connectNewIntersection(lastInsertedIntersection, newIntersection);
 
-                    // End the wire drawing now.
-                    deselectElements(null);
-                    lastInsertedIntersection = null;
-                    setCanvasState(CanvasState.IDLE);
+
+                        // End the wire drawing now.
+                        deselectElements(null);
+                        lastInsertedIntersection = null;
+                        setCanvasState(CanvasState.IDLE);
+                    } else if (lastInsertedIntersection instanceof WireIntersection)
+                    {
+//                            // we clicked on our last segment maybe we want to make it shorter again?
+
+//                            {
+                        lastInsertedIntersection.setPosition(snappedX, snappedY);
+                        canvasView.invalidate();
+//                            }
+//
+//                        }
+                    }
+
                 }
             }
 
             return true;
-        }
-        else if (getCursor() == CursorState.HAND)
+        } else if (getCursor() == CursorState.HAND)
         {
             WireSegment segment = wireManager.getSegmentByPosition(snappedX, snappedY);
             if (segment != null)
@@ -237,8 +251,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                 circuitDesignerMenu.showSubMenu(R.id.wire_properties);
                 return true;
             }
-        }
-        else if (getCursor() == CursorState.SELECTING_ELEMENT && elementSelector instanceof NodeSelector)
+        } else if (getCursor() == CursorState.SELECTING_ELEMENT && elementSelector instanceof NodeSelector)
         {
             WireSegment segment = wireManager.getSegmentByPosition(snappedX, snappedY);
             if (segment != null)
@@ -280,8 +293,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                 lastInsertedIntersection = ((CircuitElementView) view).getClosestPort(x, y, true);
                 wireManager.addIntersection(lastInsertedIntersection);
                 setCanvasState(CanvasState.DRAWING_WIRE);
-            }
-            else if (getCanvasState() == CanvasState.DRAWING_WIRE)
+            } else if (getCanvasState() == CanvasState.DRAWING_WIRE)
             {
                 // Create new node, and end the wire at the new element
                 CircuitElementPortView port = ((CircuitElementView) view).getClosestPort(lastInsertedIntersection.getX(), lastInsertedIntersection.getY(), false);
@@ -292,8 +304,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                 lastInsertedIntersection = null;
                 setCanvasState(CanvasState.IDLE);
             }
-        }
-        else if (getCursor() == CursorState.SELECTING_ELEMENT && elementSelector instanceof ElementSelector)
+        } else if (getCursor() == CursorState.SELECTING_ELEMENT && elementSelector instanceof ElementSelector)
         {
             if (elementSelector.onSelect((CircuitElementView) view))
             {
@@ -301,8 +312,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                 setElementSelector(null);
                 canvasView.invalidate();
             }
-        }
-        else
+        } else
         {
             setCursorToHand();
             circuitDesignerMenu.showElementPropertiesMenu(selectedElement, this);
@@ -330,8 +340,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
             {
                 element.setElementSelected(true);
                 selectedElement = element;
-            }
-            else
+            } else
                 element.setElementSelected(false);
         }
     }
@@ -374,15 +383,13 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                             {
                                 WireIntersection duplicate = otherIntersection.duplicate(segment, wireManager);
                                 duplicate.x = newX;
-                            }
-                            else
+                            } else
                             {
                                 ((WireIntersection) otherIntersection).x = newX;
                             }
                             segment.invalidate();
                         }
-                    }
-                    else
+                    } else
                     {
                         int dy = (int) (selectedElement.getHeight() * (port.transformPosition(newOrientation)[1] - port.getTransformedPosition()[1]));
                         int newY = segment.getStart().getY() + dy;
@@ -392,8 +399,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                             {
                                 WireIntersection duplicate = otherIntersection.duplicate(segment, wireManager);
                                 duplicate.y = newY;
-                            }
-                            else
+                            } else
                             {
                                 ((WireIntersection) otherIntersection).y = newY;
                             }
@@ -565,11 +571,12 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
             if (canMoveHorizontally)
             {
                 selectedSegment.moveX(snap(finalX));
-            }
-            else
+            } else
             {
                 selectedSegment.moveY(snap(finalY));
             }
+            setCursor(CursorState.SELECTION);
+
             selectedSegment.invalidate();
             return true;
         }

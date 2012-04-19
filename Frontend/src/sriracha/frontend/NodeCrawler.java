@@ -1,9 +1,14 @@
 package sriracha.frontend;
 
-import sriracha.frontend.android.designer.*;
-import sriracha.frontend.android.model.*;
+import sriracha.frontend.android.designer.IWireIntersection;
+import sriracha.frontend.android.designer.WireIntersection;
+import sriracha.frontend.android.designer.WireManager;
+import sriracha.frontend.android.designer.WireSegment;
+import sriracha.frontend.android.model.CircuitElementPortView;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Responsible for traversing the segment graph and finding the
@@ -119,8 +124,7 @@ public class NodeCrawler
         if (intersection instanceof CircuitElementPortView)
         {
             ports.add((CircuitElementPortView) intersection);
-        }
-        else
+        } else
         {
             intersections.add((WireIntersection) intersection);
         }
@@ -128,7 +132,7 @@ public class NodeCrawler
         for (WireSegment seg : intersection.getSegments())
         {
 
-            if (seg == parent)
+            if (seg == parent || processedSegments.contains(seg))
                 continue;
 
             processedSegments.add(seg);

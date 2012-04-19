@@ -1,6 +1,6 @@
 package sriracha.frontend.android.designer;
 
-import java.io.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -78,6 +78,13 @@ public class WireIntersection implements IWireIntersection, Serializable
         this.replaceSegment(segment, newSegment);
 
         return newIntersection;
+    }
+
+    @Override
+    public void setPosition(int snappedX, int snappedY)
+    {
+        x = snappedX;
+        y = snappedY;
     }
 
     @Override

@@ -6,8 +6,9 @@ import sriracha.frontend.android.designer.WireIntersection;
 import sriracha.frontend.android.designer.WireManager;
 import sriracha.frontend.android.designer.WireSegment;
 
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class CircuitElementPortView implements IWireIntersection, Serializable
 {
@@ -150,6 +151,13 @@ public class CircuitElementPortView implements IWireIntersection, Serializable
         this.replaceSegment(segment, newSegment);
 
         return newIntersection;
+    }
+
+    @Override
+    public void setPosition(int snappedX, int snappedY)
+    {
+        positionX = snappedX;
+        positionY = snappedY;
     }
 
     @Override
