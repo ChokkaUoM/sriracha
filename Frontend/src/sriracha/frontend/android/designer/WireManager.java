@@ -93,16 +93,14 @@ public class WireManager
                 {
                     passingThroughElement |= orientation == 0 && port.getTransformedPosition()[1] < 0 && to.getY() > from.getY();
                     passingThroughElement |= orientation == 180 && port.getTransformedPosition()[1] > 0 && to.getY() < from.getY();
-                }
-                else
+                } else
                 {
                     passingThroughElement |= orientation == 90 && port.getTransformedPosition()[0] < 0 && to.getX() > from.getX();
                     passingThroughElement |= orientation == 270 && port.getTransformedPosition()[0] > 0 && to.getX() < from.getX();
                 }
                 if (passingThroughElement)
                     extendVertically = !extendVertically;
-            }
-            else
+            } else
             {
                 WireIntersection intersection = (WireIntersection) from;
                 if (intersection.getSegments().size() != 1)
@@ -130,7 +128,7 @@ public class WireManager
         to.addSegment(segment);
         addSegment(segment);
 
-        consolidateIntersections();
+        //  consolidateIntersections();
     }
 
     public WireIntersection splitSegment(WireSegment segment, int x, int y)
@@ -172,8 +170,9 @@ public class WireManager
     {
         /**
          * Step 1:
+         * Use node crawler to assign intersections to nodes
          * Go through every pairing of intersections that we currently have. If they have the same location, then we add
-         * them to a hashmap. This hashmap is index by location and each entry is a list of intersections at this
+         * them to a hashmap. This hashmap is indexed first by location and each entry is a list of intersections at this
          * location.
          */
         HashMap<Point, HashMap<NetlistNode, ArrayList<IWireIntersection>>> toConsolidate = new HashMap<Point, HashMap<NetlistNode, ArrayList<IWireIntersection>>>();
@@ -244,8 +243,7 @@ public class WireManager
                 {
                     // Case 2.
                     newIntersection = port;
-                }
-                else
+                } else
                 {
                     // Case 3. Create a new intersection to replace all the old ones.
                     newIntersection = new WireIntersection(intersectionList.get(0).getX(), intersectionList.get(0).getY());
@@ -265,8 +263,7 @@ public class WireManager
                             segment.getStart().removeSegment(segment);
                             segment.getEnd().removeSegment(segment);
                             removeSegment(segment);
-                        }
-                        else
+                        } else
                         {
                             // When consolidating intersections, each affected segment must have the
                             // relevant intersection replaced.
@@ -280,81 +277,314 @@ public class WireManager
             }
         }
 
-        /**
-         * Step 3:
-         * Merge collinear segments.
-         * Here, we remove any intersections that are entirely useless. Note that we don't destroy all collinear segments.
-         * Rather, we eliminate intersections that have exactly two segments, where the segments are opposite each other
-         * across the intersection.
-         * Removed: ---O---
-         * Merged: ----======O
-         * Not removed: ---O
-         *                 |
-         * Also not removed: ---O---
-         *                      |
-         */
-        for (int i = 0; i < 2; i++) // Let's do two passes, for the lulz.
+
+        boolean mergeSegmentByNode = true;
+        if (mergeSegmentByNode)
         {
-            ArrayList<IWireIntersection> toRemove = new ArrayList<IWireIntersection>();
-            for (IWireIntersection intersection : intersections)
+            /**
+             * Step 3:
+             * Merge collinear segments.
+             * First make a hashmap mapping nodes to lists of segments
+             * then iterate over every pair of segments in the node list and
+             * merge the ones that overlap
+             */
+            HashMap<NetlistNode, ArrayList<WireSegment>> nodeSegmentMap;
+
+            nodeSegmentMap = new HashMap<NetlistNode, ArrayList<WireSegment>>();
+            for (WireSegment s : segments)
             {
-                if (intersection.getSegments().size() >= 2)
+
+                NetlistNode node = crawler.nodeFromSegment(s);
+                if (!nodeSegmentMap.containsKey(node))
                 {
-                    WireSegment seg1 = intersection.getSegments().get(0);
-                    WireSegment seg2 = intersection.getSegments().get(1);
-                    if (!(seg1.isVertical() ^ seg2.isVertical())) // Both vertical or both horizontal
+                    nodeSegmentMap.put(node, new ArrayList<WireSegment>());
+                }
+
+                nodeSegmentMap.get(node).add(s);
+            }
+
+            //for each node consolidate segments
+            for (ArrayList<WireSegment> segList : nodeSegmentMap.values())
+            {
+                boolean extraPass;
+
+                do
+                {
+                    extraPass = false;
+                    //iterate over all pairs of segments backwards so we can remove as we go
+                    for (int i = segList.size() - 1; i > 0; i = Math.min(i - 1, segList.size() - 1))
                     {
-                        int direction1 = 0, direction2 = 0;
-                        if (seg1.isVertical())
+                        WireSegment segA = segList.get(i);
+                        for (int j = i - 1; j >= 0; j--)
                         {
-                            direction1 = seg1.otherEnd(intersection).getY() - intersection.getY();
-                            direction2 = seg2.otherEnd(intersection).getY() - intersection.getY();
-                        }
-                        else
-                        {
-                            direction1 = seg1.otherEnd(intersection).getX() - intersection.getX();
-                            direction2 = seg2.otherEnd(intersection).getX() - intersection.getX();
-                        }
+                            WireSegment segB = segList.get(j);
+                            //always try and remove segB if you can, if you must remove segA, then
+                            // break from inner loop
 
-                        if (Math.signum(direction1) == Math.signum(direction2))
-                        {
-                            // Segments are going off in the same direction from the intersection.
-                            WireSegment longerSegment = seg1.getLength() > seg2.getLength() ? seg1 : seg2;
-                            WireSegment shorterSegment = longerSegment == seg1 ? seg2 : seg1;
-                            IWireIntersection midIntersection = shorterSegment.otherEnd(intersection);
-
-                            longerSegment.replaceIntersection(intersection, midIntersection);
-                            midIntersection.addSegment(longerSegment);
-                            intersection.removeSegment(longerSegment);
-                        }
-                        else if (intersection instanceof WireIntersection && intersection.getSegments().size() == 2)
-                        {
-                            // Segments are going off in opposite directions from the intersection.
-                            if (seg2.getStart() == intersection)
+                            if (segA.isColinearAndTouching(segB))
                             {
-                                seg2.getEnd().replaceSegment(seg2, seg1);
-                                seg1.replaceIntersection(intersection, seg2.getEnd());
+                                //segments overlap
+                                if (segA.getStart() == segB.getStart() && segA.getEnd() == segB.getEnd() ||
+                                        segA.getStart() == segB.getEnd() && segA.getEnd() == segB.getStart())
+                                {
+                                    //perfectly overlapping segments delete one
+                                    // o-=-=-=-=o
+                                    detachSegment(segB);
+                                    removeSegment(segB);
+                                    segList.remove(j);
+
+                                } else if (segA.getStart() == segB.getStart() || segA.getEnd() == segB.getEnd() ||
+                                        segA.getStart() == segB.getEnd() || segA.getEnd() == segB.getStart())
+                                {
+                                    //segments share an intersection
+                                    IWireIntersection intersection;
+                                    if (segA.getStart() == segB.getStart() || segA.getStart() == segB.getEnd())
+                                        intersection = segA.getStart();
+                                    else
+                                        intersection = segA.getEnd();
+                                    //check how they connect with direction variable
+                                    int direction1 = 0, direction2 = 0;
+                                    if (segA.isVertical())
+                                    {
+                                        direction1 = segA.otherEnd(intersection).getY() - intersection.getY();
+                                        direction2 = segB.otherEnd(intersection).getY() - intersection.getY();
+                                    } else
+                                    {
+                                        direction1 = segA.otherEnd(intersection).getX() - intersection.getX();
+                                        direction2 = segB.otherEnd(intersection).getX() - intersection.getX();
+                                    }
+                                    //if same direction, correctly ignores case with 0 length
+                                    if (Math.signum(direction1) == Math.signum(direction2))
+                                    {
+                                        // Segments are going off in the same direction from the intersection.
+                                        // o------o-=-=-=-=o
+                                        WireSegment longerSegment = segA.getLength() > segB.getLength() ? segA : segB;
+                                        WireSegment shorterSegment = longerSegment == segA ? segB : segA;
+                                        IWireIntersection midIntersection = shorterSegment.otherEnd(intersection);
+                                        //partial overlap reconnect longer seg to midpoint
+                                        longerSegment.replaceIntersection(intersection, midIntersection);
+                                        midIntersection.addSegment(longerSegment);
+                                        intersection.removeSegment(longerSegment);
+
+                                        extraPass = true;
+                                    } else if (direction1 != 0 && direction2 != 0)
+                                    {
+                                        // Segments are going off in opposite directions from the intersection. and none of
+                                        //them is 0 length
+                                        // o------o=======o
+                                        if (intersection instanceof WireIntersection)
+                                        {
+                                            if (intersection.getSegments().size() == 2)
+                                            {
+                                                //single intersection between two opposing wires nothing else attached
+                                                if (segB.getStart() == intersection)
+                                                {
+                                                    segB.getEnd().replaceSegment(segB, segA);
+                                                    segA.replaceIntersection(intersection, segB.getEnd());
+                                                } else
+                                                {
+                                                    segB.getStart().replaceSegment(segB, segA);
+                                                    segA.replaceIntersection(intersection, segB.getStart());
+                                                }
+
+                                                detachIntersection((WireIntersection) intersection);
+                                                intersections.remove(intersection);
+                                                detachSegment(segB);
+                                                removeSegment(segB);
+                                                segList.remove(j);
+                                            } else
+                                            {
+                                                //intersection between 2 opposing wires with another wire attached
+                                                //do nothing, should already be fine ... i think
+                                            }
+
+                                        } else
+                                        {
+                                            //common intersection is a port, wires are in opposing directions
+                                            //and are not of 0 length nothing to be done ...
+                                        }
+
+
+                                    }
+
+
+                                } else if (segA.covers(segB) || segB.covers(segA))
+                                {
+                                    //one segment completely covers the other
+                                    // o-----o-=-=-=o------o
+                                    WireSegment longSeg = segA.getLength() > segB.getLength() ? segA : segB;
+                                    WireSegment shortSeg = longSeg == segA ? segB : segA;
+
+                                    IWireIntersection midFar = shortSeg.getMax();
+                                    IWireIntersection midClose = shortSeg.getMin();
+                                    //move shorter segment down
+                                    shortSeg.replaceIntersection(midFar, longSeg.getMax());
+                                    shortSeg.replaceIntersection(midClose, midFar);
+                                    midClose.removeSegment(shortSeg);
+                                    longSeg.getMax().addSegment(shortSeg);
+                                    //attach long segment to top
+                                    longSeg.replaceIntersection(longSeg.getMax(), midClose);
+                                    longSeg.getMax().removeSegment(longSeg);
+                                    midClose.addSegment(longSeg);
+                                    //create new segment for middle
+                                    WireSegment segment = new WireSegment(getContext(), this, midClose, midFar);
+                                    midClose.addSegment(segment);
+                                    midFar.addSegment(segment);
+                                    addSegment(segment);
+                                    segList.add(segment);//wont be checked in this pass since added at end
+                                    extraPass = true;
+                                } else
+                                {
+                                    // general partial overlap
+                                    // o----o=-=-o======o
+
+                                    //same concept as above with new seg for middle section and second pass takes care of rest
+                                    WireSegment segMin = segA.getMinPos() < segB.getMinPos() ? segA : segB;
+                                    WireSegment segMax = segMin == segA ? segB : segA;
+
+
+                                    IWireIntersection midFar = segMin.getMax();
+                                    IWireIntersection midClose = segMax.getMin();
+                                    //connect min to min point.
+                                    segMin.replaceIntersection(midFar, midClose);
+                                    midFar.removeSegment(segMin);
+                                    midClose.addSegment(segMin);
+                                    //connect max to max mid point
+                                    segMax.replaceIntersection(midClose, midFar);
+                                    midClose.removeSegment(segMax);
+                                    midFar.addSegment(segMax);
+                                    //create new segment for middle
+                                    WireSegment segment = new WireSegment(getContext(), this, midClose, midFar);
+                                    midClose.addSegment(segment);
+                                    midFar.addSegment(segment);
+                                    addSegment(segment);
+                                    segList.add(segment); // wont be checked in this pass since added at end
+                                    extraPass = true;
+                                }
                             }
-                            else
+                        }
+                    }
+                    //while here
+                } while (extraPass);
+
+            }
+
+        } else
+        {
+            /**
+             * Step 3:
+             * Merge collinear segments.
+             * Here, we remove any intersections that are entirely useless. Note that we don't destroy all collinear segments.
+             * Rather, we eliminate intersections that have exactly two segments, where the segments are opposite each other
+             * across the intersection.
+             * Removed: ---O---
+             * Merged: ----======O
+             * Not removed: ---O
+             *                 |
+             * Also not removed: ---O---
+             *                      |
+             */
+            for (int i = 0; i < 2; i++) // Let's do two passes, for the lulz.
+            {
+                ArrayList<IWireIntersection> toRemove = new ArrayList<IWireIntersection>();
+                for (IWireIntersection intersection : intersections)
+                {
+                    if (intersection.getSegments().size() >= 2)
+                    {
+                        WireSegment seg1 = intersection.getSegments().get(0);
+                        WireSegment seg2 = intersection.getSegments().get(1);
+                        if (!(seg1.isVertical() ^ seg2.isVertical())) // Both vertical or both horizontal
+                        {
+                            int direction1 = 0, direction2 = 0;
+                            if (seg1.isVertical())
                             {
-                                seg2.getStart().replaceSegment(seg2, seg1);
-                                seg1.replaceIntersection(intersection, seg2.getStart());
+                                direction1 = seg1.otherEnd(intersection).getY() - intersection.getY();
+                                direction2 = seg2.otherEnd(intersection).getY() - intersection.getY();
+                            } else
+                            {
+                                direction1 = seg1.otherEnd(intersection).getX() - intersection.getX();
+                                direction2 = seg2.otherEnd(intersection).getX() - intersection.getX();
                             }
 
-                            toRemove.add(intersection);
-                            removeSegment(seg2);
+                            if (Math.signum(direction1) == Math.signum(direction2))
+                            {
+                                // Segments are going off in the same direction from the intersection.
+                                WireSegment longerSegment = seg1.getLength() > seg2.getLength() ? seg1 : seg2;
+                                WireSegment shorterSegment = longerSegment == seg1 ? seg2 : seg1;
+                                IWireIntersection midIntersection = shorterSegment.otherEnd(intersection);
+                                if (longerSegment.getLength() != shorterSegment.getLength())
+                                {
+                                    //partial overlap
+                                    longerSegment.replaceIntersection(intersection, midIntersection);
+                                    midIntersection.addSegment(longerSegment);
+                                    intersection.removeSegment(longerSegment);
+                                }
+
+
+                            } else if (intersection instanceof WireIntersection && intersection.getSegments().size() == 2)
+                            {
+                                // Segments are going off in opposite directions from the intersection.
+                                if (seg2.getStart() == intersection)
+                                {
+                                    seg2.getEnd().replaceSegment(seg2, seg1);
+                                    seg1.replaceIntersection(intersection, seg2.getEnd());
+                                } else
+                                {
+                                    seg2.getStart().replaceSegment(seg2, seg1);
+                                    seg1.replaceIntersection(intersection, seg2.getStart());
+                                }
+
+                                toRemove.add(intersection);
+                                removeSegment(seg2);
+                            }
                         }
                     }
                 }
+                intersections.removeAll(toRemove);
             }
-            intersections.removeAll(toRemove);
         }
+
+
     }
 
     public void addSegment(WireSegment segment)
     {
         segments.add(segment);
         canvasView.addView(segment);
+    }
+
+    private void detachIntersection(WireIntersection intersection)
+    {
+        for (WireSegment seg : intersection.getSegments())
+        {
+            try
+            {
+                seg.replaceIntersection(intersection, null);
+            } catch (IllegalArgumentException e)
+            {
+                //do nothing this intersection had already been disconnected from the 
+                //segment previously
+            }
+
+        }
+        intersection.detachSegments();
+    }
+
+    private void detachSegment(WireSegment segment)
+    {
+        if (segment.getStart() != null)
+        {
+            segment.getStart().removeSegment(segment);
+            segment.replaceIntersection(segment.getStart(), null);
+        }
+
+        if (segment.getEnd() != null)
+        {
+            segment.getEnd().removeSegment(segment);
+            segment.replaceIntersection(segment.getEnd(), null);
+        }
+
+
     }
 
     private void removeSegment(WireSegment segment)

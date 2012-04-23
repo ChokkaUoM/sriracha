@@ -173,7 +173,11 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         gestureDetector.onTouchEvent(motionEvent);
         boolean toReturn = epicTouchListener.onTouch(view, motionEvent);
         if (motionEvent.getActionMasked() == MotionEvent.ACTION_UP)
+        {
             wireManager.consolidateIntersections();
+            canvasView.invalidate();
+        }
+
 
         //  ((LinearLayout)canvasView.getParent()).onTouchEvent(motionEvent);
         return toReturn;
@@ -231,7 +235,6 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
 
 //                            {
                         lastInsertedIntersection.setPosition(snappedX, snappedY);
-                        canvasView.invalidate();
 //                            }
 //
 //                        }
@@ -276,6 +279,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         {
             addElement(elementView);
         }
+
         return true;
     }
 

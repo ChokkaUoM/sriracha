@@ -6,12 +6,17 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.view.View;
+import sriracha.frontend.android.Colors;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Random;
+
 
 /**
  * This class represents a single, straight segment of wire, connected between
- * two intersections. 
+ * two intersections.
  * The class holds a reference to each endpoint, which must be an instance of
  * {@link IWireIntersection}. It is also responsible for its own serialization,
  * since the defaualt Java serialization does not work well for View subclasses.
@@ -19,6 +24,8 @@ import java.io.*;
 public class WireSegment extends View
 {
     private static final int BOUNDS_PADDING = 20;
+
+    private boolean debugWires = true;
 
     private IWireIntersection start;
     private IWireIntersection end;
@@ -40,6 +47,52 @@ public class WireSegment extends View
         return start;
     }
 
+    /**
+     * gets the intersection coordinate with the lowest coordinate value
+     * compared on the non matching coordinate.
+     *
+     * @return min intersection coordinate value
+     */
+    public int getMinPos()
+    {
+        return isVertical() ? (start.getY() < end.getY() ? start.getY() : end.getY()) :
+                (start.getX() < end.getX() ? start.getX() : end.getX());
+    }
+
+    /**
+     * gets the intersection coordinate with the highest coordinate value
+     * compared on the non matching coordinate.
+     *
+     * @return max intersection coordinate value
+     */
+    public int getMaxPos()
+    {
+        return isVertical() ? (start.getY() > end.getY() ? start.getY() : end.getY()) :
+                (start.getX() > end.getX() ? start.getX() : end.getX());
+    }
+
+    /**
+     * gets the intersection with the lowest coordinate value
+     * compared on the non matching coordinate.
+     *
+     * @return min intersection
+     */
+    public IWireIntersection getMin()
+    {
+        return isVertical() ? (start.getY() < end.getY() ? start : end) : (start.getX() < end.getX() ? start : end);
+    }
+
+    /**
+     * gets the intersection with the highest coordinate value
+     * compared on the non matching coordinate.
+     *
+     * @return max intersection
+     */
+    public IWireIntersection getMax()
+    {
+        return getMin() == start ? end : start;
+    }
+
     public IWireIntersection getEnd()
     {
         return end;
@@ -49,12 +102,27 @@ public class WireSegment extends View
     protected void onDraw(Canvas canvas)
     {
         Paint paint = new Paint();
-        paint.setColor(isSelected() ? Color.rgb(0xCC, 0xCC, 0) : Color.GRAY);
         paint.setStrokeWidth(isSelected() ? 6 : 4);
 
-        canvas.drawLine(start.getX(), start.getY(), end.getX(), end.getY(), paint);
-        canvas.drawCircle(start.getX(), start.getY(), 4, paint);
-        canvas.drawCircle(end.getX(), end.getY(), 4, paint);
+        if (debugWires)
+        {
+            paint.setColor(isSelected() ? Color.rgb(0xCC, 0xCC, 0) : Colors.randomColor(0.8f, 0.6f));
+            Random r = new Random();
+            float scale = 15;
+            float sxOff = scale * (r.nextFloat() - 0.5f), syOff = scale * (r.nextFloat() - 0.5f);
+            float exOff = scale * (r.nextFloat() - 0.5f), eyOff = scale * (r.nextFloat() - 0.5f);
+            canvas.drawLine(start.getX() + sxOff, start.getY() + syOff, end.getX() + exOff, end.getY() + eyOff, paint);
+            canvas.drawCircle(start.getX() + sxOff, start.getY() + syOff, 4, paint);
+            canvas.drawCircle(end.getX() + exOff, end.getY() + eyOff, 4, paint);
+
+        } else
+        {
+            paint.setColor(isSelected() ? Color.rgb(0xCC, 0xCC, 0) : Color.GRAY);
+            canvas.drawLine(start.getX(), start.getY(), end.getX(), end.getY(), paint);
+            canvas.drawCircle(start.getX(), start.getY(), 4, paint);
+            canvas.drawCircle(end.getX(), end.getY(), 4, paint);
+
+        }
     }
 
     public boolean moveX(int x)
@@ -189,6 +257,49 @@ public class WireSegment extends View
         }
     }
 
+    public boolean isColinearAndTouching(WireSegment segment)
+    {
+        if (isVertical() ^ segment.isVertical()) return false;
+        //have same orientation
+        if ((isVertical() && getXPos() != segment.getXPos()) || (!isVertical() && getYPos() != segment.getYPos()))
+            return false;
+        //have same orientation and are aligned
+
+        int minEnd = getMinPos();
+        int maxEnd = getMaxPos();
+        int segMin = segment.getMinPos();
+        int segMax = segment.getMaxPos();
+
+        if (minEnd < segMin)
+        {
+            return segMin <= maxEnd;
+        } else if (segMin < minEnd)
+        {
+            return minEnd <= segMax;
+        } else
+        {
+            return true; // min ends are equal
+        }
+
+    }
+
+    public int getYPos()
+    {
+        if (isVertical())
+            throw new RuntimeException("cant call this method on a vertical segment");
+
+        return getStart().getY();
+    }
+
+    public int getXPos()
+    {
+        if (!isVertical())
+            throw new RuntimeException("cant call this method on a horizontal segment");
+
+        return getStart().getX();
+    }
+
+
     public IWireIntersection otherEnd(IWireIntersection thisEnd)
     {
         return start != thisEnd ? start : end;
@@ -227,5 +338,21 @@ public class WireSegment extends View
         end = (IWireIntersection) in.readObject();
         start.addSegment(this);
         end.addSegment(this);
+    }
+
+
+    public boolean covers(WireSegment segA)
+    {
+        int minEnd = Math.min(isVertical() ? getStart().getX() : getStart().getY(),
+                isVertical() ? getEnd().getX() : getEnd().getY());
+        int maxEnd = Math.max(isVertical() ? getStart().getX() : getStart().getY(),
+                isVertical() ? getEnd().getX() : getEnd().getY());
+        int aMin = Math.min(segA.isVertical() ? segA.getStart().getX() : segA.getStart().getY(),
+                segA.isVertical() ? segA.getEnd().getX() : segA.getEnd().getY());
+        int aMax = Math.max(segA.isVertical() ? segA.getStart().getX() : segA.getStart().getY(),
+                segA.isVertical() ? segA.getEnd().getX() : segA.getEnd().getY());
+
+
+        return minEnd < aMin && maxEnd > aMax;
     }
 }

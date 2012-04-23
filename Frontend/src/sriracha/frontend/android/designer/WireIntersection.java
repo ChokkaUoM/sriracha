@@ -44,6 +44,11 @@ public class WireIntersection implements IWireIntersection, Serializable
         segments.remove(segment);
     }
 
+    public void detachSegments()
+    {
+        segments.clear();
+    }
+
     @Override
     public ArrayList<WireSegment> getSegments()
     {
