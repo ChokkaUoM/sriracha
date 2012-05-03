@@ -25,7 +25,7 @@ public class WireSegment extends View
 {
     private static final int BOUNDS_PADDING = 20;
 
-    private boolean debugWires = true;
+    private boolean debugWires = false;
 
     private IWireIntersection start;
     private IWireIntersection end;

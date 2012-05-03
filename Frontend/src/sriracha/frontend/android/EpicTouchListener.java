@@ -34,6 +34,10 @@ public abstract class EpicTouchListener implements View.OnTouchListener
 
         float oldX, oldY;
 
+        float startX, startY;
+
+        boolean isTap = true;
+
         float distX()
         {
             return x - oldX;
@@ -112,7 +116,15 @@ public abstract class EpicTouchListener implements View.OnTouchListener
                 return true;
             }
             case MotionEvent.ACTION_UP:
+            {
                 eatEvent = onAllFingersUp(motionEvent.getX(), motionEvent.getY());
+
+                Finger f = activeFingers.get(0);
+                if (f.isTap)
+                {
+                    eatEvent |= onSingleFingerTap(f.startX, f.startY);
+                }
+            }//fall through intentional!
             case MotionEvent.ACTION_POINTER_UP:
                 activeFingers.remove(findById(actionId));
                 if (eatEvent) return true;
@@ -262,6 +274,11 @@ public abstract class EpicTouchListener implements View.OnTouchListener
         f.x = e.getX(index);
         f.y = e.getY(index);
 
+        if (f.x * f.x + f.y * f.y - (f.startX * f.startX + f.startY * f.startY) > 400)
+        {
+            f.isTap = false;
+        }
+
     }
 
     private Finger addFinger(int id, float x, float y)
@@ -270,6 +287,8 @@ public abstract class EpicTouchListener implements View.OnTouchListener
         f.id = id;
         f.x = x;
         f.y = y;
+        f.startX = x;
+        f.startY = y;
         activeFingers.add(f);
         return f;
     }
@@ -342,6 +361,19 @@ public abstract class EpicTouchListener implements View.OnTouchListener
     }
 
     /**
+     * Called whenever A single finger taps the screen. down and up without moving
+     * (no other fingers can already be touching)
+     *
+     * @param x x position
+     * @param y y position
+     */
+    protected boolean onSingleFingerTap(float x, float y)
+    {
+        return false;
+    }
+
+
+    /**
      * Called if the user has used a pinch-zoom like gesture.
      * This call is followed by a call to OnTwoFingerMove if it returns false
      *
@@ -404,6 +436,7 @@ public abstract class EpicTouchListener implements View.OnTouchListener
 
     /**
      * Called when the last finger touching has just been lifted up
+     *
      * @param x x position of last touch
      * @param y y position of last touch
      * @return true if the the event should be consumed ie not passed on.

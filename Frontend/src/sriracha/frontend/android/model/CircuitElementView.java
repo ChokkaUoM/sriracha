@@ -22,8 +22,8 @@ import java.util.UUID;
 
 /**
  * Rather important View class that represents a circuit element on the circuit designer canvas.
- * The properties of the element itself is contained in a backing {@link CircuitElement} field, 
- * but this object holds information such as position and orientation, and is responsible for 
+ * The properties of the element itself is contained in a backing {@link CircuitElement} field,
+ * but this object holds information such as position and orientation, and is responsible for
  * responding to events on the canvas.
  */
 abstract public class CircuitElementView extends ImageView implements View.OnTouchListener
@@ -42,7 +42,7 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
     private transient boolean isElementSelected;
 
     private transient OnElementClickListener onElementClickListener;
-//    private transient OnInvalidateListener onInvalidateListener;
+    //    private transient OnInvalidateListener onInvalidateListener;
     private transient OnMoveListener onMoveListener;
     private transient OnDropListener onDropListener;
 
@@ -122,6 +122,7 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
     public void setOrientation(float orientation)
     {
         this.orientation = orientation;
+        ((View) getParent()).invalidate();
 //        invalidate();
 //        if (onInvalidateListener != null)
 //            onInvalidateListener.InvalidateDesigner();
@@ -139,6 +140,7 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
 
     /**
      * Gets the port closest to the specified position.
+     *
      * @param x
      * @param y
      * @param useRelative
@@ -274,8 +276,7 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
                 {
                     possibleClickPointerId = INVALID_POINTER_ID;
                     onClick(motionEvent.getX(), motionEvent.getY());
-                }
-                else
+                } else
                 {
                     if (onDropListener != null)
                         onDropListener.onDrop(this);
@@ -304,8 +305,7 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         params.leftMargin = (int) positionX;
         params.topMargin = (int) positionY;
         setLayoutParams(params);
-//        if (onInvalidateListener != null)
-//            onInvalidateListener.InvalidateDesigner();
+        ((View) getParent()).invalidate();
     }
 
     @Override
