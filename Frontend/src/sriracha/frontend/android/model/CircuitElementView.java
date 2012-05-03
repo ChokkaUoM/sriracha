@@ -190,11 +190,6 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         this.onElementClickListener = onElementClickListener;
     }
 
-//    public void setOnInvalidateListener(OnInvalidateListener onInvalidateListener)
-//    {
-//        this.onInvalidateListener = onInvalidateListener;
-//    }
-
     public void setOnDropListener(OnDropListener onDropListener)
     {
         this.onDropListener = onDropListener;
@@ -261,8 +256,7 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
                     updatePosition();
                     refreshDrawableState();
 
-                    if (hasMoved)
-                        wireManager.consolidateIntersections();
+                    wireManager.consolidateIntersections();
 
                     if (onMoveListener != null)
                         onMoveListener.onMove(this);
@@ -281,6 +275,8 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
                     if (onDropListener != null)
                         onDropListener.onDrop(this);
                 }
+
+                wireManager.consolidateIntersections();
                 // Fall through
 
             case MotionEvent.ACTION_CANCEL:

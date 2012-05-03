@@ -237,13 +237,6 @@ public class WireManager
 
                 IWireIntersection newIntersection = null;
 
-//                // Case 1. Do nothing
-//                if (portCount >= 2)
-//                {
-//                    continue;
-//                }
-
-
                 if (portCount >= 1)
                 {
                     // Case 2.
@@ -262,12 +255,15 @@ public class WireManager
                     {
                         if (segment.getLength() == 0)
                         {
-                            // If one end is a port, and it's a zero-length
-                            // then we have to make sure that the segment gets removed
-                            // from the port, since the port won't be removed.
-                            segment.getStart().removeSegment(segment);
-                            segment.getEnd().removeSegment(segment);
-                            removeSegment(segment);
+                            if (!(segment.getEnd() instanceof CircuitElementPortView && segment.getStart() instanceof CircuitElementPortView && segment.getEnd() != segment.getStart()))
+                            {
+                                // If it's zero-length
+                                // then we have to make sure that the segment gets removed
+                                // from the intersection in case its a port, since the port won't be removed.
+                                segment.getStart().removeSegment(segment);
+                                segment.getEnd().removeSegment(segment);
+                                removeSegment(segment);
+                            }
                         } else
                         {
                             // When consolidating intersections, each affected segment must have the
