@@ -6,6 +6,12 @@ import android.os.*;
 import java.io.*;
 import java.lang.reflect.*;
 
+/**
+ * Uses the Android API to talk to the filesystem for saving and loading files.
+ * Naturally, a whole lot of different exceptions may be thrown if the filesystem
+ * disagrees with us for some reason, and it's the responsibility of the calling 
+ * method to deal with these exceptions.
+ */
 public class Storage
 {
     private Context context;

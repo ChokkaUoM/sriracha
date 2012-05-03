@@ -27,6 +27,16 @@ import sriracha.frontend.model.elements.sources.VoltageSource;
 import java.lang.reflect.*;
 import java.util.*;
 
+/**
+ * Activates {@link CircuitElementView}s.
+ * There are two ways to instantiate an element: by button ID or by UUID.
+ * Instantiation by button ID occurs when an element is added to the canvas using the
+ * circuit designer. In this case, the {@link CircuitDesigner} keeps track of the currently
+ * selected element by holding the ID of the button that is clicked to choose that element.
+ * Instantiation by UUID occurs when a circuit is deserialized from a loaded file. In this case,
+ * the apropriate CircuitElementView is retrieved based on the serialized UUID, and the class is
+ * instantiated reflectively.
+ */
 public class CircuitElementActivator
 {
     Context context;

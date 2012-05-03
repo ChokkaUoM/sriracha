@@ -10,6 +10,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
+/**
+ * Represents a circuit element's port on the circuit designer canvas.
+ * Position information is defined with respect to the center of the CircuitElementView,
+ * and must be transformed based on the element's size and orientation to get the absolute
+ * position of the port.
+ */
 public class CircuitElementPortView implements IWireIntersection, Serializable
 {
     private UUID uuid;

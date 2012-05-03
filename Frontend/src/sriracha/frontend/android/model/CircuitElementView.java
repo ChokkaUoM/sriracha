@@ -20,6 +20,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.UUID;
 
+/**
+ * Rather important View class that represents a circuit element on the circuit designer canvas.
+ * The properties of the element itself is contained in a backing {@link CircuitElement} field, 
+ * but this object holds information such as position and orientation, and is responsible for 
+ * responding to events on the canvas.
+ */
 abstract public class CircuitElementView extends ImageView implements View.OnTouchListener
 {
     private static final int[] STATE_DRAGGABLE = {R.attr.state_draggable};

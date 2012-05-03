@@ -9,6 +9,10 @@ import sriracha.frontend.R;
 
 import java.io.*;
 
+/**
+ * The dialog box for loading a circuit from the filesystem.
+ * Must be called from MainActivity, since the callback that talks to the storage is located there.
+ */
 public class LoadDialogFragment extends DialogFragment
 {
     public static LoadDialogFragment newInstance()

@@ -17,6 +17,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+/**
+ * Responsible for serializing data for saving and loading circuits.
+ * Although Java provides built-in serialization facilities through implementation
+ * of the Serializable interface, there is a restriction that prevents us from using
+ * it in certain cases.
+ * If a class implements Serializable and its parent class does not, then the parent
+ * class must provide a no-argument constructor.
+ * This is not the case for the Android View class, therefore we cannot automatically
+ * serialize our View subclasses. For these, we use manual serialization, writing the
+ * relevant data to an ObjectOutputStream that is passed in. For serialization of 
+ * relationships between two non-serizable classes (such as the CircuitElementView-CircuitElementPortView relationship),
+ * we generate UUIDs to stand in place of the objects and store those instead.
+ */
 public class Serialization
 {
     private CircuitDesigner circuitDesigner;

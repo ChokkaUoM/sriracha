@@ -6,6 +6,10 @@ import android.view.*;
 import android.widget.*;
 import sriracha.frontend.*;
 
+/**
+ * The dialog box for saving a circuit or a netlist to the filesystem.
+ * Must be called from MainActivity, since the callback that talks to the storage is located there.
+ */
 public class SaveDialogFragment extends DialogFragment
 {
     public final static int SAVE_CIRCUIT = 0;
