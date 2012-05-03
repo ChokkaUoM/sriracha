@@ -274,7 +274,9 @@ public abstract class EpicTouchListener implements View.OnTouchListener
         f.x = e.getX(index);
         f.y = e.getY(index);
 
-        if (f.x * f.x + f.y * f.y - (f.startX * f.startX + f.startY * f.startY) > 400)
+        float dx = f.x - f.startX, dy = f.y - f.startY;
+
+        if (dx * dx + dy * dy > 400)
         {
             f.isTap = false;
         }

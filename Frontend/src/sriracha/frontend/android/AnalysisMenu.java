@@ -12,7 +12,9 @@ import sriracha.frontend.android.designer.CircuitDesigner;
 import sriracha.frontend.android.designer.WireManager;
 import sriracha.frontend.android.designer.WireSegment;
 import sriracha.frontend.android.model.CircuitElementView;
-import sriracha.frontend.android.model.elements.sources.*;
+import sriracha.frontend.android.model.elements.sources.CurrentSourceView;
+import sriracha.frontend.android.model.elements.sources.VCCView;
+import sriracha.frontend.android.model.elements.sources.VoltageSourceView;
 import sriracha.frontend.android.results.Graph;
 import sriracha.frontend.android.results.IElementSelector;
 import sriracha.frontend.model.CircuitElement;
@@ -140,8 +142,7 @@ public class AnalysisMenu extends LinearLayout
                 analysis = getDcAnalysis();
             else if (analysisType.equals("AC"))
                 analysis = getAcAnalysis();
-        }
-        catch (RuntimeException e)
+        } catch (RuntimeException e)
         {
             analysis = "";
         }
@@ -166,8 +167,7 @@ public class AnalysisMenu extends LinearLayout
                 analysis = getDcAnalysis();
             else if (analysisType.equals("AC"))
                 analysis = getAcAnalysis();
-        }
-        catch (RuntimeException e)
+        } catch (RuntimeException e)
         {
             showToast(e.getMessage());
             return;
@@ -230,6 +230,7 @@ public class AnalysisMenu extends LinearLayout
             {
                 showAnalyseButton();
             }
+
             @Override
             public void OnSimulatorError(Exception e)
             {
@@ -325,8 +326,7 @@ public class AnalysisMenu extends LinearLayout
             startV = Float.parseFloat(dcStart.getText().toString());
             stopV = Float.parseFloat(dcStop.getText().toString());
             incr = Float.parseFloat(dcStep.getText().toString());
-        }
-        catch (NumberFormatException e)
+        } catch (NumberFormatException e)
         {
             throw new NumberFormatException("You must specify a valid number for start, stop and increment voltages.");
         }
@@ -335,8 +335,7 @@ public class AnalysisMenu extends LinearLayout
         {
             String analysis = String.format(".DC %s %f %f %f", element.getName(), startV, stopV, incr);
             return analysis;
-        }
-        else
+        } else
         {
             throw new RuntimeException("You must choose an element to sweep");
         }
@@ -351,8 +350,7 @@ public class AnalysisMenu extends LinearLayout
             num = Integer.parseInt(acNum.getText().toString());
             startF = Float.parseFloat(acStart.getText().toString());
             stopF = Float.parseFloat(acStop.getText().toString());
-        }
-        catch (NumberFormatException e)
+        } catch (NumberFormatException e)
         {
             throw new NumberFormatException("You must specify a valid number for number of steps, and start and stop frequencies.");
         }
@@ -388,8 +386,7 @@ public class AnalysisMenu extends LinearLayout
         if (node1 != null && node2 != null)
         {
             return String.format("%s(%s,%s)", printType, node1, node2);
-        }
-        else
+        } else
         {
             showToast("You must choose a node to measure voltage");
         }
@@ -404,8 +401,7 @@ public class AnalysisMenu extends LinearLayout
         if (element != null)
         {
             return String.format("%s(%s)", printType, element.getName());
-        }
-        else
+        } else
         {
             showToast("You must choose an element to measure current");
         }
@@ -524,7 +520,7 @@ public class AnalysisMenu extends LinearLayout
                 ArrayList<CircuitElementView> elementViews = new ArrayList<CircuitElementView>();
                 for (CircuitElementView elementView : getCircuitDesigner().getElements())
                 {
-                    if (elementView instanceof VoltageSourceView || elementView instanceof CurrentSourceView)
+                    if (elementView instanceof VoltageSourceView || elementView instanceof CurrentSourceView || elementView instanceof VCCView)
                         elementViews.add(elementView);
                 }
 

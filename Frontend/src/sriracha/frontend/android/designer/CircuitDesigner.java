@@ -217,6 +217,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         if (clickedPort != null)
         {
             // Case 1: clicked a port
+            switchIntersectionToClosestPort(snappedX, snappedY);
             onWireModeElementClick(clickedPort.getElement(), snappedX, snappedY);
         } else
         {
