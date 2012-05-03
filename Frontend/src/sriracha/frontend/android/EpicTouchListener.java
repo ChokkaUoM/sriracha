@@ -112,7 +112,7 @@ public abstract class EpicTouchListener implements View.OnTouchListener
                 return true;
             }
             case MotionEvent.ACTION_UP:
-                eatEvent = onAllFingersUp();
+                eatEvent = onAllFingersUp(motionEvent.getX(), motionEvent.getY());
             case MotionEvent.ACTION_POINTER_UP:
                 activeFingers.remove(findById(actionId));
                 if (eatEvent) return true;
@@ -404,10 +404,11 @@ public abstract class EpicTouchListener implements View.OnTouchListener
 
     /**
      * Called when the last finger touching has just been lifted up
-     *
+     * @param x x position of last touch
+     * @param y y position of last touch
      * @return true if the the event should be consumed ie not passed on.
      */
-    protected boolean onAllFingersUp()
+    protected boolean onAllFingersUp(float x, float y)
     {
         return false;
     }

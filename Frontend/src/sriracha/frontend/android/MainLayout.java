@@ -236,7 +236,7 @@ public class MainLayout extends LinearLayout
         }
 
         @Override
-        protected boolean onAllFingersUp()
+        protected boolean onAllFingersUp(float x, float y)
         {
             fingersStillDown = false;
             return false;

@@ -9,14 +9,16 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import sriracha.frontend.*;
+import sriracha.frontend.R;
 import sriracha.frontend.android.designer.CircuitDesigner;
 import sriracha.frontend.android.designer.WireManager;
 import sriracha.frontend.android.designer.WireSegment;
 import sriracha.frontend.model.CircuitElement;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.UUID;
 
 abstract public class CircuitElementView extends ImageView implements View.OnTouchListener
 {
@@ -34,7 +36,7 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
     private transient boolean isElementSelected;
 
     private transient OnElementClickListener onElementClickListener;
-    private transient OnInvalidateListener onInvalidateListener;
+//    private transient OnInvalidateListener onInvalidateListener;
     private transient OnMoveListener onMoveListener;
     private transient OnDropListener onDropListener;
 
@@ -114,9 +116,9 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
     public void setOrientation(float orientation)
     {
         this.orientation = orientation;
-        invalidate();
-        if (onInvalidateListener != null)
-            onInvalidateListener.onInvalidate();
+//        invalidate();
+//        if (onInvalidateListener != null)
+//            onInvalidateListener.InvalidateDesigner();
     }
 
     public void setPort(int index, CircuitElementPortView port)
@@ -129,6 +131,13 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         setOrientation((orientation + degrees + 360) % 360);
     }
 
+    /**
+     * Gets the port closest to the specified position.
+     * @param x
+     * @param y
+     * @param useRelative
+     * @return
+     */
     public CircuitElementPortView getClosestPort(float x, float y, boolean useRelative)
     {
         CircuitElementPortView closestPort = null;
@@ -173,10 +182,10 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         this.onElementClickListener = onElementClickListener;
     }
 
-    public void setOnInvalidateListener(OnInvalidateListener onInvalidateListener)
-    {
-        this.onInvalidateListener = onInvalidateListener;
-    }
+//    public void setOnInvalidateListener(OnInvalidateListener onInvalidateListener)
+//    {
+//        this.onInvalidateListener = onInvalidateListener;
+//    }
 
     public void setOnDropListener(OnDropListener onDropListener)
     {
@@ -289,8 +298,8 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         params.leftMargin = (int) positionX;
         params.topMargin = (int) positionY;
         setLayoutParams(params);
-        if (onInvalidateListener != null)
-            onInvalidateListener.onInvalidate();
+//        if (onInvalidateListener != null)
+//            onInvalidateListener.InvalidateDesigner();
     }
 
     @Override
@@ -322,10 +331,10 @@ abstract public class CircuitElementView extends ImageView implements View.OnTou
         public void onElementClick(View view, float x, float y);
     }
 
-    public interface OnInvalidateListener
-    {
-        public void onInvalidate();
-    }
+//    public interface OnInvalidateListener
+//    {
+//        public void onInvalidate();
+//    }
 
     public interface OnMoveListener
     {

@@ -17,7 +17,14 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * The Graph class manages {@link PlotView} and {@link Axis} objects.
+ * Also handles gestures for panning and zooming through its internal class 
+ * {@link GraphGestureListener} these are implemented by changing max and min value on the Axis
+ * objects, The plotViews then adjust themselves.
+ * 
+ *
+ */
 public class Graph extends FrameLayout
 {
 
@@ -226,9 +233,9 @@ public class Graph extends FrameLayout
     }
 
     /**
-     * Takes into account internal edges and is only valid after layout
-     *
-     * @return
+     * Does pixel to coordinate conversion, Only valid after layout
+     * @param pixel position relative to top left of graph
+     * @return graph coordinates at this point.
      */
     public Point pixelsToCoordinate(Point pixel)
     {
@@ -242,6 +249,11 @@ public class Graph extends FrameLayout
 
     }
 
+    /**
+     * Does coordinate to pixel conversion, Only valid after layout
+     * @param coord axis coordinates to convert
+     * @return pixel value relative to top left of graph
+     */
     public Point pixelsFromCoordinate(Point coord)
     {
         int internalEdges[] = internalEdges(getWidth(), getHeight());
@@ -383,7 +395,7 @@ public class Graph extends FrameLayout
             canvas.drawCircle(xp2, yp2, 5f, p);
 
 
-            //redraw preview box at the end so that it is on top of lines
+            //so its on top of plots
             previewBox.bringToFront();
         }
 

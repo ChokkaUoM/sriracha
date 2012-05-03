@@ -26,7 +26,7 @@ import java.util.UUID;
  * moves them and deletes them.
  */
 public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
-        implements View.OnTouchListener, CircuitElementView.OnElementClickListener, CircuitElementView.OnInvalidateListener,
+        implements View.OnTouchListener, CircuitElementView.OnElementClickListener,
         CircuitElementView.OnDropListener, CircuitElementView.OnMoveListener
 {
     public static final int GRID_SIZE = 40;
@@ -52,7 +52,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     private CircuitElementManager elementManager;
 
     private transient GestureDetector gestureDetector;
-    private EpicTouchListener epicTouchListener;
+    private DesignerTouchListener designerTouchListener;
     private CircuitDesignerCanvas canvasView;
 
     private ArrayList<CircuitElementView> elements;
@@ -68,7 +68,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         elementManager = new CircuitElementManager();
 
         gestureDetector = new GestureDetector(this);
-        epicTouchListener = new TouchListener();
+        designerTouchListener = new DesignerTouchListener();
         this.canvasView = (CircuitDesignerCanvas) canvasView;
         this.canvasView.setOnTouchListener(this);
 
@@ -171,156 +171,230 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     public boolean onTouch(View view, MotionEvent motionEvent)
     {
         gestureDetector.onTouchEvent(motionEvent);
-        boolean toReturn = epicTouchListener.onTouch(view, motionEvent);
-        if (motionEvent.getActionMasked() == MotionEvent.ACTION_UP)
-        {
-            wireManager.consolidateIntersections();
-            canvasView.invalidate();
-        }
-
-
-        //  ((LinearLayout)canvasView.getParent()).onTouchEvent(motionEvent);
-        return toReturn;
+        return designerTouchListener.onTouch(view, motionEvent);
     }
 
-    @Override
-    public boolean onSingleTapUp(MotionEvent motionEvent)
+    private void onWireModeElementClick(CircuitElementView elementView, int snappedX, int snappedY)
     {
         wireManager.selectSegment(null);
+        selectElement(elementView);
 
-        int snappedX = snap(motionEvent.getX());
-        int snappedY = snap(motionEvent.getY());
-
-        if (getCursor() == CursorState.WIRE && lastInsertedIntersection != null)
+        // The first endpoint of a wire
+        if (getCanvasState() == CanvasState.IDLE)
         {
-            // Possibilities: clicked near a port (but not on the element itself), clicked on empty space,
-            // clicked on existing node, or clicked on existing wire segment.
-            CircuitElementPortView port = getPortAt(snappedX, snappedY, null);
-            if (port != null)
-            {
-                // Case 1: clicked a port
-                onElementClick(port.getElement(), snappedX, snappedY);
-            } else
-            {
-                WireSegment segment = wireManager.getSegmentByPosition(snappedX, snappedY);
-                if (segment == null)
-                {
-                    // Case 2: empty space.
-                    // Add new node
-                    WireIntersection newIntersection = new WireIntersection(snappedX, snappedY);
-                    replaceLastInsertedIntersection(snappedX, snappedY);
-                    wireManager.connectNewIntersection(lastInsertedIntersection, newIntersection);
-                    lastInsertedIntersection = newIntersection;
-                } else
-                {
-                    // Case 3, 4: existing segment/node.
-                    // Add a new node. If we clicked on a node instead of a segment, we let
-                    // the node consolidator take care of it later.
-//                    if(lastInsertedIntersection.getSegments().size() == 1)
-//                    {
-                    if (!lastInsertedIntersection.getSegments().get(0).isPointOnSegment(snappedX, snappedY))
-                    {
-                        WireIntersection newIntersection = wireManager.splitSegment(segment, snappedX, snappedY);
-                        replaceLastInsertedIntersection(snappedX, snappedY);
-                        wireManager.connectNewIntersection(lastInsertedIntersection, newIntersection);
+            lastInsertedIntersection = elementView.getClosestPort(snappedX, snappedY, true);
+            wireManager.addIntersection(lastInsertedIntersection);
+            setCanvasState(CanvasState.DRAWING_WIRE);
+        }
+        else if (getCanvasState() == CanvasState.DRAWING_WIRE)
+        {
+            // Create new node, and end the wire at the new element
+            CircuitElementPortView port = elementView.getClosestPort(lastInsertedIntersection.getX(), lastInsertedIntersection.getY(), false);
+            switchIntersectionToClosestPort(port.getX(), port.getY());
+            wireManager.connectNewIntersection(lastInsertedIntersection, port);
+
+            // End the wire drawing now.
+            endWireDraw();
+        }
+    }
 
 
-                        // End the wire drawing now.
-                        deselectElements(null);
-                        lastInsertedIntersection = null;
-                        setCanvasState(CanvasState.IDLE);
-                    } else if (lastInsertedIntersection instanceof WireIntersection)
-                    {
-//                            // we clicked on our last segment maybe we want to make it shorter again?
+    private void onWireModeTapUp(int snappedX, int snappedY)
+    {
 
-//                            {
-                        lastInsertedIntersection.setPosition(snappedX, snappedY);
-//                            }
+        if (lastInsertedIntersection == null)
+        {
+                int howdowegethere = 42;
+            return;
+
+        }
+
+        // Possibilities:
+        // 1 clicked near a port
+        // 2 clicked on empty space
+        // 3 clicked on our previously inserted segment
+        // 4 clicked on another older segment or intersection
+
+        CircuitElementPortView clickedPort = getPortAt(snappedX, snappedY, null);
+        WireSegment clickedSegment = wireManager.getSegmentByPosition(snappedX, snappedY);
+
+
+        if (clickedPort != null)
+        {
+            // Case 1: clicked a port
+            onWireModeElementClick(clickedPort.getElement(), snappedX, snappedY);
+        }
+        else if (clickedSegment == null)
+        {
+            // Case 2: empty space.
+            // Add new node
+            WireIntersection newIntersection = new WireIntersection(snappedX, snappedY);
+            //switchIntersectionToClosestPort(snappedX, snappedY);
+            wireManager.connectNewIntersection(lastInsertedIntersection, newIntersection);
+            lastInsertedIntersection = newIntersection;
+        }
+        else if (lastInsertedIntersection instanceof WireIntersection && lastInsertedIntersection.getSegments().size() == 1 && lastInsertedIntersection.getSegments().get(0) == clickedSegment)
+        {
+            // Case 3: we clicked on our last segment maybe we want to make it shorter again?
+            lastInsertedIntersection.setPosition(snappedX, snappedY);
+
+        }
+        else if (clickedSegment.isPointOnSegment(snappedX, snappedY))
+        {
+            // Case 4: existing segment/node.
+            // Add a new node. we let the node consolidator take care of it later.
+            WireIntersection newIntersection = wireManager.splitSegment(clickedSegment, snappedX, snappedY);
+            wireManager.connectNewIntersection(lastInsertedIntersection, newIntersection);
+
+            // End the wire drawing now.
+            endWireDraw();
+
+        }
+    }
+
+    public void endWireDraw()
+    {
+        selectElement(null);
+        lastInsertedIntersection = null;
+        setCanvasState(CanvasState.IDLE);
+
+    }
+
 //
-//                        }
-                    }
+//    @Override
+//    public boolean onSingleTapUp(MotionEvent motionEvent)
+//    {
+//        wireManager.selectSegment(null);
+//
+//        int snappedX = snap(motionEvent.getX());
+//        int snappedY = snap(motionEvent.getY());
+//
+//
+//        switch (getCursor())
+//        {
+//            case WIRE:
+//            {
+//                onWireModeTapUp(snap(motionEvent.getX()), snap(motionEvent.getY()));
+//                return true;
+//            }
+//            case HAND:
+//            {
+//                WireSegment segment = wireManager.getSegmentByPosition(snappedX, snappedY);
+//                if (segment != null)
+//                {
+//                    wireManager.selectSegment(segment);
+//                    selectElement(null);
+//                    circuitDesignerMenu.showSubMenu(R.id.wire_properties);
+//                    return true;
+//                }
+//            }
+//            case SELECTING_ELEMENT:
+//            {
+//                if (elementSelector instanceof NodeSelector)
+//                {
+//                    WireSegment segment = wireManager.getSegmentByPosition(snappedX, snappedY);
+//
+//                    if (segment != null && elementSelector.onSelect(segment))
+//                    {
+//                        setCursorToHand();
+//                        setElementSelector(null);
+//                        canvasView.invalidate();
+//                    }
+//
+//                }
+//                else if (elementSelector instanceof ElementSelector)
+//                {
+//                    CircuitElementView view = getPortAt(snappedX, snappedY, null).getElement();
+//                    if (view != null && elementSelector.onSelect(view)) ;
+//                    {
+//                        setCursorToHand();
+//                        setElementSelector(null);
+//                        canvasView.invalidate();
+//                    }
+//                }
+//
+//            }
+//        }
+//
+//
+//        if (getCursor() != CursorState.ELEMENT)
+//            return false;
+//
+//        selectElement(null);
+//
+//        CircuitElementView elementView = instantiateElement(snappedX, snappedY);
+//        if (elementView != null)
+//        {
+//            addElement(elementView);
+//        }
+//
+//        return true;
+//    }
 
-                }
-            }
+    @Override
+    public void onElementClick(View view, float x, float y)
+    {
+        wireManager.selectSegment(null);
+        selectElement((CircuitElementView) view);
 
-            return true;
-        } else if (getCursor() == CursorState.HAND)
+
+        switch (getCursor())
         {
-            WireSegment segment = wireManager.getSegmentByPosition(snappedX, snappedY);
-            if (segment != null)
+            case SELECTING_ELEMENT:
             {
-                wireManager.selectSegment(segment);
-                deselectElements(null);
-                circuitDesignerMenu.showSubMenu(R.id.wire_properties);
-                return true;
-            }
-        } else if (getCursor() == CursorState.SELECTING_ELEMENT && elementSelector instanceof NodeSelector)
-        {
-            WireSegment segment = wireManager.getSegmentByPosition(snappedX, snappedY);
-            if (segment != null)
-            {
-                if (elementSelector.onSelect(segment))
+                if (elementSelector instanceof ElementSelector && elementSelector.onSelect(view))
                 {
                     setCursorToHand();
                     setElementSelector(null);
                     canvasView.invalidate();
                 }
             }
-        }
-
-
-        if (getCursor() != CursorState.ELEMENT)
-            return false;
-
-        deselectElements(null);
-
-        CircuitElementView elementView = instantiateElement(snappedX, snappedY);
-        if (elementView != null)
-        {
-            addElement(elementView);
-        }
-
-        return true;
-    }
-
-    @Override
-    public void onElementClick(View view, float x, float y)
-    {
-        wireManager.selectSegment(null);
-        deselectElements(view);
-
-        if (getCursor() == CursorState.WIRE)
-        {
-            // The first endpoint of a wire
-            if (getCanvasState() == CanvasState.IDLE)
+            break;
+            case HAND:
             {
-                lastInsertedIntersection = ((CircuitElementView) view).getClosestPort(x, y, true);
-                wireManager.addIntersection(lastInsertedIntersection);
-                setCanvasState(CanvasState.DRAWING_WIRE);
-            } else if (getCanvasState() == CanvasState.DRAWING_WIRE)
-            {
-                // Create new node, and end the wire at the new element
-                CircuitElementPortView port = ((CircuitElementView) view).getClosestPort(lastInsertedIntersection.getX(), lastInsertedIntersection.getY(), false);
-                replaceLastInsertedIntersection(port.getX(), port.getY());
-                wireManager.connectNewIntersection(lastInsertedIntersection, port);
-
-                deselectElements(null);
-                lastInsertedIntersection = null;
-                setCanvasState(CanvasState.IDLE);
+                circuitDesignerMenu.showElementPropertiesMenu(selectedElement, this);
             }
-        } else if (getCursor() == CursorState.SELECTING_ELEMENT && elementSelector instanceof ElementSelector)
-        {
-            if (elementSelector.onSelect((CircuitElementView) view))
+            break;
+            case WIRE:
             {
-                setCursorToHand();
-                setElementSelector(null);
-                canvasView.invalidate();
+                onWireModeElementClick((CircuitElementView)view, snap(x), snap(y));
             }
-        } else
-        {
-            setCursorToHand();
-            circuitDesignerMenu.showElementPropertiesMenu(selectedElement, this);
+            break;
         }
+
+
+        /* if (getCursor() == CursorState.WIRE)
+      {
+          // The first endpoint of a wire
+          if (getCanvasState() == CanvasState.IDLE)
+          {
+              lastInsertedIntersection = ((CircuitElementView) view).getClosestPort(x, y, true);
+              wireManager.addIntersection(lastInsertedIntersection);
+              setCanvasState(CanvasState.DRAWING_WIRE);
+          } else if (getCanvasState() == CanvasState.DRAWING_WIRE)
+          {
+              // Create new node, and end the wire at the new element
+              CircuitElementPortView port = ((CircuitElementView) view).getClosestPort(lastInsertedIntersection.getX(), lastInsertedIntersection.getY(), false);
+              switchIntersectionToClosestPort(port.getX(), port.getY());
+              wireManager.connectNewIntersection(lastInsertedIntersection, port);
+
+              selectElement(null);
+              lastInsertedIntersection = null;
+              setCanvasState(CanvasState.IDLE);
+          }
+      } else */
+//        if (getCursor() == CursorState.SELECTING_ELEMENT && elementSelector instanceof ElementSelector)
+//        {
+//            if (elementSelector.onSelect((CircuitElementView) view))
+//            {
+//
+//            }
+//        }
+//        else if(getCursor() != CursorState.WIRE)
+//        {
+//            setCursorToHand();
+//
+//        }
     }
 
     public void addElement(CircuitElementView elementView)
@@ -330,29 +404,32 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         canvasView.addView(elementView);
 
         elementView.setOnElementClickListener(this);
-        elementView.setOnInvalidateListener(this);
+//        elementView.setOnInvalidateListener(this);
         elementView.setOnDropListener(this);
         elementView.setOnMoveListener(this);
         elementView.updatePosition();
     }
 
-    private void deselectElements(View exceptFor)
+
+    private void selectElement(CircuitElementView e)
     {
         for (CircuitElementView element : elements)
         {
-            if (element == exceptFor && !element.isElementSelected())
-            {
-                element.setElementSelected(true);
-                selectedElement = element;
-            } else
-                element.setElementSelected(false);
+            element.setElementSelected(false);
         }
+
+        if (e != null)
+        {
+            e.setElementSelected(true);
+        }
+
+        selectedElement = e;
     }
 
     public void deselectAllElements()
     {
         setCursorToHand();
-        deselectElements(null);
+        selectElement(null);
         wireManager.selectSegment(null);
     }
 
@@ -387,13 +464,15 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                             {
                                 WireIntersection duplicate = otherIntersection.duplicate(segment, wireManager);
                                 duplicate.x = newX;
-                            } else
+                            }
+                            else
                             {
                                 ((WireIntersection) otherIntersection).x = newX;
                             }
                             segment.invalidate();
                         }
-                    } else
+                    }
+                    else
                     {
                         int dy = (int) (selectedElement.getHeight() * (port.transformPosition(newOrientation)[1] - port.getTransformedPosition()[1]));
                         int newY = segment.getStart().getY() + dy;
@@ -403,7 +482,8 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                             {
                                 WireIntersection duplicate = otherIntersection.duplicate(segment, wireManager);
                                 duplicate.y = newY;
-                            } else
+                            }
+                            else
                             {
                                 ((WireIntersection) otherIntersection).y = newY;
                             }
@@ -444,14 +524,10 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         circuitDesignerMenu.showSubMenu(R.id.circuit_menu);
     }
 
-    @Override
-    public void onInvalidate()
+    public void InvalidateDesigner()
     {
         wireManager.invalidateAll();
-        if (getCursor() == CursorState.SELECTING_ELEMENT)
-        {
-            canvasView.invalidate();
-        }
+        canvasView.invalidate();
     }
 
     @Override
@@ -489,7 +565,13 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         return null;
     }
 
-    private void replaceLastInsertedIntersection(int x, int y)
+    /**
+     * If the last inserted intersection was a port
+     *
+     * @param x
+     * @param y
+     */
+    private void switchIntersectionToClosestPort(int x, int y)
     {
         if (lastInsertedIntersection instanceof CircuitElementPortView)
         {
@@ -541,28 +623,104 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
         return (int) (coord / GRID_SIZE + 0.5f) * GRID_SIZE;
     }
 
-    private class TouchListener extends EpicTouchListener
+    private class DesignerTouchListener extends EpicTouchListener
     {
         private WireSegment selectedSegment;
 
         @Override
-        public boolean onTouch(View view, MotionEvent motionEvent)
+        protected void onSingleFingerDown(float x, float y)
         {
-            // We want to record the selectedSegment outside the onSingleFingerMove()
-            // method because otherwise it causes some issues.
-            // As you move your finger, at some point before the segment snaps to the
-            // next grid-line, the finger will leave its collision bounds, causing the
-            // drag to end.
-            switch (motionEvent.getActionMasked())
+            switch (getCursor())
             {
-                case MotionEvent.ACTION_DOWN:
-                    selectedSegment = wireManager.getSegmentByPosition(motionEvent.getX(), motionEvent.getY());
-                    break;
-                case MotionEvent.ACTION_UP:
-                    selectedSegment = null;
-                    break;
+                case HAND:
+                {
+                    selectedSegment = wireManager.getSegmentByPosition(x, y);
+                }
+                break;
             }
-            return super.onTouch(view, motionEvent);
+        }
+
+        @Override
+        protected boolean onAllFingersUp(float x, float y)
+        {
+
+
+       //     wireManager.selectSegment(null);
+
+            int snappedX = snap(x);
+            int snappedY = snap(y);
+
+            boolean handled = false;
+
+
+            switch (getCursor())
+            {
+                case WIRE:
+                {
+                    onWireModeTapUp(snappedX, snappedY);
+                    handled = true;
+                }
+                case HAND:
+                {
+                    WireSegment segment = wireManager.getSegmentByPosition(snappedX, snappedY);
+                    if (segment != null)
+                    {
+                        wireManager.selectSegment(segment);
+                        selectElement(null);
+                        circuitDesignerMenu.showSubMenu(R.id.wire_properties);
+                        handled = true;
+                    }
+                    selectedSegment = null;
+                }
+                case SELECTING_ELEMENT:
+                {
+                    if (elementSelector instanceof NodeSelector)
+                    {
+                        WireSegment segment = wireManager.getSegmentByPosition(snappedX, snappedY);
+
+                        if (segment != null && elementSelector.onSelect(segment))
+                        {
+                            setCursorToHand();
+                            setElementSelector(null);
+                            handled = true;
+                        }
+
+                    }
+                    else if (elementSelector instanceof ElementSelector)
+                    {
+                        CircuitElementView view = getPortAt(snappedX, snappedY, null).getElement();
+                        if (view != null && elementSelector.onSelect(view)) ;
+                        {
+                            setCursorToHand();
+                            setElementSelector(null);
+                            handled = true;
+                        }
+                    }
+
+                }
+                break;
+                case ELEMENT:
+                {
+                    selectElement(null);
+
+                    CircuitElementView elementView = instantiateElement(snappedX, snappedY);
+                    if (elementView != null)
+                    {
+                        addElement(elementView);
+                        handled = true;
+                    }
+
+                }
+            }
+
+            if (handled)
+            {
+                wireManager.consolidateIntersections();
+                InvalidateDesigner();
+            }
+
+
+            return handled;
         }
 
         @Override
@@ -575,13 +733,17 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
             if (canMoveHorizontally)
             {
                 selectedSegment.moveX(snap(finalX));
-            } else
+            }
+            else
             {
                 selectedSegment.moveY(snap(finalY));
             }
-            setCursor(CursorState.SELECTION);
 
-            selectedSegment.invalidate();
+            if (getCursor() == CursorState.ELEMENT || getCursor() == CursorState.WIRE)
+            {
+                setCursorToHand();
+            }
+
             return true;
         }
     }
