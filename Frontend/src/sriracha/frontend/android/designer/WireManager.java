@@ -127,8 +127,6 @@ public class WireManager
         from.addSegment(segment);
         to.addSegment(segment);
         addSegment(segment);
-
-        //  consolidateIntersections();
     }
 
     public WireIntersection splitSegment(WireSegment segment, int x, int y)
@@ -202,15 +200,11 @@ public class WireManager
          * Iterate through the hashmap.
          * For each list of intersections, there are three cases:
          *
-         * - Case 1: Two or more of the intersections are ports.
-         *           Once again, we do nothing, since we obviously can't
-         *           eliminate any of the elements. Furthermore, we must not delete any zero-length segments that exist,
-         *           since that would break the connection between the elements.
          *
-         * - Case 2: One of the intersections is a port.
+         * - Case 1: One or more of the intersections is a port.
          *           In this case, we consolidate the other intersections, adding their segments to the port intersection.
          *
-         * - Case 3: None of the above.
+         * - Case 2: None of the above.
          *           The simplest case, we create a new intersection and add all the segments from the rest of the
          *           intersections to the new one.
          */
@@ -226,7 +220,7 @@ public class WireManager
                 ArrayList<CircuitElementPortView> ports = new ArrayList<CircuitElementPortView>();
                 for (IWireIntersection intersection : intersectionList)
                 {
-                    // Counting ports for cases 1 and 2.
+                    // Counting ports for case 1.
                     if (intersection instanceof CircuitElementPortView && !ports.contains(intersection))
                     {
                         portCount++;
@@ -239,11 +233,21 @@ public class WireManager
 
                 if (portCount >= 1)
                 {
-                    // Case 2.
+                    // Case 1.
                     newIntersection = ports.get(0);
+                    
+                    if(portCount == 2)
+                    {
+                        //create extra segment linking them in case they
+                        //are currently linked by 0 length segments, through another stacked intersection 
+                        //if we do not do this the element will detach since 0 length segments are deleted
+                        //if they are not between 2 elements
+                        addNewSegment(new WireSegment(getContext(), this, ports.get(0), ports.get(1)));
+                    }
+                    
                 } else
                 {
-                    // Case 3. Create a new intersection to replace all the old ones.
+                    // Case 2. Create a new intersection to replace all the old ones.
                     newIntersection = new WireIntersection(intersectionList.get(0).getX(), intersectionList.get(0).getY());
                     intersections.add(newIntersection);
                 }
@@ -472,6 +476,14 @@ public class WireManager
 
     public void addSegment(WireSegment segment)
     {
+        segments.add(segment);
+        canvasView.addView(segment);
+    }
+
+    public void addNewSegment(WireSegment segment)
+    {
+        segment.getStart().addSegment(segment);
+        segment.getEnd().addSegment(segment);
         segments.add(segment);
         canvasView.addView(segment);
     }
