@@ -235,8 +235,8 @@ public class WireManager
                 {
                     // Case 1.
                     newIntersection = ports.get(0);
-                    
-                    if(portCount == 2)
+
+                    if (portCount == 2)
                     {
                         //create extra segment linking them in case they
                         //are currently linked by 0 length segments, through another stacked intersection 
@@ -244,7 +244,7 @@ public class WireManager
                         //if they are not between 2 elements
                         addNewSegment(new WireSegment(getContext(), this, ports.get(0), ports.get(1)));
                     }
-                    
+
                 } else
                 {
                     // Case 2. Create a new intersection to replace all the old ones.
@@ -309,9 +309,10 @@ public class WireManager
         for (ArrayList<WireSegment> segList : nodeSegmentMap.values())
         {
             boolean extraPass;
-
+            int passCount = 0;
             do
             {
+                passCount++;
                 extraPass = false;
                 //iterate over all pairs of segments backwards so we can remove as we go
                 for (int i = segList.size() - 1; i > 0; i = Math.min(i - 1, segList.size() - 1))
@@ -467,7 +468,7 @@ public class WireManager
                     }
                 }
                 //while here
-            } while (extraPass);
+            } while (extraPass && passCount < 5);
 
         }
 

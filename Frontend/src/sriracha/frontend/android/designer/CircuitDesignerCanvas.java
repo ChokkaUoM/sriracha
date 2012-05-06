@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.RelativeLayout;
 import sriracha.frontend.R;
 import sriracha.frontend.android.results.IElementSelector;
@@ -66,9 +67,21 @@ public class CircuitDesignerCanvas extends RelativeLayout
                 canvas.drawLine(0, i, getWidth(), i, paint);
         }
 
+
+        for (int i = 0; i < getChildCount(); i++)
+        {
+            View child = getChildAt(i);
+            if (child instanceof WireSegment)
+            {
+                child.bringToFront();
+            }
+        }
+
         if (elementSelector != null)
         {
             elementSelector.onDraw(canvas);
         }
     }
+
+
 }

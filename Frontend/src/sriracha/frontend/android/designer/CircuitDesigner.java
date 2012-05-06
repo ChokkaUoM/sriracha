@@ -262,77 +262,6 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
 
     }
 
-//
-//    @Override
-//    public boolean onSingleTapUp(MotionEvent motionEvent)
-//    {
-//        wireManager.selectSegment(null);
-//
-//        int snappedX = snap(motionEvent.getX());
-//        int snappedY = snap(motionEvent.getY());
-//
-//
-//        switch (getCursor())
-//        {
-//            case WIRE:
-//            {
-//                onWireModeTapUp(snap(motionEvent.getX()), snap(motionEvent.getY()));
-//                return true;
-//            }
-//            case HAND:
-//            {
-//                WireSegment segment = wireManager.getSegmentByPosition(snappedX, snappedY);
-//                if (segment != null)
-//                {
-//                    wireManager.selectSegment(segment);
-//                    selectElement(null);
-//                    circuitDesignerMenu.showSubMenu(R.id.wire_properties);
-//                    return true;
-//                }
-//            }
-//            case SELECTING_ELEMENT:
-//            {
-//                if (elementSelector instanceof NodeSelector)
-//                {
-//                    WireSegment segment = wireManager.getSegmentByPosition(snappedX, snappedY);
-//
-//                    if (segment != null && elementSelector.onSelect(segment))
-//                    {
-//                        setCursorToHand();
-//                        setElementSelector(null);
-//                        canvasView.invalidate();
-//                    }
-//
-//                }
-//                else if (elementSelector instanceof ElementSelector)
-//                {
-//                    CircuitElementView view = getPortAt(snappedX, snappedY, null).getElement();
-//                    if (view != null && elementSelector.onSelect(view)) ;
-//                    {
-//                        setCursorToHand();
-//                        setElementSelector(null);
-//                        canvasView.invalidate();
-//                    }
-//                }
-//
-//            }
-//        }
-//
-//
-//        if (getCursor() != CursorState.ELEMENT)
-//            return false;
-//
-//        selectElement(null);
-//
-//        CircuitElementView elementView = instantiateElement(snappedX, snappedY);
-//        if (elementView != null)
-//        {
-//            addElement(elementView);
-//        }
-//
-//        return true;
-//    }
-
     @Override
     public void onElementClick(View view, float x, float y)
     {
@@ -501,13 +430,37 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
             if (port.getSegments().isEmpty())
             {
                 CircuitElementPortView portIntersection = getPortAt(port.getX(), port.getY(), port.getElement());
+
+                IWireIntersection normIntersection = getIntersectionAt(port.getX(), port.getY(), port);
+
                 if (portIntersection != null)
                 {
                     wireManager.addIntersection(port);
                     wireManager.connectNewIntersection(port, portIntersection);
+                } else if (normIntersection != null)
+                {
+                    wireManager.addIntersection(port);
+                    wireManager.connectNewIntersection(port, normIntersection);
                 }
             }
         }
+    }
+
+    private IWireIntersection getIntersectionAt(int x, int y, IWireIntersection except)
+    {
+
+        for (IWireIntersection intersection : wireManager.getIntersections())
+        {
+
+            if (intersection == except) continue;
+
+            if (x == intersection.getX() && y == intersection.getY())
+            {
+                return intersection;
+            }
+        }
+
+        return null;
     }
 
     private CircuitElementPortView getPortAt(int x, int y, CircuitElementView not)
