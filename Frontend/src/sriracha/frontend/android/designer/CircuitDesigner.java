@@ -538,10 +538,10 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
     {
         if (lastInsertedIntersection instanceof CircuitElementPortView)
         {
-            CircuitElementPortView port = (CircuitElementPortView) lastInsertedIntersection;
+            CircuitElementPortView port = ((CircuitElementPortView) lastInsertedIntersection).getElement().getClosestPort(x, y, false);
             if (port.getElement().getAttachedSegmentCount() == 0)
             {
-                lastInsertedIntersection = port.getElement().getClosestPort(x, y, false);
+                lastInsertedIntersection = port;
                 wireManager.addIntersection(lastInsertedIntersection);
             }
         }
