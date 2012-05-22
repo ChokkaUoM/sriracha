@@ -458,21 +458,11 @@ class Axis extends LinearLayout
 
     private void updateLabelContents()
     {
-//        if (scaleType == LINEARSCALE)
-//        {
         int i = 0;
         for (float mid : getNotchPositions())
         {
             getLabel(i++).setText(axisNumFormat(coordinateFromPixel(mid)));
         }
-
-//        } else
-//        {
-//            for (int i = 0; i < getChildCount(); i++)
-//            {
-//                getLabel(i).setText(axisNumFormat(minValue * Math.pow(logBase, i)));
-//            }
-//        }
     }
 
     private void inflateLabel()

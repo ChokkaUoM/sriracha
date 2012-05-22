@@ -4,6 +4,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import sriracha.frontend.NetlistGenerator;
+import sriracha.frontend.NodeCrawler;
 import sriracha.frontend.R;
 import sriracha.frontend.android.ElementSelector;
 import sriracha.frontend.android.EpicTouchListener;
@@ -437,10 +438,28 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                 {
                     wireManager.addIntersection(port);
                     wireManager.connectNewIntersection(port, portIntersection);
-                } else if (normIntersection != null)
+                } else if (normIntersection != null && normIntersection.getSegments().size() == 1)
                 {
-                    wireManager.addIntersection(port);
-                    wireManager.connectNewIntersection(port, normIntersection);
+
+                    NodeCrawler crawler = new NodeCrawler(wireManager);
+                    crawler.computeMappings();
+                    CircuitElementPortView[] ports = elementView.getPortViews();
+                    boolean connect = true;
+                    for (CircuitElementPortView p : ports)
+                    {
+                        //check all other ports if they are the same node as the hanging wire, do not connect
+                        if (port != p && crawler.nodeFromIntersection(normIntersection) == crawler.nodeFromIntersection(port))
+                        {
+                            connect = false;
+                            break;
+                        }
+                    }
+                    if (connect)
+                    {
+                        wireManager.addIntersection(port);
+                        wireManager.connectNewIntersection(port, normIntersection);
+                    }
+
                 }
             }
         }
@@ -627,7 +646,7 @@ public class CircuitDesigner extends GestureDetector.SimpleOnGestureListener
                     } else if (elementSelector instanceof ElementSelector)
                     {
                         CircuitElementView view = getPortAt(snappedX, snappedY, null).getElement();
-                        if (view != null && elementSelector.onSelect(view)) ;
+                        if (view != null && elementSelector != null && elementSelector.onSelect(view)) ;
                         {
                             setCursorToHand();
                             setElementSelector(null);
